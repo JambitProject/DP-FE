@@ -1,0 +1,271 @@
+@font-face {
+  font-family: "Pretendard-Black";
+  src: url("assets/fonts/Pretendard-Black.otf");
+}
+@font-face {
+  font-family: "Pretendard-Bold";
+  src: url("assets/fonts/Pretendard-Bold.otf");
+}
+@font-face {
+  font-family: "Pretendard-ExtraBold";
+  src: url("assets/fonts/Pretendard-ExtraBold.otf");
+}
+@font-face {
+  font-family: "Pretendard-ExtraLight";
+  src: url("assets/fonts/Pretendard-ExtraLight.otf");
+}
+@font-face {
+  font-family: "Pretendard-Light";
+  src: url("assets/fonts/Pretendard-Light.otf");
+}
+@font-face {
+  font-family: "Pretendard-Medium";
+  src: url("assets/fonts/Pretendard-Medium.otf");
+}
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("assets/fonts/Pretendard-Regular.otf");
+}
+@font-face {
+  font-family: "Pretendard-SemiBold";
+  src: url("assets/fonts/Pretendard-SemiBold.otf");
+}
+@font-face {
+  font-family: "Pretendard-Thin";
+  src: url("assets/fonts/Pretendard-Thin.otf");
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  background-color: #fff;
+  font-family: "Pretendard-Regular";
+}
+
+.App {
+  text-align: center;
+}
+
+span {
+  font-family: "Pretendard-Regular";
+}
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+pre {
+  white-space: pre-wrap;
+  margin-bottom: 0 !important;
+}
+
+span {
+  display: inline-block;
+}
+
+.tooltip-container {
+  --tooltipBackground: rgba(0, 0, 0, 0.55) !important;
+
+  backdrop-filter: blur(8.5px) !important;
+  -webkit-backdrop-filter: blur(8.5px) !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: white !important;
+  font-size: 12px !important;
+}
+
+.Collapsible {
+  background-color: #111213;
+  border-radius: 16px;
+  padding: 24px;
+  /* width: 80vw; */
+  /* width: 100%; */
+  margin-left: 24px;
+  margin-right: 24px;
+  max-width: 800px;
+  margin-top: 16px;
+  color: white;
+}
+
+.Collapsible__contentOuter {
+}
+
+.Collapsible__contentInner {
+  background-color: #111213;
+  padding-top: 16px;
+  border-radius: 16px;
+  /* width: 80vw; */
+  max-width: 800px;
+  color: gray;
+}
+
+.burger .burger-squeeze {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  background-color: pink !important;
+}
+
+.burger .burger-lines {
+  width: 24px !important;
+  background-color: white !important;
+  font-size: 8px;
+}
+.burger .burger-lines:after {
+  width: 24px !important;
+  background-color: white !important;
+  font-size: 8px;
+}
+.burger .burger-lines:before {
+  width: 24px !important;
+  background-color: white !important;
+  font-size: 8px;
+}
+
+body {
+  overflow: scroll;
+  overflow-x: hidden;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+select {
+  /*ios대응*/
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+select::-ms-expand {
+  display: none; /* 화살표 없애기 for IE10, 11*/
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.Collapsible {
+  width: 100%;
+}
+
+.pagination > li {
+  width: 30px;
+}
+
+.pagination > li.active {
+  width: 30px;
+  font-weight: bold;
+}
+.pagination > li > a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+/* only Mobile */
+@media (max-width: 1024.98px) {
+  .table-responsive {
+    overflow-x: scroll;
+    width: 100%;
+  }
+  .table {
+    min-width: 500px;
+  }
+}
+
+.custom-slick .slick-dots {
+  top: -52px;
+  width: auto !important;
+  left: 100px;
+  bottom: 300px !important;
+}
+
+.slick-dots li {
+  margin: 0px !important;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #f25625 !important;
+}
+
+.custom-slick .slick-prev:before {
+  color: transparent !important;
+  width: 10px !important;
+  height: 19px !important;
+  background-image: url("images/pngs/ImgArrowLeft.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.custom-slick .slick-next:before {
+  color: transparent !important;
+  width: 10px !important;
+  height: 19px !important;
+  background-image: url("images/pngs/ImgArrowRight.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.slick-next:before,
+.slick-prev:before {
+  color: #e0e0e0 !important;
+}
+
+/* a.dropdown-item:hover {
+  background-color: #f25625;
+} */
+
+a.dropdown-item:active {
+  background-color: white;
+  color: black;
+}
+
+textarea,
+input {
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.react-toggle--checked .react-toggle-track {
+  background-color: #00b881 !important;
+}
+
+.react-toggle-track {
+  background-color: #bcbcc1 !important;
+}
+
+.react-toggle-thumb {
+  border: 0px !important;
+}
+
+.project-slick .slick-dots {
+  bottom: -44px;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.modal-content {
+  border-radius: 16px !important;
+}
+
+.modal-dialog {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slick-dots {
+  z-index: 0;
+}
+
+.navbar-collapse {
+  background-color: #fff;
+  z-index: 100;
+}
