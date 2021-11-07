@@ -144,7 +144,7 @@ S.ImageProfile = styled.img`
   width: 48px;
   height: 48px;
   border-radius: 48px;
-  background-color: ${colors.gray4};
+  background-image: url('https://source.unsplash.com/random/48x48');
 `;
 
 S.ModalTextSm = styled.div`

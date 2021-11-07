@@ -166,14 +166,14 @@ S.PortFolioImage = styled.img`
   width: 100%;
   height: 224px;
   object-fit: cover;
-  background-color: ${colors.gray4};
+  background-image: url('https://source.unsplash.com/random/1320x224');
 `;
 
 S.ImageProfile = styled.img`
   width: 48px;
   height: 48px;
   border-radius: 48px;
-  background-color: ${colors.gray4};
+  background-image: url('https://source.unsplash.com/random/48x48');
 `;
 
 S.ProfileCol = styled(Col)`

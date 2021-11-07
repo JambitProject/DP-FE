@@ -172,7 +172,7 @@ S.TextIntroduce = styled.pre`
 S.ImageMain = styled.img`
   width: 100%;
   aspect-ratio: 883/504;
-  background-color: ${colors.gray4};
+  background-image: url('https://source.unsplash.com/random/883x504');
 `;
 
 S.ArrowContainer = styled.div`

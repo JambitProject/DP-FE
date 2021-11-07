@@ -67,5 +67,5 @@ const CardProfileImage = styled.img`
   height: 60px;
   border-radius: 60px;
   object-fit: cover;
-  background-color: ${colors.gray4};
+  background-image: url('https://source.unsplash.com/random/60x60');
 `;
