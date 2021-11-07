@@ -35,7 +35,7 @@ export const App = () => {
 
   const [themeMode, setThemeMode] = useState(false); // 테마 모드 세팅
   const theme = themeMode == false ? light : dark; // 테마 환경에 맞는 테마 컬러 가져오기.
-
+  
   return (
     <ThemeProvider theme={theme}>
       <S.Body>
@@ -54,7 +54,7 @@ export const App = () => {
                 <Navbar.Collapse id="responsive-navbar-nav">
                   <Nav className="me-auto">
                     <Nav.Link href="/portfolio">
-                      {location.pathname == "/portfolio" ? ( //주소에 따라 스타일 변경
+                      {location.pathname === "/portfolio" ? ( //주소에 따라 스타일 변경
                         <Stext s3 primary style={{ cursor: "pointer" }}>
                           내 포트폴리오
                         </Stext>
@@ -65,7 +65,7 @@ export const App = () => {
                       )}
                     </Nav.Link>
                     <Nav.Link href="/recruit-list">
-                      {location.pathname == "/recruit-list" ? ( //주소에 따라 스타일 변경
+                      {location.pathname === "/recruit-list" ? ( //주소에 따라 스타일 변경
                         <Stext s3 primary style={{ cursor: "pointer" }}>
                           프로젝트 모집 게시판
                         </Stext>
@@ -89,7 +89,9 @@ export const App = () => {
                           <IcBell />
                         </Sdiv>
                         <Sdiv mgl={16}>
-                          <S.Avatar />
+                          <Nav.Link href="/portfolio-edit">
+                            <S.Avatar />
+                          </Nav.Link>
                         </Sdiv>
                       </Sdiv>
                     </S.NoShowInMobile>
@@ -136,7 +138,7 @@ S.IcMore = styled(IcMore)`
 `;
 
 S.Avatar = styled.img`
-  background-color: ${colors.gray4};
+  background-image: url('https://source.unsplash.com/random/32x32');
   height: 32px;
   width: 32px;
   border-radius: 100px;
