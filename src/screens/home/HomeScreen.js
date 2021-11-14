@@ -101,6 +101,13 @@ export const HomeScreen = () => {
     history.push("/project");
   };
 
+  const handleTop = ()=>{
+    window.scrollTo({
+      top: 0,
+      
+    });
+  }
+
   const handleResize = (e) => {
     console.log("ee", e);
     setIsMobile(window.innerWidth < 768);
@@ -165,50 +172,17 @@ export const HomeScreen = () => {
                     id="dropdown-basic"
                   >
                     <Stext b2 g4>
-                      언어선택
+                      스택 필터
                     </Stext>
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.Item>Action</Dropdown.Item>
-                    <Dropdown.Item>Another action</Dropdown.Item>
-                    <Dropdown.Item>Something else</Dropdown.Item>
+                    <Dropdown.Item>JAVA</Dropdown.Item>
+                    <Dropdown.Item>SPRING</Dropdown.Item>
+                    <Dropdown.Item>Django</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
-                <Dropdown>
-                  <Dropdown.Toggle
-                    as={CustomToggle}
-                    variant="success"
-                    id="dropdown-basic"
-                  >
-                    <Stext b2 g4>
-                      프레임워크
-                    </Stext>
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu>
-                    <Dropdown.Item>Action</Dropdown.Item>
-                    <Dropdown.Item>Another action</Dropdown.Item>
-                    <Dropdown.Item>Something else</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-                <Dropdown>
-                  <Dropdown.Toggle
-                    as={CustomToggle}
-                    variant="success"
-                    id="dropdown-basic"
-                  >
-                    <Stext b2 g4>
-                      Select More..
-                    </Stext>
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu>
-                    <Dropdown.Item>Action</Dropdown.Item>
-                    <Dropdown.Item>Another action</Dropdown.Item>
-                    <Dropdown.Item>Something else</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                
               </Sdiv>
             </Sdiv>
           </Col>
@@ -216,11 +190,12 @@ export const HomeScreen = () => {
         <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
           {TMP_PRIFILE_ITEM.map((item) => {
             return (
-              <Col>
+              <Col onClick={handleTop}>
                 <CardProfile
                   onClickProfile={goProfile}
                   name={item.name}
                   subTitle={item.subTitle}
+                  
                 />
               </Col>
             );

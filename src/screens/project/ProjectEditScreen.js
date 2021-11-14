@@ -100,7 +100,7 @@ export const ProjectEditScreen = () => {
             <TextareaWithTitle title="프로젝트 설명" />
           </Sdiv>
           <Sdiv mgt={40} jed>
-            <DefaultButtonSm fill title="변경사항 저장하기" />
+            <DefaultButtonSm fill title="프로젝트 등록하기" />
           </Sdiv>
         </Sdiv>
       </Container>

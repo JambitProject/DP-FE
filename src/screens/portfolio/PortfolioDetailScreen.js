@@ -60,6 +60,10 @@ export const PortfolioDetailScreen = () => {
     history.push("/portfolio-edit");
   };
 
+  const goProject = () => {
+    history.push("/project");
+  };
+
   return (
     <S.Body>
       <Container>
@@ -130,11 +134,12 @@ export const PortfolioDetailScreen = () => {
           {TMP_PROJECT_ITEM.map((item) => {
             return (
               <S.ProfileCol>
-                <Sdiv>
+               <Sdiv>
                   <CardProjectHome
                     title={item.title}
                     subTitle={item.subTitle}
                     progress={item.progress}
+                    onClick={goProject}
                   />
                 </Sdiv>
               </S.ProfileCol>

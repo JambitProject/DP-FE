@@ -106,11 +106,17 @@ export const ProjectDetailScreen = () => {
     sliderRef.current.slickPrev();
   };
 
+  const handleTop = ()=>{
+    window.scrollTo({
+      top: 0,
+      
+    });
+  }
   return (
     <S.Body>
       <Container>
         <Row>
-          <div class="project-slick">
+          <div className="project-slick">
             <Slider ref={sliderRef} {...settings}>
               {TMP_IMG_LIST.map((item) => (
                 <S.ImageMain />
@@ -119,10 +125,10 @@ export const ProjectDetailScreen = () => {
 
             <S.ArrowContainer>
               <S.ArrowWrapper length={TMP_IMG_LIST.length}>
-                <div class="cursor" style={{ zIndex: 2 }} onClick={slickPrev}>
+                <div className="cursor" style={{ zIndex: 2 }} onClick={slickPrev}>
                   <IcArrowLeft />
                 </div>
-                <div class="cursor" style={{ zIndex: 2 }} onClick={slickNext}>
+                <div className="cursor" style={{ zIndex: 2 }} onClick={slickNext}>
                   <IcArrowRight />
                 </div>
               </S.ArrowWrapper>
@@ -131,7 +137,7 @@ export const ProjectDetailScreen = () => {
         </Row>
         <Row style={{ marginTop: 40 }}>
           <Col>
-            <ProejctTitle title="AI 승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다." />
+            <ProejctTitle title="AI 승부 예측 프로그램" />
           </Col>
         </Row>
         <Row>
@@ -174,7 +180,7 @@ export const ProjectDetailScreen = () => {
         <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
           {TMP_PRIFILE_ITEM.map((item) => {
             return (
-              <Col>
+              <Col onClick={handleTop}>
                 <CardProfile onClickProfile={goProfile} name={item.name} subTitle={item.subTitle} />
               </Col>
             );
@@ -255,7 +261,7 @@ S.TextIntroduce = styled.pre`
 S.ImageMain = styled.img`
   width: 100%;
   aspect-ratio: 883/504;
-  background-image: url('https://source.unsplash.com/random/884x504');
+  background-image: url('https://source.unsplash.com/random/1500x800');
 `;
 
 S.ArrowContainer = styled.div`

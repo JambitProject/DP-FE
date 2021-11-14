@@ -84,7 +84,7 @@ export const RecruitEditScreen = () => {
           <Sdiv>
             <InputWithTitle title="모집글 제목" />
             <Sdiv mgt={24} />
-            <InputWithTitle title="모집 포지션, 인원 수" />
+            <InputWithTitle title="모집 포지션, 인원 수 (ex.프론트엔드 1명)" />
             <Sdiv mgt={24} />
             <InputWithTitle title="우대 스택" onClick={onClickOpenModal} />
             <Sdiv mgt={24} />

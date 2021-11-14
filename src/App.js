@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -18,6 +18,7 @@ import {
   RecruitDetailScreen,
   RecruitListScreen,
 } from "screens";
+import ScrollToTop from "components/ScrollToTop/ScrollToTop";
 import styled, { ThemeProvider } from "styled-components";
 import { Sdiv, Stext } from "components";
 import { ReactComponent as LogoMain } from "images/LogoMain.svg";
@@ -34,7 +35,7 @@ export const App = () => {
   const location = useLocation();
 
   const [themeMode, setThemeMode] = useState(false); // 테마 모드 세팅
-  const theme = themeMode == false ? light : dark; // 테마 환경에 맞는 테마 컬러 가져오기.
+  const theme = themeMode == false ? light : dark; // 테마 환경에 맞는 테마 컬러 가져오기. 
   
   return (
     <ThemeProvider theme={theme}>
@@ -44,7 +45,8 @@ export const App = () => {
             <Navbar
               collapseOnSelect
               expand="lg"
-              style={{ height: 80, background: "white", zIndex: 10 }}
+              style={{ height: 80, background: "white", zIndex: 10}}
+              fixed="top"
             >
               <Container style={{ background: "white", zIndex: 10 }}>
                 <Navbar.Brand href="/">
@@ -85,9 +87,9 @@ export const App = () => {
                           </S.IcSearch>
                           <S.SearchBar placeholder="검색어를 입력하세요." />
                         </Sdiv>
-                        <Sdiv mgl={20} pdt={4} pdb={4} pdr={4} pdl={4}>
+                        {/* <Sdiv mgl={20} pdt={4} pdb={4} pdr={4} pdl={4}>
                           <IcBell />
-                        </Sdiv>
+                        </Sdiv> */}
                         <Sdiv mgl={16}>
                           <Nav.Link href="/portfolio-edit">
                             <S.Avatar />
@@ -99,11 +101,11 @@ export const App = () => {
                 </Navbar.Collapse>
               </Container>
             </Navbar>
-            <Sdiv h={1} bg={colors.gray7} />
+            <Sdiv h={80} bg={colors.gray7} />
           </>
         )}
 
-        <Switch location={location}>
+        <Switch location={location} history={history}>
           <Route exact path="/" component={HomeScreen} />
           <Route exact path="/profile" component={ProfileScreen} />
           <Route exact path="/login" component={LoginScreen} />
