@@ -63,7 +63,12 @@ export const PortfolioDetailScreen = () => {
   const goProject = () => {
     history.push("/project");
   };
-
+  const handleTop = ()=>{
+    window.scrollTo({
+      top: 0,
+      
+    });
+  }
   return (
     <S.Body>
       <Container>
@@ -134,7 +139,7 @@ export const PortfolioDetailScreen = () => {
           {TMP_PROJECT_ITEM.map((item) => {
             return (
               <S.ProfileCol>
-               <Sdiv>
+               <Sdiv onClick={handleTop}>
                   <CardProjectHome
                     title={item.title}
                     subTitle={item.subTitle}
