@@ -79,7 +79,7 @@ export const RecruitDetailScreen = () => {
           </Col>
         </Row>
         <Sdiv row style={{ display: "flex", flexWrap: "wrap" }}>
-          <Sdiv w={300}>
+          <Sdiv w={300} mgr={30}>
             <Row>
               <Col>
                 <Sdiv row>
@@ -91,9 +91,9 @@ export const RecruitDetailScreen = () => {
             </Row>
             <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
               <S.ProfileCol>
-                <CardProjectHome />
+                <CardProjectHome title="모집중인 프로젝트" subTitle="부제목"/>
               </S.ProfileCol>
-            </S.ProfileRow>
+            </S.ProfileRow> 
           </Sdiv>
           <Sdiv w={300}>
             <Row>

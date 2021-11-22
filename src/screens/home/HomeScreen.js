@@ -84,8 +84,8 @@ export const HomeScreen = () => {
     history.push("/portfolio");
   };
 
-  const goProject = () => {
-    history.push("/project");
+  const goProject = (id) => {
+    history.push(`/project/${id}`);
   };
 
   const handleTop = ()=>{
@@ -144,7 +144,7 @@ export const HomeScreen = () => {
                           title={item.projectName}
                           subTitle={"subTitle"}
                           progress={item.progress}
-                          onClick={goProject}
+                          onClick={()=>{goProject(item.id)}}
                         />
                       </Sdiv>
                     </S.ProfileCol>

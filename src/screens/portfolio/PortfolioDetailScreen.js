@@ -72,6 +72,7 @@ export const PortfolioDetailScreen = () => {
   },[prjList]);
 
   const goProjectEdit = () => {
+
     history.push("/project-edit");
   };
 
@@ -79,8 +80,8 @@ export const PortfolioDetailScreen = () => {
     history.push("/portfolio-edit");
   };
 
-  const goProject = () => {
-    history.push("/project");
+  const goProject = (id) => {
+    history.push(`/project/${id}`);
   };
   const handleTop = ()=>{
     window.scrollTo({
@@ -156,7 +157,7 @@ export const PortfolioDetailScreen = () => {
           </Col>
         </Row>
         <S.ProfileRow xs={2} sm={2} md={3}>
-          {console.log(prjList[0])}
+          
           {prjList.map((item) => {
               return (
               <S.ProfileCol>
@@ -166,7 +167,7 @@ export const PortfolioDetailScreen = () => {
                     title={item.projectName}
                     subTitle={"subTitle"}
                     progress={item.progress}
-                    onClick={goProject}
+                    onClick={()=>{goProject(item.id)}}
                   />
                 </Sdiv>
               </S.ProfileCol>

@@ -111,7 +111,7 @@ export const App = () => {
           <Route exact path="/login" component={LoginScreen} />
           <Route exact path="/portfolio" component={PortfolioDetailScreen} />
           <Route exact path="/portfolio-edit" component={PortfolioEditScreen} />
-          <Route exact path="/project" component={ProjectDetailScreen} />
+          <Route exact path="/project/:id" component={ProjectDetailScreen} />
           <Route exact path="/project-edit" component={ProjectEditScreen} />
           <Route exact path="/recruit-edit" component={RecruitEditScreen} />
           <Route exact path="/recruit" component={RecruitDetailScreen} />

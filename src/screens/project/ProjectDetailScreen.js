@@ -1,6 +1,6 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState} from "react";
 import ReactDOM from "react-dom";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import styled, { css } from "styled-components";
 import {
   BadgeDefaultGray,
@@ -16,7 +16,7 @@ import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import Slider from "react-slick";
 import { ReactComponent as IcArrowLeft } from "images/IcArrowLeft.svg";
 import { ReactComponent as IcArrowRight } from "images/IcArrowRight.svg";
-
+import axios from "axios";
 // slider 세팅
 let settings = {
   dots: true,
@@ -90,7 +90,28 @@ const TMP_COMMENT_ITEMS = [
 const TMP_IMG_LIST = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
 
 export const ProjectDetailScreen = () => {
+  
   const history = useHistory();
+  const [thisPrj, setThisPrj] = useState({});
+  
+  let { id } = useParams();
+ 
+  
+  useEffect(() => {
+    const getAjax = async () => {
+      
+      const res = await axios.get("http://15.165.194.66:8080/project/list");
+      setThisPrj(res.data.find(item=>{
+        return item.id == id;
+      }));
+     
+    }
+    getAjax();
+    
+  },[]);
+  
+ 
+ 
 
   const sliderRef = useRef();
 
@@ -112,6 +133,7 @@ export const ProjectDetailScreen = () => {
       
     });
   }
+  
   return (
     <S.Body>
       <Container>
@@ -137,7 +159,7 @@ export const ProjectDetailScreen = () => {
         </Row>
         <Row style={{ marginTop: 40 }}>
           <Col>
-            <ProejctTitle title="AI 승부 예측 프로그램" />
+            <ProejctTitle title={thisPrj.projectName} />
           </Col>
         </Row>
         <Row>
@@ -148,9 +170,7 @@ export const ProjectDetailScreen = () => {
               </Stext>
             </Sdiv>
             <Sdiv mgt={24} style={{ gap: "16px 0px" }} col>
-              <Stext>http://www.xxx.com</Stext>
-              <Stext>http://www.xxx.com</Stext>
-              <Stext>http://www.xxx.com</Stext>
+              <Stext>{thisPrj.link}</Stext>
             </Sdiv>
           </Col>
         </Row>
@@ -195,10 +215,7 @@ export const ProjectDetailScreen = () => {
             </Sdiv>
             <Sdiv mgt={28}>
               <S.TextIntroduce>
-                {`프론트엔드 개발자 (1명)
-
-저희가 개발중인 AI 승부 예측 프로그램의 모바일 클라이언트
-사이드 프론트엔드 개발 가능하신 분 찾고 있습니다!  `}
+                {thisPrj.content}
               </S.TextIntroduce>
             </Sdiv>
           </Col>
@@ -261,7 +278,7 @@ S.TextIntroduce = styled.pre`
 S.ImageMain = styled.img`
   width: 100%;
   aspect-ratio: 883/504;
-  background-image: url('https://source.unsplash.com/random/1500x800');
+  background-image: url('https://source.unsplash.com/random/883*504');
 `;
 
 S.ArrowContainer = styled.div`

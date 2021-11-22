@@ -5,7 +5,7 @@ import { ReactComponent as IcHeart } from "images/IcHeart.svg";
 import { Sdiv, Stext } from "components";
 import { colors } from "styles/colors";
 
-export const CardProjectHome = ({ src, title, progress = 0, likesCount = 0, subTitle, onClick }) => {
+export const CardProjectHome = ({ src, title, progress = "ONGOING", likesCount = 0, subTitle, onClick }) => {
   const RenderProgress = () => {
     switch (progress) {
       case "ONGOING":
