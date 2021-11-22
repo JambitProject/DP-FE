@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
-import styled, { css } from "styled-components";
+import styled, { css } from "styled-components"
 import {
   BadgeDefaultGray,
   DefaultButtonSm,
@@ -10,11 +10,33 @@ import {
   ModalContainer,
   Sdiv,
   Stext,
+  CardProfile,
   TextareaWithTitle,
+  CardProjectHome,
 } from "components";
 
 import { Row, Col, Container } from "react-bootstrap";
 import { colors } from "styles/colors";
+const TMP_PRIFILE_ITEM = [
+  {
+    name: "ComHolic1",
+    subTitle:
+      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
+  },
+  {
+    name: "ComHolic2",
+    subTitle:
+      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
+  },
+  {
+    name: "ComHolic3",
+    subTitle:
+      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
+  },
+  
+ 
+  
+];
 
 const TMP_STACK_BADGE_ITEMS = [
   { title: "JAVA" },
@@ -70,7 +92,16 @@ export const PortfolioEditScreen = () => {
   const onClickCloseModal = () => {
     setShowModal(false);
   };
+  const handleTop = ()=>{
+    window.scrollTo({
+      top: 0,
+      
+    });
+  }
 
+  const goProfile = ()=>{
+    history.push('/portfolio')
+  }
   return (
     <S.Body>
       <Container>
@@ -132,6 +163,68 @@ export const PortfolioEditScreen = () => {
         <Row>
           <Col>
             <Sdiv row>
+              <Stext h3 g0>
+                # Followers
+              </Stext>
+            </Sdiv>
+          </Col>
+        </Row>
+        <Sdiv h={30} />
+        <Row>
+          <Col>
+            <Sdiv>
+              <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
+                {TMP_PRIFILE_ITEM.map((item) => {
+                  return (
+                    <Col onClick={handleTop}>
+                      <CardProfile
+                        onClickProfile={goProfile}
+                        name={item.name}
+                        subTitle={item.subTitle}
+                        
+                      />
+                    </Col>
+                  );
+                })}
+              </S.ProfileRow>
+            </Sdiv>
+          </Col>
+        </Row>
+        <Sdiv h={80} />
+        <Row>
+          <Col>
+            <Sdiv row>
+              <Stext h3 g0>
+                # Following
+              </Stext>
+            </Sdiv>
+          </Col>
+        </Row>
+        <Sdiv h={30} />
+        <Row>
+          <Col>
+            <Sdiv>
+              <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
+                {TMP_PRIFILE_ITEM.map((item) => {
+                  return (
+                    <Col onClick={handleTop}>
+                      <CardProfile
+                        onClickProfile={goProfile}
+                        name={item.name}
+                        subTitle={item.subTitle}
+                        
+                      />
+                    </Col>
+                  );
+                })}
+              </S.ProfileRow>
+            </Sdiv>
+          </Col>
+        </Row>
+        <Sdiv h={80} />
+        <Row>
+          <Col>
+            <Sdiv row>
               <Stext mgr={10} h3 g0>
                 # 나의 모집중인 글
               </Stext>
@@ -167,6 +260,7 @@ export const PortfolioEditScreen = () => {
             </Sdiv>
           </Col>
         </Row>
+        <Sdiv h={40} />
       </Container>
       <ModalContainer show={showModal}>
         <Stext h3 g0 mgb={20}>
@@ -245,4 +339,13 @@ S.Line = styled.div`
   width: 100%;
   height: 1px;
   background-color: ${colors.gray7};
+`;
+
+S.ProfileCol = styled(Col)`
+  padding: 0px;
+`;
+
+S.ProfileRow = styled(Row)`
+  gap: 16px 0px;
+  margin-top: 48px;
 `;

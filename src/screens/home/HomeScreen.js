@@ -3,10 +3,10 @@ import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { CardProfile, CardProjectHome, Sdiv, Stext } from "components";
-
+import defaultImg from 'images/pngs/defaultImg.png';
 import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import Slider from "react-slick";
-
+import axios from 'axios';
 import { ReactComponent as IcDropArrowDown } from "images/IcDropArrowDown.svg";
 
 // slider 세팅
@@ -21,19 +21,6 @@ let settings = {
   beforeChange: (current, next) => console.log(current, next),
   afterChange: (current) => console.log(current),
 };
-
-const TMP_PROJECT_ITEM = [
-  { title: "title1", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title2", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title3", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title4", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title5", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title6", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title7", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title8", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title9", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title10", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-];
 
 const TMP_PRIFILE_ITEM = [
   {
@@ -90,7 +77,7 @@ const TMP_PRIFILE_ITEM = [
 
 export const HomeScreen = () => {
   const history = useHistory();
-
+  const [prjList, setPrjList] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
 
   const goProfile = () => {
@@ -107,6 +94,16 @@ export const HomeScreen = () => {
       
     });
   }
+  useEffect(() => {
+    const getAjax = async () => {
+      
+      const res = await axios.get("http://15.165.194.66:8080/project/top");
+      setPrjList([...res.data]);
+        
+    }
+    getAjax();
+    
+  },[]);
 
   const handleResize = (e) => {
     console.log("ee", e);
@@ -128,7 +125,7 @@ export const HomeScreen = () => {
             <Sdiv col>
               <Sdiv row act>
                 <Stext mgb={18} mgt={40} h3 g0>
-                  # 프로젝트
+                  # 프로젝트   
                 </Stext>
               </Sdiv>
               <Sdiv className="custom-slick">
@@ -138,18 +135,21 @@ export const HomeScreen = () => {
                   slidesToScroll={isMobile ? 1 : 3}
                   arrows={!isMobile}
                 >
-                  {TMP_PROJECT_ITEM.map((item) => {
+                  {prjList.map((item) => {
                     return (
-                      <Sdiv>
+                    <S.ProfileCol>
+                     <Sdiv onClick={handleTop} >
                         <CardProjectHome
-                          title={item.title}
-                          subTitle={item.subTitle}
+                          src={defaultImg}
+                          title={item.projectName}
+                          subTitle={"subTitle"}
                           progress={item.progress}
                           onClick={goProject}
                         />
                       </Sdiv>
-                    );
-                  })}
+                    </S.ProfileCol>
+                    );  
+                })}
                 </Slider>
               </Sdiv>
             </Sdiv>

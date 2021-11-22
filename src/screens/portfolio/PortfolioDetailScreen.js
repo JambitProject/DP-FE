@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
 import { BadgeDefaultGray, DefaultButtonSm, Sdiv, Stext, CardProjectHome } from "components";
-
+import defaultImg from 'images/pngs/defaultImg.png';
 import { Row, Col, Container } from "react-bootstrap";
 import Slider from "react-slick";
 
 import { ReactComponent as IcSetting } from "images/IcSetting.svg";
+import axios from "axios";
 
 // slider 세팅
 let settings = {
@@ -51,11 +52,29 @@ const TMP_SLIDER_ITEM = [
 ];
 
 export const PortfolioDetailScreen = () => {
+
   const history = useHistory();
+
+  const [prjList, setPrjList] = useState([]);
+
+  const [imgList, setImgList] = useState([]);
+  
+  
+  useEffect(() => {
+    const getAjax = async () => {
+      
+      const res = await axios.get("http://15.165.194.66:8080/project/list");
+      setPrjList([...res.data]);
+        
+    }
+    getAjax();
+    
+  },[prjList]);
 
   const goProjectEdit = () => {
     history.push("/project-edit");
   };
+
   const goPortfolioEdit = () => {
     history.push("/portfolio-edit");
   };
@@ -69,6 +88,7 @@ export const PortfolioDetailScreen = () => {
       
     });
   }
+  
   return (
     <S.Body>
       <Container>
@@ -109,7 +129,7 @@ export const PortfolioDetailScreen = () => {
                 justifyContent: "center",
               }}
             >
-              <div style={{ maxWidth: 306 }}>
+              {/* <div style={{ maxWidth: 306 }}>
                 <Slider {...settings}>
                   {TMP_SLIDER_ITEM.map((item) => {
                     return (
@@ -119,7 +139,7 @@ export const PortfolioDetailScreen = () => {
                     );
                   })}
                 </Slider>
-              </div>
+              </div> */}
             </div>
           </Col>
         </Row>
@@ -136,19 +156,21 @@ export const PortfolioDetailScreen = () => {
           </Col>
         </Row>
         <S.ProfileRow xs={2} sm={2} md={3}>
-          {TMP_PROJECT_ITEM.map((item) => {
-            return (
+          {console.log(prjList[0])}
+          {prjList.map((item) => {
+              return (
               <S.ProfileCol>
-               <Sdiv onClick={handleTop}>
+               <Sdiv onClick={handleTop} >
                   <CardProjectHome
-                    title={item.title}
-                    subTitle={item.subTitle}
+                    src={defaultImg}
+                    title={item.projectName}
+                    subTitle={"subTitle"}
                     progress={item.progress}
                     onClick={goProject}
                   />
                 </Sdiv>
               </S.ProfileCol>
-            );
+              );  
           })}
         </S.ProfileRow>
       </Container>

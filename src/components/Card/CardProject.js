@@ -5,10 +5,10 @@ import { ReactComponent as IcHeart } from "images/IcHeart.svg";
 import { Sdiv, Stext } from "components";
 import { colors } from "styles/colors";
 
-export const CardProjectHome = ({ src, title, progress = 0, likeCount = 0, subTitle, onClick }) => {
+export const CardProjectHome = ({ src, title, progress = 0, likesCount = 0, subTitle, onClick }) => {
   const RenderProgress = () => {
     switch (progress) {
-      case 0:
+      case "ONGOING":
         return (
           <BadgeProgress bg={colors.primary}>
             <Stext s5 white>
@@ -16,11 +16,11 @@ export const CardProjectHome = ({ src, title, progress = 0, likeCount = 0, subTi
             </Stext>
           </BadgeProgress>
         );
-      case 1:
+      case "COMPLETE":
         return (
           <BadgeProgress bg={colors.secondary}>
             <Stext s5 white>
-              진행중
+              완료됨
             </Stext>
           </BadgeProgress>
         );
@@ -42,7 +42,7 @@ export const CardProjectHome = ({ src, title, progress = 0, likeCount = 0, subTi
         <Sdiv row act>
           <IcHeart />
           <Stext mgl={4} s4 g3>
-            {likeCount}
+            {likesCount}
           </Stext>
         </Sdiv>
       </HomeInfoContainer>

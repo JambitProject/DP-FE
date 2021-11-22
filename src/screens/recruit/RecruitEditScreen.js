@@ -90,6 +90,8 @@ export const RecruitEditScreen = () => {
             <Sdiv mgt={24} />
             <TextareaWithTitle title="모집 상세 설명" />
             <Sdiv mgt={24} />
+            <InputWithTitle title="프로젝트 추가" onClick={onClickOpenModal} />
+            <Sdiv mgt={24} />
             <InputWithTitle title="연락처" />
           </Sdiv>
           <Sdiv mgt={40} jed>

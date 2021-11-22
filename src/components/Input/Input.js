@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { ReactComponent as IcCamera } from "images/IcCamera.svg";
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
+import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
+import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
+import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 
 import { DefaultButtonSm, Sdiv, Stext } from "components";
 import { colors } from "styles/colors";
@@ -11,6 +17,7 @@ export const InputWithTitle = ({
   onChange,
   style,
   onClick,
+  name,
 }) => {
   return (
     <Sdiv style={style}>
@@ -21,12 +28,57 @@ export const InputWithTitle = ({
         value={value}
         onChange={onChange && onChange}
         onClick={onClick && onClick}
+        name={name}
       />
     </Sdiv>
   );
 };
 
-export const TextareaWithTitle = ({ title = "title", value, onChange }) => {
+export const InputWithToggleBtn = ({
+  title = "title",
+  value,
+  onChange,
+  style,
+  onClick,
+  name,
+  handleProgress,
+})=>{
+  const [alignment, setAlignment] = useState('left');
+
+  const handleAlignment = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+  const handleSelect=(progress)=>{
+    handleProgress(progress);
+  }
+  return (
+    
+    <Sdiv style={style}>
+      <Stext s4 g0 mgb={12}>
+        {title}
+      </Stext>
+      <br/>
+      <ToggleButtonGroup
+        value={alignment}
+        exclusive
+        onChange={handleAlignment}
+        aria-label="text alignment"
+      >
+        <ToggleButton value={"ONGOING"} onClick={()=>{
+          handleSelect("ONGOING")}} >
+          진행중
+        </ToggleButton>
+        <ToggleButton value={"COMPLETE"} onClick={()=>{
+          handleSelect("COMPLETED");
+        }}>
+          완료됨
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </Sdiv>
+  );
+}
+
+export const TextareaWithTitle = ({ title = "title", value, onChange, name }) => {
   return (
     <Sdiv>
       <Stext s4 g0 mgb={12}>
@@ -37,7 +89,7 @@ export const TextareaWithTitle = ({ title = "title", value, onChange }) => {
   );
 };
 
-export const InputImage = ({ title = "title", value, onChange }) => {
+export const InputImage = ({ title = "title", value, onChange, handleImageUpload}) => {
   const [imgFile, setImgFile] = useState(null);
   const [imgUrl, setImgUrl] = useState(undefined);
 
@@ -56,6 +108,8 @@ export const InputImage = ({ title = "title", value, onChange }) => {
     };
     reader.readAsDataURL(file);
   };
+
+  
   return (
     <Sdiv col>
       <Stext s4 g0 mgb={12}>
@@ -69,7 +123,7 @@ export const InputImage = ({ title = "title", value, onChange }) => {
           <StyledUploadButton
             style={{ display: "none" }}
             value={value}
-            onChange={(e) => handleFileOnChange(e)}
+            onChange={onChange}
             type="file"
             id="input-file"
             accept="image/*"

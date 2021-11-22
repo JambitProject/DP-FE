@@ -50,8 +50,8 @@ export const Sdiv = styled.div`
   /*나머지 속성*/
   ${(props) => props.bg && bg}
   border-radius: ${(props) => props.br || 0}px;
-
   ${(props) => props.flex && flex}
+  
 
   width: ${(props) => (props.w ? props.w + "px" : "auto")};
   height: ${(props) => (props.h ? props.h + "px" : "auto")};
