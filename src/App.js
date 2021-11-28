@@ -17,10 +17,11 @@ import {
   RecruitEditScreen,
   RecruitDetailScreen,
   RecruitListScreen,
+  
 } from "screens";
 import ScrollToTop from "components/ScrollToTop/ScrollToTop";
 import styled, { ThemeProvider } from "styled-components";
-import { Sdiv, Stext } from "components";
+import { Sdiv, Stext, DefaultButtonSm } from "components";
 import { ReactComponent as LogoMain } from "images/LogoMain.svg";
 import { ReactComponent as IcMore } from "images/IcMore.svg";
 import { ReactComponent as IcBell } from "images/IcBell.svg";
@@ -29,11 +30,13 @@ import { dark, light } from "styles/theme";
 import { colors } from "styles/colors";
 
 import { Row, Col, Container, NavDropdown, Navbar, Nav } from "react-bootstrap";
+import LoginCallback from "screens/login/LoginCallback";
+
 
 export const App = () => {
   const history = useHistory();
   const location = useLocation();
-
+  
   const [themeMode, setThemeMode] = useState(false); // 테마 모드 세팅
   const theme = themeMode == false ? light : dark; // 테마 환경에 맞는 테마 컬러 가져오기. 
   
@@ -95,6 +98,7 @@ export const App = () => {
                             <S.Avatar />
                           </Nav.Link>
                         </Sdiv>
+                        <DefaultButtonSm title="로그아웃"/>
                       </Sdiv>
                     </S.NoShowInMobile>
                   </Nav>
@@ -116,6 +120,7 @@ export const App = () => {
           <Route exact path="/recruit-edit" component={RecruitEditScreen} />
           <Route exact path="/recruit" component={RecruitDetailScreen} />
           <Route exact path="/recruit-list" component={RecruitListScreen} />
+          <Route exact path="/logincallback" component={LoginCallback} />
         </Switch>
       </S.Body>
     </ThemeProvider>

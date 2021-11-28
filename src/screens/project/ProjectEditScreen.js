@@ -115,7 +115,7 @@ export const ProjectEditScreen = () => {
       "Accept" : "application/json",
       "Content-Type": "application/json;charset=UTF-8",
     }
-    const url = "http://15.165.194.66:8080/project";
+    const url = `http://15.165.194.66:8080/project`;
     axios.post(url, sendParam, {headers:headers})
       .then(()=>{
       

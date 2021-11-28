@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { ButtonLogin, Sdiv, Stext } from "components";
-
-import { Row, Col, Container } from "react-bootstrap";
+import { Row, Col, Container, Nav } from "react-bootstrap";
 
 import LoginImage from "images/pngs/LoginImage.png";
 import LogoGithub from "images/pngs/LogoGithub.png";
 
 import { ReactComponent as LogoMain } from "images/LogoMain.svg";
 import { ReactComponent as LogoGoogle } from "images/LogoGoogle.svg";
+import GoogleLogin from "react-google-login";
+import GoogleLoginBtn from "components/LoginBtn/GoogleLoginBtn";
+import GithubLoginBtn from "components/LoginBtn/GithubLoginBtn";
 
 const RenderGithub = () => {
   return <S.LogoImg src={LogoGithub} />;
@@ -23,6 +25,8 @@ export const LoginScreen = () => {
     history.push("/");
   };
 
+  
+  
   return (
     <S.Body>
       <Container fluid={true} style={{ padding: 0 }}>
@@ -39,19 +43,18 @@ export const LoginScreen = () => {
                 <LogoMain />
                 <Sdiv mgt={108}>
                   <Stext h2 g2>
-                    회원가입
+                    Welcome
                   </Stext>
                   <Sdiv mgt={42} col act style={{ gap: 10 }}>
-                    <ButtonLogin
-                      title="구글로 시작하기"
-                      Logo={LogoGoogle}
-                      onClick={goHome}
-                    />
+                    
                     <ButtonLogin
                       title="깃허브로 시작하기"
                       Logo={RenderGithub}
-                      onClick={goHome}
+                      //onClick={}
+                      href={`${process.env.REACT_APP_GITHUB_URI}`}
                     />
+                    <GoogleLoginBtn />
+                    
                     <Stext c2 g3>
                       이용약관, 개인정보 수집 및 이용, 개인정보 제공 내용을
                       확인하였고 동의합니다.

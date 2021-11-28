@@ -8,7 +8,7 @@ import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import Slider from "react-slick";
 import axios from 'axios';
 import { ReactComponent as IcDropArrowDown } from "images/IcDropArrowDown.svg";
-
+import {Cookies} from "react-cookie";
 // slider 세팅
 let settings = {
   dots: true,
@@ -79,6 +79,7 @@ export const HomeScreen = () => {
   const history = useHistory();
   const [prjList, setPrjList] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   const goProfile = () => {
     history.push("/portfolio");
@@ -94,6 +95,34 @@ export const HomeScreen = () => {
       
     });
   }
+  const getCookie = (name)=>{
+    let nameOfCookie = name + "=";
+    let x = 0;
+    let endOfCookie = 0;
+    while (x <= document.cookie.length) {  
+
+      var y = (x + nameOfCookie.length); 
+
+      if (document.cookie.substring(x, y) == nameOfCookie) { 
+
+           if ((endOfCookie = document.cookie.indexOf(";", y)) == -1) 
+
+                endOfCookie = document.cookie.length; 
+
+           return unescape(document.cookie.substring(y, endOfCookie)); 
+
+      }
+
+      x = document.cookie.indexOf(" ", x) + 1;
+
+      if (x == 0) 
+
+           break; 
+
+ }
+
+ return ""; 
+  }
   useEffect(() => {
     const getAjax = async () => {
       
@@ -103,15 +132,22 @@ export const HomeScreen = () => {
     }
     getAjax();
     
+    setUserId(getCookie('github.com'));
+    
   },[]);
 
+  useEffect(()=>{
+    console.log(userId);
+  },[userId])
+
   const handleResize = (e) => {
-    console.log("ee", e);
     setIsMobile(window.innerWidth < 768);
   };
+  
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     handleResize();
+    
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -175,7 +211,7 @@ export const HomeScreen = () => {
                       스택 필터
                     </Stext>
                   </Dropdown.Toggle>
-
+                  
                   <Dropdown.Menu>
                     <Dropdown.Item>JAVA</Dropdown.Item>
                     <Dropdown.Item>SPRING</Dropdown.Item>
@@ -195,7 +231,6 @@ export const HomeScreen = () => {
                   onClickProfile={goProfile}
                   name={item.name}
                   subTitle={item.subTitle}
-                  
                 />
               </Col>
             );

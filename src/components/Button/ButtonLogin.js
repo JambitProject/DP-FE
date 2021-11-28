@@ -1,16 +1,19 @@
 import { Sdiv } from "components";
 import React from "react";
 import styled from "styled-components";
+import { colors } from "styles/colors";
 
-export const ButtonLogin = ({ Logo, onClick, title, style }) => {
+export const ButtonLogin = ({ Logo, onClick, title, style, href }) => {
   return (
     <ButtonContainer onClick={onClick && onClick} style={style}>
-      <LogoContainer>{Logo && <Logo />}</LogoContainer>
-      <Sdiv s2 g0>
-        {title}
-      </Sdiv>
-      <LogoContainer />
-    </ButtonContainer>
+        <LogoContainer>{Logo && <Logo />}</LogoContainer>        
+          <a href={href} style={{color:`${colors.secondary}`,textDecoration:"none"}}>        
+            <Sdiv s2 g0>
+              {title}
+            </Sdiv>
+          </a>           
+        <LogoContainer />
+      </ButtonContainer>
   );
 };
 
