@@ -3,11 +3,11 @@ import React from "react";
 import styled from "styled-components";
 import { colors } from "styles/colors";
 
-export const BadgeDefaultGray = ({ title = "JAVA", style }) => {
+export const BadgeDefaultGray = ({ title = "JAVA", style, onClick, selected}) => {
   return (
-    <BadgeContainerSm style={style}>
+    <BadgeContainerSm style={style} onClick={onClick && onClick} selected={selected}>
       <Sdiv s4 g0>
-        #{title}
+        {'#'+title}
       </Sdiv>
     </BadgeContainerSm>
   );
@@ -15,12 +15,12 @@ export const BadgeDefaultGray = ({ title = "JAVA", style }) => {
 
 const BadgeContainerSm = styled.div`
   border-radius: 8px;
-
+  cursor: pointer;
   padding: 8px 12px;
   display: flex;
-
+  margin-top:8px;
   flex-direction: row;
   justify-content: center;
-
-  background-color: ${colors.gray7};
+  color: ${props=> props.selected ? 'white' : 'black'};
+  background-color: ${props => props.selected ? colors.primary : colors.gray7}
 `;

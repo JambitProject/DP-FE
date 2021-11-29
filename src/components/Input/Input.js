@@ -18,13 +18,15 @@ export const InputWithTitle = ({
   style,
   onClick,
   name,
+  placeholder,
 }) => {
   return (
-    <Sdiv style={style}>
+    <Sdiv style={style} mgb={12}>
       <Stext s4 g0 mgb={12}>
         {title}
       </Stext>
       <StyledInput
+        placeholder={placeholder}
         value={value}
         onChange={onChange && onChange}
         onClick={onClick && onClick}
@@ -161,7 +163,7 @@ const StyledInput = styled.input`
   font-size: 12px;
   line-height: 14px;
   /* identical to box height, or 140% */
-
+  
   /* g0 */
 
   color: #0d0c22;

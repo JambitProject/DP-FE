@@ -31,15 +31,35 @@ import { colors } from "styles/colors";
 
 import { Row, Col, Container, NavDropdown, Navbar, Nav } from "react-bootstrap";
 import LoginCallback from "screens/login/LoginCallback";
+import Cookies from "universal-cookie";
 
 
 export const App = () => {
   const history = useHistory();
   const location = useLocation();
-  
+  const cookies = new Cookies();
   const [themeMode, setThemeMode] = useState(false); // 테마 모드 세팅
   const theme = themeMode == false ? light : dark; // 테마 환경에 맞는 테마 컬러 가져오기. 
-  
+  const [currentUser, setCurrentUser] = useState(localStorage.getItem('access-token'));
+
+  const onClickLogout=()=>{
+    cookies.remove('memberId');
+    cookies.remove('nickname');
+    localStorage.clear();
+    setCurrentUser(null);
+  }
+  const onClickLogin=()=>{
+    history.push("/login");
+  }
+
+  useEffect(()=>{
+    console.log("Use Effect");
+    console.log(localStorage);
+    console.log(currentUser);
+    setCurrentUser(cookies.get('memberId'));
+    
+  }, [cookies.get('memberId')])
+
   return (
     <ThemeProvider theme={theme}>
       <S.Body>
@@ -50,7 +70,7 @@ export const App = () => {
               expand="lg"
               style={{ height: 80, background: "white", zIndex: 10}}
               fixed="top"
-            >
+              >
               <Container style={{ background: "white", zIndex: 10 }}>
                 <Navbar.Brand href="/">
                   <S.LogoMain />
@@ -93,12 +113,23 @@ export const App = () => {
                         {/* <Sdiv mgl={20} pdt={4} pdb={4} pdr={4} pdl={4}>
                           <IcBell />
                         </Sdiv> */}
-                        <Sdiv mgl={16}>
+                        {currentUser && <Sdiv mgl={16}>
                           <Nav.Link href="/portfolio-edit">
                             <S.Avatar />
                           </Nav.Link>
-                        </Sdiv>
-                        <DefaultButtonSm title="로그아웃"/>
+                        </Sdiv>}
+                        {
+                          currentUser ? 
+                          <DefaultButtonSm 
+                            title="로그아웃"
+                            onClick={onClickLogout}
+                          /> //로그인된상태
+                          :
+                          <DefaultButtonSm 
+                            title="로그인"
+                            onClick={onClickLogin}
+                          /> //로그인안된상태
+                        }
                       </Sdiv>
                     </S.NoShowInMobile>
                   </Nav>
@@ -158,6 +189,7 @@ S.SearchBar = styled.input`
   border-radius: 8px;
   border: none;
   padding-left: 40px;
+  margin-right: 20px;
   font-size: 14px;
   font-weight: bold;
   ::placeholder {

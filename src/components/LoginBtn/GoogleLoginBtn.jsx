@@ -5,12 +5,13 @@ import { useHistory } from 'react-router';
 import Sdiv from 'styled-components';
 import styled, { css } from "styled-components";
 import { useState } from 'react';
+import Cookies from 'universal-cookie';
 
 const GoogleLoginBtn = ({ }) => {
+
   const history = useHistory();
   let user={};
   
-
   const onSuccessGoogle = async (response)=>{
     console.log(response);
     console.log(response.profileObj.email);
@@ -20,7 +21,6 @@ const GoogleLoginBtn = ({ }) => {
     const isNewMember = await axios.get(`http://15.165.194.66:8080/member/check/${email}`);
     console.log(isNewMember);
     if(isNewMember.data=== ""){ 
-      alert('어머니')
       const idx = response.profileObj.email.indexOf('@');
       const nickName = response.profileObj.email.substring(0, idx);
       
@@ -40,29 +40,34 @@ const GoogleLoginBtn = ({ }) => {
       const tokenPromise = await axios.get(`http://15.165.194.66:8080/member/access-token?nickname=${user.nickname}`);
       
       localStorage.setItem('access-token', tokenPromise.data);
-      localStorage.setItem('memberId', memberIdPromise.data);
-      localStorage.setItem('nickname', user.nickname);
+      const memberIdCookies = new Cookies();
+      const nickNameCookies = new Cookies();
+      memberIdCookies.set('memberId', memberIdPromise.data, {path: '/', expires: new Date(Date.now() + 86400)});
+      nickNameCookies.set('nickname', user.nickname, {path: '/', expires: new Date(Date.now() + 86400)});
     
      
-      console.log(user);
+      console.log(localStorage);
 
     }else{
       const token = await axios.get(`http://15.165.194.66:8080/member/access-token?nickname=${isNewMember.data.nickname}`);
       localStorage.setItem('access-token', token.data);
-      localStorage.setItem('memberId', isNewMember.data.id);
-      localStorage.setItem('nickname', isNewMember.data.nickname);
+      const memberIdCookies = new Cookies();
+      const nickNameCookies = new Cookies();
+      memberIdCookies.set('memberId', isNewMember.data.id, {path: '/', expires: new Date(Date.now() + 86400)});
+      nickNameCookies.set('nickname', isNewMember.data.nickname, {path: '/', expires: new Date(Date.now() + 86400)});
+      
     }
     console.log(localStorage);
     history.push('/');
     
   }
-  useEffect(()=>{
-    
-  })
+  
   const onFailureGoogle = (response)=>{
-    console.log('실패');
+    console.log('구글 로그인 실패');
     console.log(response);
   }
+
+  
   return (
       <div>
         <GoogleLogin

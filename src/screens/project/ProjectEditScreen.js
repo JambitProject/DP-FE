@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
 import axios from "axios";
-
+import dotenv from 'dotenv';
 import {
   InputWithTitle,
   TextareaWithTitle,
@@ -18,6 +18,7 @@ import {
 
 import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import { InputWithToggleBtn } from "components/Input/Input";
+import { SettingsInputAntennaTwoTone } from "@mui/icons-material";
 
 const TMP_STACK_BADGE_ITEMS = [
   { title: "JAVA" },
@@ -60,6 +61,7 @@ const TMP_STACK_BADGE_ITEMS_MODAL = [
   { title: "NodeJS" },
   { title: "Redux" },
 ];
+
 //프로젝트 엔티티 형식
 /*
   {
@@ -76,7 +78,7 @@ const TMP_STACK_BADGE_ITEMS_MODAL = [
   }
 */
 export const ProjectEditScreen = () => {
-  
+  dotenv.config();
   const [prj, setPrj] = useState({
     //id: 0,
     participatedNickname: "jambit",
@@ -90,26 +92,62 @@ export const ProjectEditScreen = () => {
     likesCount: 0,
   });
 
+  const [techStackList, setTechStackList] = useState([]);
   const [imgFile, setImgFile] = useState(null);
   const [imgUrl, setImgUrl] = useState(undefined);
+  
   const frm = new FormData();
 
   const history = useHistory();
 
   const [showModal, setShowModal] = useState(false);
 
+  useEffect(()=>{
+    const getTechStack = async ()=>{
+
+      const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/all`);
+      
+      res.data.map(item=>{
+        item.selected = false;
+        item.searched = true;
+      })
+      setTechStackList(res.data);
+      
+    }
+    getTechStack();
+    
+  },[])
+
   const onClickOpenModal = () => {
     setShowModal(true);
   };
 
-  const onClickCloseModal = () => {
+  //추가된 기술 스택을 prj 스테이트의 techStack 프로퍼티 형식에 맞게 세팅해준다.
+  const onClickCompleteModal = () => {
+
+    let prjStack = "";
+    techStackList.forEach(item=>{
+      if(item.selected===true){
+        console.log(item.skillName)
+        prjStack = prjStack + '#' + item.skillName;
+        
+      }
+    })  
+    setPrj({...prj, techStack:prjStack});
     setShowModal(false);
   };
 
+  //setPrj없이 모달을 그냥 닫는다. 
+  const onClickCloseModal = ()=>{
+    setShowModal(false);
+  }
+
+  //프로젝트 업로드 폼에 입력한 값을로 setPrj를 한다. 
   const handleChange = (prop) => (e) => {
 		setPrj({ ...prj, [prop]: e.target.value })
 	}
 
+  //prj를 이용해서 서버에 post한다. 
   const postAjax = (sendParam)=>{
     const headers = {
       "Accept" : "application/json",
@@ -118,7 +156,7 @@ export const ProjectEditScreen = () => {
     const url = `http://15.165.194.66:8080/project`;
     axios.post(url, sendParam, {headers:headers})
       .then(()=>{
-      
+        
       })
       .catch((e)=>{
         console.log(sendParam);
@@ -127,6 +165,7 @@ export const ProjectEditScreen = () => {
     
   }
 
+  //입력이 완료된 프로젝트를 이미지와 함께 등록한다. 
   const handleRegister = () => {
     
     if(prj.projectName===""){
@@ -148,10 +187,39 @@ export const ProjectEditScreen = () => {
     }
   }
 
+  //프로젝트 진행사항을 셋팅한다.(setPrj) 
   const handleProgress = (progress)=>{
 		setPrj({ ...prj, progress: progress });
   }
 
+  //스택 버튼을 클릭하면 selected가 toggle되게 한다
+  const handleStackButtonSelect = (thisId)=>{
+
+    setTechStackList(techStackList.map((item)=>{
+        return item.id===thisId ? {...item, selected: (!item.selected)} : {...item};
+      })
+    );   
+  }
+
+  //스택 추가 모달창 안의 검색 기능 - input으로 get요청을 한다. 
+  const handleStackSearch = async (searchInput)=>{
+    const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/list?skillName=${searchInput}`);
+    console.log(res.data);
+    const tmpList = [...techStackList];
+    tmpList.forEach(tmpItem=>{
+      if(res.data.filter(e=>e.id === tmpItem.id).length>0){
+        tmpItem.searched = true;
+      }else{
+        tmpItem.searched = false;
+      }
+    })
+    console.log(tmpList);
+    setTechStackList(tmpList);
+    
+    
+  }
+
+  //이미지를 컴퓨터에서 가져오고 대상 파일을 setImgFile한다. 
   const handleImageUpload = (e)=>{
     e.preventDefault();
     let reader = new FileReader();
@@ -205,33 +273,39 @@ export const ProjectEditScreen = () => {
         <Stext h3 g0 mgb={20}>
           # 기술스택 추가하기
         </Stext>
-        <S.ModalTextSm>기술스택 선택</S.ModalTextSm>
         <Sdiv h={16} />
-        <S.ModalStackContainer>
-          {TMP_STACK_BADGE_ITEMS_MODAL.map((item) => {
-            return <BadgeDefaultGray title={item.title} />;
-          })}
-        </S.ModalStackContainer>
-        <Sdiv row aed mgt={28} style={{ width: "100%" }}>
-          <InputWithTitle style={{ width: "100%" }} title="직접 추가" />
-          <Sdiv w={60} mgl={8}>
-            <DefaultButtonSm line title="추가" />
+        <Sdiv col mgt={28} style={{ width: "100%" }}>
+          <Sdiv row >
+            <InputWithTitle placeholder="검색어를 입력하세요..." style={{ width: "100%" }} title="기술스택 선택" onChange={(e)=>{handleStackSearch(e.target.value)}}/>
           </Sdiv>
+          <S.ModalStackContainer>
+            {techStackList.map((item) => {
+              return item.searched && <BadgeDefaultGray title={item.skillName} onClick={()=>{handleStackButtonSelect(item.id)}} selected={item.selected}/>;
+            })}
+          </S.ModalStackContainer>
         </Sdiv>
         <Sdiv h={28} />
-        <S.ModalTextSm>추가된 기술 스택</S.ModalTextSm>
-        <Sdiv mgt={4} row style={{ gap: "0px 4px", flexWrap: "wrap" }}>
-          {TMP_STACK_BADGE_ITEMS.map((item) => (
-            <BadgeDefaultGray title={item.title} />
-          ))}
+        <Stext s4 g0 mgb={5}>
+          추가된 기술 스택
+        </Stext>
+        <Sdiv mgt={3} row style={{ gap: "0px 4px", flexWrap: "wrap" }}>
+          {
+            techStackList.map((item) => {
+                if(item.selected){
+                  return <BadgeDefaultGray title={item.skillName} onClick={()=>{handleStackButtonSelect(item.id)}} selected={item.selected}/>
+                }
+              }
+            )
+          }
         </Sdiv>
         <Sdiv h={78} />
         <S.Line />
         <Sdiv row jed mgt={28}>
           <DefaultButtonSm title="닫기" line onClick={onClickCloseModal} />
           <Sdiv w={4} />
-          <DefaultButtonSm title="완료" onClick={onClickCloseModal} />
+          <DefaultButtonSm title="완료" onClick={onClickCompleteModal} />
         </Sdiv>
+        
       </ModalContainer>
     </S.Body>
   );
@@ -254,8 +328,8 @@ S.ImageProfile = styled.img`
 S.ModalTextSm = styled.div`
   font-family: Pretendard;
   font-style: normal;
-  font-weight: bold;
-  font-size: 10px;
+  font-weight: normal;
+  font-size: 12px;
   line-height: 22px;
   /* identical to box height, or 220% */
 
