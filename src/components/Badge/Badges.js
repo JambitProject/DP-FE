@@ -6,7 +6,7 @@ import { colors } from "styles/colors";
 export const BadgeDefaultGray = ({ title = "JAVA", style, onClick, selected}) => {
   return (
     <BadgeContainerSm style={style} onClick={onClick && onClick} selected={selected}>
-      <Sdiv s4 g0>
+      <Sdiv s4 >
         {'#'+title}
       </Sdiv>
     </BadgeContainerSm>

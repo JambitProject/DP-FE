@@ -69,7 +69,7 @@ export const ProejctTitle = ({
           history.go(-1);
         }}
       >
-        글 목록으로 {">"}
+        목록으로 {">"}
       </TextProjectBack>
       <TextProjectTitle>{title}</TextProjectTitle>
       <Sdiv row sb act mgb={16}>

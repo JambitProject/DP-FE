@@ -71,7 +71,7 @@ export const InputWithToggleBtn = ({
           진행중
         </ToggleButton>
         <ToggleButton value={"COMPLETE"} onClick={()=>{
-          handleSelect("COMPLETED");
+          handleSelect("COMPLETE");
         }}>
           완료됨
         </ToggleButton>

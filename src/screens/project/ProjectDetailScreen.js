@@ -95,23 +95,19 @@ export const ProjectDetailScreen = () => {
   const [thisPrj, setThisPrj] = useState({});
   
   let { id } = useParams();
- 
   
+  //get요청 따로따로 2번하지말고 axios.all([axios.get(), axios.get()]) 하고 결과는 spread하면 된다
   useEffect(() => {
-    const getAjax = async () => {
-      
-      const res = await axios.get("http://15.165.194.66:8080/project/list");
-      setThisPrj(res.data.find(item=>{
-        return item.id == id;
-      }));
-     
-    }
-    getAjax();
+  
+    axios
+      .all([axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`), axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/skill/${id}`)])
+      .then(
+        axios.spread((res1, res2) =>{
+          setThisPrj({...res1.data, techStack:res2.data});
+        })
+      )
     
   },[]);
-  
- 
- 
 
   const sliderRef = useRef();
 
@@ -182,8 +178,11 @@ export const ProjectDetailScreen = () => {
               </Stext>
             </Sdiv>
             <Sdiv row style={{ gap: "0px 4px", flexWrap: "wrap" }}>
-              {TMP_STACK_BADGE_ITEMS.map((item) => (
-                <BadgeDefaultGray title={item.title} />
+              {/*TMP_STACK_BADGE_ITEMS */}
+              {/**/}
+              {console.log(thisPrj)}
+              {thisPrj.techStack && thisPrj.techStack.map((item) => (
+                <BadgeDefaultGray title={item.skillName} />
               ))}
             </Sdiv>
           </Col>

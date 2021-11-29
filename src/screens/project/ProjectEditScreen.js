@@ -78,17 +78,19 @@ const TMP_STACK_BADGE_ITEMS_MODAL = [
   }
 */
 export const ProjectEditScreen = () => {
-  dotenv.config();
+  
   const [prj, setPrj] = useState({
     //id: 0,
-    participatedNickname: "jambit",
+    participatedNickname: "1#3",
+    projectManager: "giregi",
     progress: -1, // 0:ongoing, 1: complete
     projectName: "",
     content: "",
-    link: "https://jambit.com",
+    projectLink: "https://jambit.com",
+    githubLink: "https://github/jambit.com",
     viewCount: 0,
     replyCount: 0,
-    techStack: "",
+    techStack: "1#3",
     likesCount: 0,
   });
 
@@ -124,21 +126,22 @@ export const ProjectEditScreen = () => {
 
   //추가된 기술 스택을 prj 스테이트의 techStack 프로퍼티 형식에 맞게 세팅해준다.
   const onClickCompleteModal = () => {
-
+    
     let prjStack = "";
     techStackList.forEach(item=>{
       if(item.selected===true){
-        console.log(item.skillName)
-        prjStack = prjStack + '#' + item.skillName;
+        prjStack = prjStack + '#' + item.id;
         
       }
     })  
+    console.log(prjStack);
     setPrj({...prj, techStack:prjStack});
     setShowModal(false);
   };
 
   //setPrj없이 모달을 그냥 닫는다. 
   const onClickCloseModal = ()=>{
+
     setShowModal(false);
   }
 
@@ -153,7 +156,7 @@ export const ProjectEditScreen = () => {
       "Accept" : "application/json",
       "Content-Type": "application/json;charset=UTF-8",
     }
-    const url = `http://15.165.194.66:8080/project`;
+    const url = 'http://15.165.194.66:8080/project';
     axios.post(url, sendParam, {headers:headers})
       .then(()=>{
         
@@ -253,7 +256,9 @@ export const ProjectEditScreen = () => {
             <Sdiv mgt={24} />
             <InputImage title="프로젝트 이미지" onChange={handleImageUpload}/>
             <Sdiv mgt={24} />
-            <InputWithTitle title="프로젝트 링크" />
+            <InputWithTitle title="프로젝트 링크" onChange={handleChange('projectLink')} name="projectLink"/>
+            <Sdiv mgt={24} />
+            <InputWithTitle title="프로젝트 Github 링크" onChange={handleChange('githubLink')} name="githubLink"/>
             <Sdiv mgt={24} />
             <InputWithTitle
               title="사용한 언어, 프레임워크"

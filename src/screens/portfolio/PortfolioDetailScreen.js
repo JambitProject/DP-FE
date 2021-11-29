@@ -69,7 +69,7 @@ export const PortfolioDetailScreen = () => {
     }
     getAjax();
     
-  },[prjList]);
+  },[]);
 
   const goProjectEdit = () => {
 

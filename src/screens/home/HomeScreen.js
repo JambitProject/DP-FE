@@ -147,7 +147,7 @@ export const HomeScreen = () => {
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     handleResize();
-    console.log(localStorage);
+    
     return () => {
       window.removeEventListener("resize", handleResize);
     };
