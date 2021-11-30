@@ -18,7 +18,7 @@ const GoogleLoginBtn = ({ }) => {
     
     const email = response.profileObj.email;
     
-    const isNewMember = await axios.get(`http://15.165.194.66:8080/member/check/${email}`);
+    const isNewMember = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/check/${email}`);
     console.log(isNewMember);
     if(isNewMember.data=== ""){ 
       const idx = response.profileObj.email.indexOf('@');
@@ -36,8 +36,8 @@ const GoogleLoginBtn = ({ }) => {
         "Accept" : "application/json",
         "Content-Type": "application/json;charset=UTF-8",
       }
-      const memberIdPromise = await axios.post(`http://15.165.194.66:8080/member`, user, {headers:headers});
-      const tokenPromise = await axios.get(`http://15.165.194.66:8080/member/access-token?nickname=${user.nickname}`);
+      const memberIdPromise = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/member`, user, {headers:headers});
+      const tokenPromise = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/access-token?nickname=${user.nickname}`);
       
       localStorage.setItem('access-token', tokenPromise.data);
       const memberIdCookies = new Cookies();
@@ -57,7 +57,6 @@ const GoogleLoginBtn = ({ }) => {
       nickNameCookies.set('nickname', isNewMember.data.nickname, {path: '/', expires: new Date(Date.now() + 86400)});
       
     }
-    console.log(localStorage);
     history.push('/');
     
   }

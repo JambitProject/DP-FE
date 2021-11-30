@@ -18,8 +18,8 @@ let settings = {
   slidesToScroll: 3,
   arrows: true,
   centerPadding: "0px",
-  beforeChange: (current, next) => console.log(current, next),
-  afterChange: (current) => console.log(current),
+  //beforeChange: (current, next) => console.log(current, next),
+  //afterChange: (current) => console.log(current),
 };
 
 const TMP_PRIFILE_ITEM = [
@@ -80,7 +80,7 @@ export const HomeScreen = () => {
   const [prjList, setPrjList] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [userId, setUserId] = useState(null);
-
+  const cookies = new Cookies();
   const goProfile = () => {
     history.push("/portfolio");
   };
@@ -95,50 +95,20 @@ export const HomeScreen = () => {
       
     });
   }
-  const getCookie = (name)=>{
-    let nameOfCookie = name + "=";
-    let x = 0;
-    let endOfCookie = 0;
-    while (x <= document.cookie.length) {  
-
-      var y = (x + nameOfCookie.length); 
-
-      if (document.cookie.substring(x, y) == nameOfCookie) { 
-
-           if ((endOfCookie = document.cookie.indexOf(";", y)) == -1) 
-
-                endOfCookie = document.cookie.length; 
-
-           return unescape(document.cookie.substring(y, endOfCookie)); 
-
-      }
-
-      x = document.cookie.indexOf(" ", x) + 1;
-
-      if (x == 0) 
-
-           break; 
-
- }
-
- return ""; 
-  }
   useEffect(() => {
     const getAjax = async () => {
       
-      const res = await axios.get("http://15.165.194.66:8080/project/top");
+      const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top`);
       setPrjList([...res.data]);
         
     }
     getAjax();
     
-    setUserId(getCookie('github.com'));
+    
     
   },[]);
 
-  useEffect(()=>{
-    console.log(userId);
-  },[userId])
+
 
   const handleResize = (e) => {
     setIsMobile(window.innerWidth < 768);
@@ -187,6 +157,7 @@ export const HomeScreen = () => {
                     );  
                 })}
                 </Slider>
+                
               </Sdiv>
             </Sdiv>
           </Col>

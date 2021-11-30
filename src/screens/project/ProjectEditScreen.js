@@ -156,7 +156,7 @@ export const ProjectEditScreen = () => {
       "Accept" : "application/json",
       "Content-Type": "application/json;charset=UTF-8",
     }
-    const url = 'http://15.165.194.66:8080/project';
+    const url = `${process.env.REACT_APP_SERVER_BASE_URL}/project`;
     axios.post(url, sendParam, {headers:headers})
       .then(()=>{
         
@@ -165,7 +165,6 @@ export const ProjectEditScreen = () => {
         console.log(sendParam);
         console.log(e);
       })
-    
   }
 
   //입력이 완료된 프로젝트를 이미지와 함께 등록한다. 
