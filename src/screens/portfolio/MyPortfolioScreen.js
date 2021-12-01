@@ -10,6 +10,8 @@ import Slider from "react-slick";
 
 import { ReactComponent as IcSetting } from "images/IcSetting.svg";
 import axios from "axios";
+import Cookies from "universal-cookie";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 // slider 세팅
 let settings = {
@@ -51,25 +53,40 @@ const TMP_SLIDER_ITEM = [
   { title: "MOST POPULAR" },
 ];
 
-export const PortfolioDetailScreen = () => {
+export const MyPortfolioScreen = () => {
 
   const history = useHistory();
 
   const [prjList, setPrjList] = useState([]);
 
   const [imgList, setImgList] = useState([]);
-  
-  
+  const cookies = new Cookies();
+  const [member, setMember] = useState({});
+  const [myTechStack, setMyTechStack] = useState([]);
+
   useEffect(() => {
     const getAjax = async () => {
-      
-      const res = await axios.get("http://15.165.194.66:8080/project/list");
-      setPrjList([...res.data]);
+      await axios
+        .all([
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/project/${parseInt(cookies.get('memberId'))}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${cookies.get('nickname')}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/skill/me?member_id=${parseInt(cookies.get('memberId'))}`)
+        ])
+        .then(
+          axios.spread((projectPromise, memberPromise, myStackPromise)=>{
+            setPrjList([...projectPromise.data]);
+            setMember(memberPromise.data);
+            setMyTechStack([...myStackPromise.data]);
+            
+        }))
+        .catch((e)=>{
+          console.log(e);
+        })
         
     }
     getAjax();
     
-  },[prjList]);
+  },[]);
 
   const goProjectEdit = () => {
 
@@ -100,19 +117,19 @@ export const PortfolioDetailScreen = () => {
               <S.ImageProfile />
               <Sdiv col mgl={12} mgr={24}>
                 <Stext s2 g0>
-                  Lorem
+                  {cookies.get('nickname')}
                 </Stext>
                 <Stext b2 g0>
-                  Lorem ipsum dolor
+                  {member.description}
                 </Stext>
               </Sdiv>
-              <DefaultButtonSm line />
+              {/*<DefaultButtonSm line />*/}
             </Sdiv>
           </Col>
           <Col>
             <Sdiv act row style={{ gap: "0px 4px", flexWrap: "wrap" }} jed>
-              {TMP_STACK_BADGE_ITEMS.map((item) => (
-                <BadgeDefaultGray title={item.title} />
+              {myTechStack && myTechStack.map((item) => (
+                <BadgeDefaultGray title={item.skillName} />
               ))}
               <Sdiv className="cursor" onClick={goPortfolioEdit} mgl={16}>
                 <IcSetting />

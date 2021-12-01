@@ -100,13 +100,13 @@ export const PortfolioEditScreen = () => {
     setShowModal(true);
   };
 
-  //member 스테이트를 이용해서 서버에 put한다. 
-  const putAjax = (sendParam)=>{
+  //서버에 put한다. 
+  const putAjax = (sendParam, urlParam)=>{
     const headers = {
       "Accept" : "application/json",
       "Content-Type": "application/json;charset=UTF-8",
     }
-    const url = `${process.env.REACT_APP_SERVER_BASE_URL}/member`;
+    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
     axios.put(url, sendParam, {headers:headers})
       .then(()=>{
         
@@ -116,14 +116,33 @@ export const PortfolioEditScreen = () => {
         console.log(e);
       })
   }
+  //서버에 post한다. 
+  const postAjax = (sendParam, urlParam)=>{
+    const headers = {
+      "Accept" : "application/json",
+      "Content-Type": "application/json;charset=UTF-8",
+    }
+    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
+    axios.post(url, sendParam, {headers:headers})
+      .then(()=>{
+        
+      })
+      .catch((e)=>{
+        console.log(sendParam);
+        console.log(urlParam);
+        console.log(e);
+      })
+  }
   //추가된 기술 스택을 member 스테이트의 techStack 프로퍼티 형식에 맞게 세팅해준다.
   const onClickCompleteModal = () => {
     
     let memberStack = "";
-    techStackList.forEach((item, i)=>{
+    let cnt = 0;
+    techStackList.forEach((item)=>{
       if(item.selected===true){
-        if(i===0){
+        if(cnt===0){
           memberStack = item.id;
+          cnt++;
         }
         else{
           memberStack = memberStack + '#' + item.id;
@@ -155,9 +174,14 @@ export const PortfolioEditScreen = () => {
     if(cookies.get('nickname') !== member.nickname){
       cookies.set('nickname', member.nickname);
     }
-    putAjax({...member});
-    
-    history.push('/portfolio');
+    //멤버업데이트 
+    putAjax({...member}, "/member");
+    const skillSetRegisterObj = {
+      memberId:parseInt(cookies.get('memberId')),
+      skill:member.skillSet,
+    }
+    postAjax(JSON.stringify(skillSetRegisterObj), "/member/skill");
+    history.push('/myportfolio');
     
   }
 
@@ -169,7 +193,7 @@ export const PortfolioEditScreen = () => {
       await axios
         .all([
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/all`),
-          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/skill/me?member_id=${cookies.get('memberId')}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/skill/me?member_id=${parseInt(cookies.get('memberId'))}`),
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${cookies.get('nickname')}`),
          ])
         .then(
@@ -192,6 +216,7 @@ export const PortfolioEditScreen = () => {
           })
         )
         .catch((e)=>{
+          console.log("get 오류")
           console.log(e);
         })
       

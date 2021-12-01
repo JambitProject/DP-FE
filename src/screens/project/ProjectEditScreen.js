@@ -19,6 +19,7 @@ import {
 import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import { InputWithToggleBtn } from "components/Input/Input";
 import { SettingsInputAntennaTwoTone } from "@mui/icons-material";
+import Cookies from "universal-cookie";
 
 const TMP_STACK_BADGE_ITEMS = [
   { title: "JAVA" },
@@ -78,11 +79,11 @@ const TMP_STACK_BADGE_ITEMS_MODAL = [
   }
 */
 export const ProjectEditScreen = () => {
-  
+  const cookies = new Cookies();
   const [prj, setPrj] = useState({
     //id: 0,
-    participatedNickname: "1#3",
-    projectManager: "giregi",
+    participatedNickname: cookies.get('memberId'),
+    projectManager: cookies.get('nickname'),
     progress: -1, // 0:ongoing, 1: complete
     projectName: "",
     content: "",
@@ -90,7 +91,7 @@ export const ProjectEditScreen = () => {
     githubLink: "https://github/jambit.com",
     viewCount: 0,
     replyCount: 0,
-    techStack: "1#3",
+    techStack: "",
     likesCount: 0,
   });
 
@@ -117,6 +118,7 @@ export const ProjectEditScreen = () => {
       
     }
     getTechStack();
+    setPrj({...prj, participatedNickname:cookies.get('memberId'), projectManager:cookies.get('nickname')})
     
   },[])
 
@@ -185,7 +187,7 @@ export const ProjectEditScreen = () => {
       frm.append('image', imgFile);
       postAjax(frm);
       
-      history.push('/portfolio');
+      history.push('/myportfolio');
     }
   }
 

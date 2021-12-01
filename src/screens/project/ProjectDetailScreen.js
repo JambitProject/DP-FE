@@ -162,11 +162,35 @@ export const ProjectDetailScreen = () => {
           <Col>
             <Sdiv row>
               <Stext mgt={40} h3 g0>
+                # 프로젝트 소개
+              </Stext>
+            </Sdiv>
+            <Sdiv mgt={28}>
+              <S.TextIntroduce>
+                {thisPrj.content}
+              </S.TextIntroduce>
+            </Sdiv>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Sdiv row>
+              <Stext mgt={40} h3 g0>
                 # 프로젝트 링크
               </Stext>
             </Sdiv>
             <Sdiv mgt={24} style={{ gap: "16px 0px" }} col>
-              <Stext>{thisPrj.link}</Stext>
+              <Stext>{thisPrj.projectLink}</Stext>
+            </Sdiv>
+          </Col>
+          <Col>
+            <Sdiv row>
+              <Stext mgt={40} h3 g0>
+                # 프로젝트 Github 링크
+              </Stext>
+            </Sdiv>
+            <Sdiv mgt={24} style={{ gap: "16px 0px" }} col>
+              <Stext>{thisPrj.githubLink}</Stext>
             </Sdiv>
           </Col>
         </Row>
@@ -205,20 +229,6 @@ export const ProjectDetailScreen = () => {
             );
           })}
         </S.ProfileRow>
-        <Row>
-          <Col>
-            <Sdiv row>
-              <Stext mgt={40} h3 g0>
-                # 프로젝트 소개
-              </Stext>
-            </Sdiv>
-            <Sdiv mgt={28}>
-              <S.TextIntroduce>
-                {thisPrj.content}
-              </S.TextIntroduce>
-            </Sdiv>
-          </Col>
-        </Row>
         <Row>
           <Col>
             <Sdiv row>

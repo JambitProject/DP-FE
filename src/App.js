@@ -17,7 +17,7 @@ import {
   RecruitEditScreen,
   RecruitDetailScreen,
   RecruitListScreen,
-  
+  MyPortfolioScreen,
 } from "screens";
 import ScrollToTop from "components/ScrollToTop/ScrollToTop";
 import styled, { ThemeProvider } from "styled-components";
@@ -78,8 +78,8 @@ export const App = () => {
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                   <Nav className="me-auto">
-                    <Nav.Link href="/portfolio">
-                      {location.pathname === "/portfolio" ? ( //주소에 따라 스타일 변경
+                    <Nav.Link href={currentUser ? "/myportfolio" : "/login"}>
+                      {location.pathname === "/myportfolio" ? ( //주소에 따라 스타일 변경
                         <Stext s3 primary style={{ cursor: "pointer" }}>
                           내 포트폴리오
                         </Stext>
@@ -89,6 +89,7 @@ export const App = () => {
                         </Stext>
                       )}
                     </Nav.Link>
+                    {console.log(cookies.get('memberId'))}
                     <Nav.Link href="/recruit-list">
                       {location.pathname === "/recruit-list" ? ( //주소에 따라 스타일 변경
                         <Stext s3 primary style={{ cursor: "pointer" }}>
@@ -144,6 +145,7 @@ export const App = () => {
           <Route exact path="/" component={HomeScreen} />
           <Route exact path="/profile" component={ProfileScreen} />
           <Route exact path="/login" component={LoginScreen} />
+          <Route exact path="/myportfolio" component={MyPortfolioScreen} />
           <Route exact path="/portfolio" component={PortfolioDetailScreen} />
           <Route exact path="/portfolio-edit" component={PortfolioEditScreen} />
           <Route exact path="/project/:id" component={ProjectDetailScreen} />
