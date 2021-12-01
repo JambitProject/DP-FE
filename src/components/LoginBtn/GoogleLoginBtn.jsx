@@ -42,8 +42,8 @@ const GoogleLoginBtn = ({ }) => {
       localStorage.setItem('access-token', tokenPromise.data);
       const memberIdCookies = new Cookies();
       const nickNameCookies = new Cookies();
-      memberIdCookies.set('memberId', memberIdPromise.data, {path: '/', expires: new Date(Date.now() + 86400)});
-      nickNameCookies.set('nickname', user.nickname, {path: '/', expires: new Date(Date.now() + 86400)});
+      memberIdCookies.set('memberId', memberIdPromise.data, {path: '/', expires: new Date(Date.now() + 86400000)});
+      nickNameCookies.set('nickname', user.nickname, {path: '/', expires: new Date(Date.now() + 86400000)});
     
      
       console.log(localStorage);
@@ -53,8 +53,8 @@ const GoogleLoginBtn = ({ }) => {
       localStorage.setItem('access-token', token.data);
       const memberIdCookies = new Cookies();
       const nickNameCookies = new Cookies();
-      memberIdCookies.set('memberId', isNewMember.data.id, {path: '/', expires: new Date(Date.now() + 86400)});
-      nickNameCookies.set('nickname', isNewMember.data.nickname, {path: '/', expires: new Date(Date.now() + 86400)});
+      memberIdCookies.set('memberId', isNewMember.data.id, {path: '/', expires: new Date(Date.now() + 86400000)});
+      nickNameCookies.set('nickname', isNewMember.data.nickname, {path: '/', expires: new Date(Date.now() + 86400000)});
       
     }
     history.push('/');

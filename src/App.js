@@ -32,6 +32,7 @@ import { colors } from "styles/colors";
 import { Row, Col, Container, NavDropdown, Navbar, Nav } from "react-bootstrap";
 import LoginCallback from "screens/login/LoginCallback";
 import Cookies from "universal-cookie";
+import { LocalSeeOutlined } from "@mui/icons-material";
 
 
 export const App = () => {
@@ -48,12 +49,13 @@ export const App = () => {
     localStorage.clear();
     setCurrentUser(null);
   }
+
   const onClickLogin=()=>{
     history.push("/login");
   }
 
   useEffect(()=>{
-    console.log("Use Effect");
+    console.log("app.js Use Effect");
     console.log(localStorage);
     console.log(currentUser);
     setCurrentUser(cookies.get('memberId'));
@@ -89,7 +91,7 @@ export const App = () => {
                         </Stext>
                       )}
                     </Nav.Link>
-                    {console.log(cookies.get('memberId'))}
+                    
                     <Nav.Link href="/recruit-list">
                       {location.pathname === "/recruit-list" ? ( //주소에 따라 스타일 변경
                         <Stext s3 primary style={{ cursor: "pointer" }}>

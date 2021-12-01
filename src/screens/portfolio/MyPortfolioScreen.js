@@ -11,7 +11,7 @@ import Slider from "react-slick";
 import { ReactComponent as IcSetting } from "images/IcSetting.svg";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { ConstructionOutlined } from "@mui/icons-material";
+import { ConstructionOutlined, IosShare } from "@mui/icons-material";
 
 // slider 세팅
 let settings = {
@@ -59,10 +59,11 @@ export const MyPortfolioScreen = () => {
 
   const [prjList, setPrjList] = useState([]);
 
-  const [imgList, setImgList] = useState([]);
+ 
   const cookies = new Cookies();
   const [member, setMember] = useState({});
   const [myTechStack, setMyTechStack] = useState([]);
+
 
   useEffect(() => {
     const getAjax = async () => {
@@ -74,19 +75,24 @@ export const MyPortfolioScreen = () => {
         ])
         .then(
           axios.spread((projectPromise, memberPromise, myStackPromise)=>{
-            setPrjList([...projectPromise.data]);
+            
+            
+            console.log(projectPromise.data)
             setMember(memberPromise.data);
             setMyTechStack([...myStackPromise.data]);
-            
+            setPrjList([...projectPromise.data])
         }))
         .catch((e)=>{
-          console.log(e);
+          console.log('실패');
+          console.log(e.response);
+          
         })
         
     }
     getAjax();
     
   },[]);
+
 
   const goProjectEdit = () => {
 
@@ -106,6 +112,7 @@ export const MyPortfolioScreen = () => {
       
     });
   }
+
   
   return (
     <S.Body>
@@ -176,20 +183,21 @@ export const MyPortfolioScreen = () => {
         <S.ProfileRow xs={2} sm={2} md={3}>
           
           {prjList.map((item) => {
+              console.log(item);
               return (
-              <S.ProfileCol>
-               <Sdiv onClick={handleTop} >
-                  <CardProjectHome
-                    src={defaultImg}
-                    title={item.projectName}
-                    subTitle={"subTitle"}
-                    progress={item.progress}
-                    onClick={()=>{goProject(item.id)}}
-                  />
-                </Sdiv>
-              </S.ProfileCol>
-              );  
-          })}
+                <S.ProfileCol>
+                  <Sdiv onClick={handleTop} >
+                    <CardProjectHome
+                      src={item.imgList[0]}
+                      title={item.projectName}
+                      subTitle={"subTitle"}
+                      progress={item.progress}
+                      onClick={()=>{goProject(item.id)}}
+                    />
+                  </Sdiv>
+                </S.ProfileCol>
+              );
+            })}
         </S.ProfileRow>
       </Container>
     </S.Body>

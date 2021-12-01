@@ -76,11 +76,13 @@ const TMP_PRIFILE_ITEM = [
 ];
 
 export const HomeScreen = () => {
+
   const history = useHistory();
-  const [prjList, setPrjList] = useState([]);
+  const [prjList, setPrjList] = useState([]); //홈화면에 뿌릴 프로젝트들 
   const [isMobile, setIsMobile] = useState(false);
-  const [userId, setUserId] = useState(null);
   const cookies = new Cookies();
+  const [members, setMembers] = useState([]); //홈화면에 뿌릴 유저 프로필들
+
   const goProfile = () => {
     history.push("/portfolio");
   };
@@ -98,10 +100,17 @@ export const HomeScreen = () => {
   useEffect(() => {
     const getAjax = async () => {
       
-      const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top`);
-      setPrjList([...res.data]);
+      await axios
+        .all([
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top`),
+          
+        ])
+        .then(axios.spread(res=>{
+          setPrjList(res.data);
+        }))
         
-    }
+        
+      }
     getAjax();
     
     
@@ -117,7 +126,6 @@ export const HomeScreen = () => {
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     handleResize();
-    
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -141,7 +149,8 @@ export const HomeScreen = () => {
                   slidesToScroll={isMobile ? 1 : 3}
                   arrows={!isMobile}
                 >
-                  {prjList.map((item) => {
+                  {console.log(prjList)}
+                  {prjList && prjList.map((item) => {
                     return (
                     <S.ProfileCol>
                      <Sdiv onClick={handleTop} >

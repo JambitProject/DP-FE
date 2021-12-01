@@ -54,7 +54,7 @@ export const LoginScreen = () => {
                       href={`${process.env.REACT_APP_GITHUB_URI}`}
                     />
                     <GoogleLoginBtn />
-                    
+                    <img src="http://15.165.194.66:8080/image?targetType=PROJECT&targetId=1"/>
                     <Stext c2 g3>
                       이용약관, 개인정보 수집 및 이용, 개인정보 제공 내용을
                       확인하였고 동의합니다.

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState} from "react";
 import ReactDOM from "react-dom";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, Link } from "react-router-dom";
 import styled, { css } from "styled-components";
 import {
   BadgeDefaultGray,
@@ -11,6 +11,7 @@ import {
   Stext,
   TextareaComment,
 } from "components";
+import defaultImg from 'images/pngs/defaultImg.png'
 import { colors } from "styles/colors";
 import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import Slider from "react-slick";
@@ -98,15 +99,18 @@ export const ProjectDetailScreen = () => {
   
   //get요청 따로따로 2번하지말고 axios.all([axios.get(), axios.get()]) 하고 결과는 spread하면 된다
   useEffect(() => {
-  
-    axios
-      .all([axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`), axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/skill/${id}`)])
-      .then(
-        axios.spread((res1, res2) =>{
-          setThisPrj({...res1.data, techStack:res2.data});
-        })
-      )
-    
+    const getAjax=async()=>{
+
+      await axios
+        .all([axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`), axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/skill/${id}`)])
+        .then(
+          axios.spread((res1, res2) =>{
+            setThisPrj({...res1.data, techStack:res2.data});
+          })
+          ).catch(e=>console.log(e))
+          
+        }
+        getAjax();
   },[]);
 
   const sliderRef = useRef();
@@ -136,9 +140,12 @@ export const ProjectDetailScreen = () => {
         <Row>
           <div className="project-slick">
             <Slider ref={sliderRef} {...settings}>
-              {TMP_IMG_LIST.map((item) => (
-                <S.ImageMain />
-              ))}
+              {thisPrj.imgList && thisPrj.imgList.map(src=>{
+                
+                return(
+                  <S.ImageMain src={src}/>
+                );
+              })}
             </Slider>
 
             <S.ArrowContainer>
@@ -180,7 +187,9 @@ export const ProjectDetailScreen = () => {
               </Stext>
             </Sdiv>
             <Sdiv mgt={24} style={{ gap: "16px 0px" }} col>
-              <Stext>{thisPrj.projectLink}</Stext>
+              <a href={'https://' + thisPrj.projectLink}>
+                <Stext>{thisPrj.projectLink}</Stext>
+              </a>
             </Sdiv>
           </Col>
           <Col>
@@ -190,7 +199,9 @@ export const ProjectDetailScreen = () => {
               </Stext>
             </Sdiv>
             <Sdiv mgt={24} style={{ gap: "16px 0px" }} col>
-              <Stext>{thisPrj.githubLink}</Stext>
+              <a href={'https://' + thisPrj.githubLink}>
+                <Stext>{thisPrj.githubLink}</Stext>
+              </a>
             </Sdiv>
           </Col>
         </Row>

@@ -130,9 +130,15 @@ export const ProjectEditScreen = () => {
   const onClickCompleteModal = () => {
     
     let prjStack = "";
+    let cnt = 0;
     techStackList.forEach(item=>{
       if(item.selected===true){
-        prjStack = prjStack + '#' + item.id;
+        if(cnt===0){
+          prjStack = item.id;
+          cnt++;
+        }else{
+          prjStack = prjStack + '#' + item.id;
+        }
         
       }
     })  

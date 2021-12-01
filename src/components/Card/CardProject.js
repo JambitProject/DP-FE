@@ -65,7 +65,8 @@ const CardHomeImage = styled.img`
   aspect-ratio: 277 / 196;
   border-radius: 10px;
   margin-bottom: 12px;
-  background-image: url('https://source.unsplash.com/random/600x300');
+  
+  
 `;
 
 const HomeInfoContainer = styled.div`
