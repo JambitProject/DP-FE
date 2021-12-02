@@ -187,7 +187,7 @@ export const ProjectDetailScreen = () => {
               </Stext>
             </Sdiv>
             <Sdiv mgt={24} style={{ gap: "16px 0px" }} col>
-              <a href={'https://' + thisPrj.projectLink}>
+              <a href={'http://' + thisPrj.projectLink}>
                 <Stext>{thisPrj.projectLink}</Stext>
               </a>
             </Sdiv>
@@ -199,7 +199,7 @@ export const ProjectDetailScreen = () => {
               </Stext>
             </Sdiv>
             <Sdiv mgt={24} style={{ gap: "16px 0px" }} col>
-              <a href={'https://' + thisPrj.githubLink}>
+              <a href={'http://' + thisPrj.githubLink}>
                 <Stext>{thisPrj.githubLink}</Stext>
               </a>
             </Sdiv>

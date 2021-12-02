@@ -81,8 +81,8 @@ export const HomeScreen = () => {
   const [prjList, setPrjList] = useState([]); //홈화면에 뿌릴 프로젝트들 
   const [isMobile, setIsMobile] = useState(false);
   const cookies = new Cookies();
-  const [members, setMembers] = useState([]); //홈화면에 뿌릴 유저 프로필들
-
+  const [showMembers, setShowMembers] = useState([]); //홈화면에 뿌릴 유저 프로필들
+  
   const goProfile = () => {
     history.push("/portfolio");
   };
@@ -97,24 +97,27 @@ export const HomeScreen = () => {
       
     });
   }
+
   useEffect(() => {
     const getAjax = async () => {
       
       await axios
         .all([
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top`),
-          
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend`)
         ])
-        .then(axios.spread(res=>{
-          setPrjList(res.data);
+        .then(axios.spread((prjPromise, memberPromise)=>{
+          setPrjList(prjPromise.data);
+          setShowMembers(memberPromise.data.content);
         }))
+        .catch(e=>{
+          
+          console.log(e);
+        })
         
         
       }
     getAjax();
-    
-    
-    
   },[]);
 
 
@@ -155,7 +158,7 @@ export const HomeScreen = () => {
                     <S.ProfileCol>
                      <Sdiv onClick={handleTop} >
                         <CardProjectHome
-                          src={defaultImg}
+                          src={item.imgList[0]}
                           title={item.projectName}
                           subTitle={"subTitle"}
                           progress={item.progress}
@@ -204,13 +207,14 @@ export const HomeScreen = () => {
           </Col>
         </Row>
         <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
-          {TMP_PRIFILE_ITEM.map((item) => {
+          {showMembers.map((item) => {
             return (
               <Col onClick={handleTop}>
                 <CardProfile
                   onClickProfile={goProfile}
-                  name={item.name}
-                  subTitle={item.subTitle}
+                  name={item.nickname}
+                  subTitle={item.description}
+                  
                 />
               </Col>
             );
