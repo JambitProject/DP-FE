@@ -8,7 +8,7 @@ import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import Slider from "react-slick";
 import axios from 'axios';
 import { ReactComponent as IcDropArrowDown } from "images/IcDropArrowDown.svg";
-import {Cookies} from "react-cookie";
+import Cookies from "universal-cookie";
 // slider 세팅
 let settings = {
   dots: true,
@@ -80,11 +80,17 @@ export const HomeScreen = () => {
   const history = useHistory();
   const [prjList, setPrjList] = useState([]); //홈화면에 뿌릴 프로젝트들 
   const [isMobile, setIsMobile] = useState(false);
-  const cookies = new Cookies();
+  
   const [showMembers, setShowMembers] = useState([]); //홈화면에 뿌릴 유저 프로필들
   
-  const goProfile = () => {
-    history.push("/portfolio");
+  const goProfile = (nickname) => {
+    const cookies = new Cookies();
+    if(nickname === cookies.get('nickname')){
+      history.push('/myportfolio');
+    }
+    else{
+      history.push(`/portfolio/${nickname}`);
+    }
   };
 
   const goProject = (id) => {
@@ -152,8 +158,6 @@ export const HomeScreen = () => {
                   slidesToScroll={isMobile ? 1 : 3}
                   arrows={!isMobile}
                 >
-                  {console.log(prjList)}
-                  {console.log(showMembers)}
                   {prjList && prjList.map((item) => {
                     return (
                     <S.ProfileCol>
@@ -209,12 +213,12 @@ export const HomeScreen = () => {
         </Row>
         <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
           {showMembers.map((item) => {
-            console.log(item.skillList)
+            console.log(item)
             return (
-              <Col onClick={handleTop}>
+              <Col>
                 <CardProfile
                   prifileSrc={defaultImg}
-                  onClickProfile={goProfile}
+                  onClickProfile={()=>{goProfile(item.nickname)}}
                   name={item.nickname}
                   subTitle={item.description}
                   skillList={item.skillList}

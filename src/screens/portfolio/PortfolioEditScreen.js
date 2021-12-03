@@ -82,7 +82,7 @@ const TMP_STACK_BADGE_ITEMS_MODAL = [
   { title: "Redux" },
 ];
 
-export const PortfolioEditScreen = () => {
+export const PortfolioEditScreen = ({myFollowees}) => {
 
   const [member, setMember] = useState({
     //id: 0,
@@ -99,7 +99,7 @@ export const PortfolioEditScreen = () => {
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [newNickname, setNewNickname] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  
+  const [myFollowers, setMyFollowers] = useState([]);
   const cookies = new Cookies();
   
   const onClickOpenStackModal = () => {
@@ -123,7 +123,6 @@ export const PortfolioEditScreen = () => {
         else{
           memberStack = memberStack + '#' + item.id;
         }
-        
       }
     })  
 
@@ -281,9 +280,21 @@ export const PortfolioEditScreen = () => {
     getAjax();
     
   },[]);
+
+  //followers 불러오기
   useEffect(()=>{
-    console.log(member);
-  },[member])
+    const getFollowers = async ()=>{
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/follower/${cookies.get('nickname')}`)
+        .then(res=>{
+          setMyFollowers(res.data);
+        })
+        .catch(e=>{
+          console.log(e.response);
+        })
+    }
+    getFollowers();
+  },[])
+
    //스택 버튼을 클릭하면 selected가 toggle되게 한다
   const handleStackButtonSelect = async (thisId)=>{
 
@@ -402,10 +413,13 @@ export const PortfolioEditScreen = () => {
           <Col>
             <Sdiv>
               <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
-                {TMP_PRIFILE_ITEM.map((item) => {
+                {myFollowers && myFollowers.map((item) => {
                   return (
                     <Col onClick={handleTop}>
-                      팔로워
+                      <CardProfile
+                        name={item.nickname}
+                        subTitle=""
+                      />
                     </Col>
                   );
                 })}
@@ -428,10 +442,13 @@ export const PortfolioEditScreen = () => {
           <Col>
             <Sdiv>
               <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
-                {TMP_PRIFILE_ITEM.map((item) => {
+                {myFollowees && myFollowees.map((item) => {
                   return (
                     <Col onClick={handleTop}>
-                      팔로잉
+                      <CardProfile
+                        name={item.followee}
+                        subTitle=""
+                      />
                     </Col>
                   );
                 })}

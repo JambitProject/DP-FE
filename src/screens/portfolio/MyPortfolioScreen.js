@@ -73,7 +73,7 @@ export const MyPortfolioScreen = () => {
         ])
         .then(
           axios.spread((projectPromise, memberPromise, myStackPromise)=>{
-            console.log(projectPromise.data)
+            
             setMember(memberPromise.data);  //내정보(닉네임, 소개한마디 등)
             setMyTechStack([...myStackPromise.data]); //내기술스택
             setPrjList([...projectPromise.data])  //내프로젝트들
@@ -179,7 +179,7 @@ export const MyPortfolioScreen = () => {
         <S.ProfileRow xs={2} sm={2} md={3}>
           
           {prjList.map((item) => {
-              console.log(item);
+              
               return (
                 <S.ProfileCol>
                   <Sdiv onClick={handleTop} >

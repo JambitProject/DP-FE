@@ -33,6 +33,7 @@ import { Row, Col, Container, NavDropdown, Navbar, Nav } from "react-bootstrap";
 import LoginCallback from "screens/login/LoginCallback";
 import Cookies from "universal-cookie";
 import { LocalSeeOutlined } from "@mui/icons-material";
+import axios from "axios";
 
 
 export const App = () => {
@@ -42,6 +43,7 @@ export const App = () => {
   const [themeMode, setThemeMode] = useState(false); // 테마 모드 세팅
   const theme = themeMode == false ? light : dark; // 테마 환경에 맞는 테마 컬러 가져오기. 
   const [currentUser, setCurrentUser] = useState(localStorage.getItem('access-token'));
+  const [myFollowees, setMyFollowees] = useState([]);
 
   const onClickLogout=()=>{
     cookies.remove('memberId');
@@ -55,12 +57,28 @@ export const App = () => {
   }
 
   useEffect(()=>{
-    console.log("app.js Use Effect");
-    console.log(localStorage);
-    console.log(currentUser);
     setCurrentUser(cookies.get('memberId'));
-    
   }, [cookies.get('memberId')])
+
+  useEffect(()=>{
+    const getFollowees = async ()=>{
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`)
+        .then(res=>{
+          setMyFollowees([...res.data]);
+        })
+        .catch(e=>{
+          console.log(e.response);
+        })
+    }
+    if(cookies.get('memberId')){
+      getFollowees();
+      
+    }
+  },[])
+
+  const handleFollowees = ()=>{
+
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -134,6 +152,7 @@ export const App = () => {
                           /> //로그인안된상태
                         }
                       </Sdiv>
+                      {console.log(myFollowees)}
                     </S.NoShowInMobile>
                   </Nav>
                 </Navbar.Collapse>
@@ -144,16 +163,25 @@ export const App = () => {
         )}
 
         <Switch location={location} history={history}>
-          <Route exact path="/" component={HomeScreen} />
-          <Route exact path="/profile" component={ProfileScreen} />
+          <Route exact path="/" component={HomeScreen} myFollowees={myFollowees}/>
           <Route exact path="/login" component={LoginScreen} />
           <Route exact path="/myportfolio" component={MyPortfolioScreen} />
-          <Route exact path="/portfolio" component={PortfolioDetailScreen} />
-          <Route exact path="/portfolio-edit" component={PortfolioEditScreen} />
-          <Route exact path="/project/:id" component={ProjectDetailScreen} />
+          <Route exact path="/portfolio/:nickname"> 
+            <PortfolioDetailScreen  
+              myFollowees={myFollowees} 
+              setMyFollowees={setMyFollowees}
+            />
+          </Route>
+          <Route exact path="/portfolio-edit">
+            <PortfolioEditScreen 
+              component={PortfolioEditScreen} 
+              myFollowees={myFollowees}
+            />
+          </Route>
+          <Route exact path="/project/:id" component={ProjectDetailScreen} myFollowees={myFollowees}/>
           <Route exact path="/project-edit" component={ProjectEditScreen} />
           <Route exact path="/recruit-edit" component={RecruitEditScreen} />
-          <Route exact path="/recruit" component={RecruitDetailScreen} />
+          <Route exact path="/recruit" component={RecruitDetailScreen} myFollowees={myFollowees}/>
           <Route exact path="/recruit-list" component={RecruitListScreen} />
           <Route exact path="/logincallback" component={LoginCallback} />
         </Switch>
