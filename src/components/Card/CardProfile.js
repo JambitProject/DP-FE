@@ -8,17 +8,12 @@ import { colors } from "styles/colors";
 
 export const CardProfile = ({
   prifileSrc,
-  techStacks = [
-    { id: 1, title: "BACKEND" },
-    { id: 2, title: "SPRING" },
-    { id: 3, title: "WEB-ENGINEERING" },
-    { id: 4, title: "FRONTEND" },
-    { id: 5, title: "JAVASCRIPT" },
-  ],
+  skillList,
   name = "ComHolic",
   subTitle = "안녕안녕",
   onClickProfile,
 }) => {
+  let arr = [1,2,3];
   return (
     <CardContainer>
       <Sdiv col jct act>
@@ -32,12 +27,22 @@ export const CardProfile = ({
         </Stext>
       </Sdiv>
 
-      {techStacks.slice(0, 3).map((item, index) => {
+      {/* {skillList && skillList.slice(0,3).map((item, index) => {
         return (
           <Sdiv row mgb={12}>
-            {index % 2 == 0 ? <IcListP /> : <IcListS />}
+            {index % 2 == 0 ? <IcListS /> : <IcListP />}
             <Stext mgl={4} c1 g0>
-              {item.title}
+              {item}
+            </Stext>
+          </Sdiv>
+        );
+      })} */}
+      {skillList && arr.map(i=>{
+        return (
+          <Sdiv row mgb={12}>
+            {skillList[i-1] ? i % 2 == 0 ? <IcListS /> : <IcListP /> : <Sdiv mgt={20}/> }            
+            <Stext mgl={4} c1 g0>
+              {skillList[i-1]}
             </Stext>
           </Sdiv>
         );
@@ -56,7 +61,7 @@ const CardContainer = styled.div`
   flex-direction: column;
   padding: 24px;
   justify-content: center;
-
+  
   border: 1px solid #e0e0e0;
   box-sizing: border-box;
   border-radius: 12px;

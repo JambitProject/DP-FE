@@ -167,6 +167,7 @@ export const ProjectEditScreen = () => {
     const url = `${process.env.REACT_APP_SERVER_BASE_URL}/project`;
     axios.post(url, sendParam, {headers:headers})
       .then(()=>{
+        history.push('/myportfolio');
         
       })
       .catch((e)=>{
@@ -193,7 +194,6 @@ export const ProjectEditScreen = () => {
       frm.append('image', imgFile);
       postAjax(frm);
       
-      history.push('/myportfolio');
     }
   }
 

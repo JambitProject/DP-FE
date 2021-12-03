@@ -55,6 +55,7 @@ export const Sdiv = styled.div`
 
   width: ${(props) => (props.w ? props.w + "px" : "auto")};
   height: ${(props) => (props.h ? props.h + "px" : "auto")};
+  min-height: ${(props) => (props.mh ? props.mh + "%" : "auto")};
 
   //gap 속성
   gap: ${(props) => (props.g ? props.g + "px" : 0)};

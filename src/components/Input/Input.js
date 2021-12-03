@@ -19,6 +19,9 @@ export const InputWithTitle = ({
   onClick,
   name,
   placeholder,
+  hooraceholder,
+  maxlength,
+  type,
 }) => {
   return (
     <Sdiv style={style} mgb={12}>
@@ -26,11 +29,13 @@ export const InputWithTitle = ({
         {title}
       </Stext>
       <StyledInput
-        placeholder={placeholder}
+        placeholder={placeholder || hooraceholder}
         value={value}
         onChange={onChange && onChange}
         onClick={onClick && onClick}
         name={name}
+        maxLength={maxlength && maxlength}
+        type={type}
       />
     </Sdiv>
   );

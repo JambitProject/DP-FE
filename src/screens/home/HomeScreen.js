@@ -153,6 +153,7 @@ export const HomeScreen = () => {
                   arrows={!isMobile}
                 >
                   {console.log(prjList)}
+                  {console.log(showMembers)}
                   {prjList && prjList.map((item) => {
                     return (
                     <S.ProfileCol>
@@ -208,13 +209,15 @@ export const HomeScreen = () => {
         </Row>
         <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
           {showMembers.map((item) => {
+            console.log(item.skillList)
             return (
               <Col onClick={handleTop}>
                 <CardProfile
+                  prifileSrc={defaultImg}
                   onClickProfile={goProfile}
                   name={item.nickname}
                   subTitle={item.description}
-                  
+                  skillList={item.skillList}
                 />
               </Col>
             );

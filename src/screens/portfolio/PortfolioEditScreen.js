@@ -91,50 +91,26 @@ export const PortfolioEditScreen = () => {
     description:"", //소개한마디
     skillSet:"",  //기술 스택
   });
-
+  
   const history = useHistory();
   const [techStackList, setTechStackList] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showStackModal, setShowStackModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isDuplicate, setIsDuplicate] = useState(false);
+  const [newNickname, setNewNickname] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  
   const cookies = new Cookies();
-  const onClickOpenModal = () => {
-    setShowModal(true);
+  
+  const onClickOpenStackModal = () => {
+    setShowStackModal(true);
   };
+  const setMemberCallback = (gigi)=>{
+    setMember({...member, skillSet:gigi});
 
-  //서버에 put한다. 
-  const putAjax = (sendParam, urlParam)=>{
-    const headers = {
-      "Accept" : "application/json",
-      "Content-Type": "application/json;charset=UTF-8",
-    }
-    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
-    axios.put(url, sendParam, {headers:headers})
-      .then(()=>{
-        
-      })
-      .catch((e)=>{
-        console.log(sendParam);
-        console.log(e);
-      })
-  }
-  //서버에 post한다. 
-  const postAjax = (sendParam, urlParam)=>{
-    const headers = {
-      "Accept" : "application/json",
-      "Content-Type": "application/json;charset=UTF-8",
-    }
-    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
-    axios.post(url, sendParam, {headers:headers})
-      .then(()=>{
-        
-      })
-      .catch((e)=>{
-        console.log(sendParam);
-        console.log(urlParam);
-        console.log(e);
-      })
   }
   //추가된 기술 스택을 member 스테이트의 techStack 프로퍼티 형식에 맞게 세팅해준다.
-  const onClickCompleteModal = () => {
+  const onClickCompleteStackModal = () => {
     
     let memberStack = "";
     let cnt = 0;
@@ -150,30 +126,109 @@ export const PortfolioEditScreen = () => {
         
       }
     })  
-    setMember({...member, skillSet:memberStack});
-    setShowModal(false);
+
+    setMemberCallback(memberStack);
+    putAjax({...member, skillSet:memberStack}, "/member");
+    const skillSetRegisterObj = {
+      memberId:parseInt(cookies.get('memberId')),
+      skill:memberStack,
+    }
+    postAjax(JSON.stringify(skillSetRegisterObj), "/member/skill");
+    setShowStackModal(false);
+  };
+  
+  const onClickCloseStackModal = () => {
+    setShowStackModal(false);
   };
 
-  const onClickCloseModal = () => {
-    setShowModal(false);
-  };
+  const onClickOpenConfirmModal = ()=>{
+    
+    //새 닉네임이 중복된채로 저장하기 누르면 alert 후 return
+    if(isDuplicate){
+      alert('예~~~~~하면 되는데!!! 이 시발 개새끼가...어디서 들은건 있어가지고 닉네임 영어로 써봐! 써봐이새끼야 !  처음부터 다시할까? ')
+      return;
+    }
+    let nk = newNickname;
+    let des = newDescription;
+    //닉변을 한 경우 쿠키를 재세팅 한다.
+    if(newNickname!=="" || newDescription!==""){
+      
+      if(newNickname===""){
+        nk = member.nickname;
+      }
+      if(newDescription===""){
+        des = member.description;
+      }
+      setMember({...member, nickname: nk, description: des});
+      setShowConfirmModal(true);
+    }else{
+      alert('변경된 사항이 없는데요?');
+    }
+  }
 
+  const onClickCloseConfirmModal = ()=>{
+    setNewNickname("");
+    setNewDescription("");
+    const restored = JSON.parse(localStorage.getItem('originalMemberInfo'));
+    //console.log(restored);
+    setMember({...restored});
+    localStorage.removeItem('originalMemberInfo');
+    setShowConfirmModal(false);
+  }
+  
+  //서버에 put한다. 
+  const putAjax = async (sendParam, urlParam)=>{
+    console.log(sendParam)
+    const headers = {
+      "Accept" : "application/json",
+      "Content-Type": "application/json;charset=UTF-8",
+    }
+    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
+    await axios.put(url, sendParam, {headers:headers})
+    .then(()=>{
+      
+    })
+    .catch((e)=>{
+      console.log(sendParam);
+      console.log(e);
+    })
+  }
+  //서버에 post한다. 
+  const postAjax = async (sendParam, urlParam)=>{
+    const headers = {
+      "Accept" : "application/json",
+      "Content-Type": "application/json;charset=UTF-8",
+    }
+    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
+    await axios.post(url, sendParam, {headers:headers})
+    .then(()=>{
+      history.push('/myportfolio');
+    })
+    .catch((e)=>{
+      console.log(sendParam);
+      console.log(urlParam);
+      console.log(e);
+    })
+  }
+  
   const handleTop = ()=>{
     window.scrollTo({
       top: 0,
       
     });
   }
-
+  
   const goProfile = ()=>{
     history.push('/portfolio')
   }
-
+  
+  //
   const onClickSave = ()=>{
-    //닉변을 한 경우 쿠키를 재세팅 한다. 
-    if(cookies.get('nickname') !== member.nickname){
-      cookies.set('nickname', member.nickname);
+    
+    if(newNickname !== "") {
+      cookies.set('nickname', newNickname, {path: '/', expires: new Date(Date.now() + 86400000)});
     }
+   
     //멤버업데이트 
     putAjax({...member}, "/member");
     const skillSetRegisterObj = {
@@ -181,7 +236,8 @@ export const PortfolioEditScreen = () => {
       skill:member.skillSet,
     }
     postAjax(JSON.stringify(skillSetRegisterObj), "/member/skill");
-    history.push('/myportfolio');
+    localStorage.removeItem('originalMemberInfo');
+    //history.push('/myportfolio');
     
   }
 
@@ -208,15 +264,16 @@ export const PortfolioEditScreen = () => {
               }
               tmpItem.searched = true;
             });
+            localStorage.setItem('originalMemberInfo', JSON.stringify(memberInfo.data));
             setTechStackList([...tmpAllStack]);
             setMember(memberInfo.data);
             
-            console.log(memberInfo);
-            console.log(myStack);
+            //console.log(memberInfo);
+            //console.log(myStack);
           })
         )
         .catch((e)=>{
-          console.log("get 오류")
+          //console.log("get 오류")
           console.log(e);
         })
       
@@ -224,11 +281,13 @@ export const PortfolioEditScreen = () => {
     getAjax();
     
   },[]);
-
+  useEffect(()=>{
+    console.log(member);
+  },[member])
    //스택 버튼을 클릭하면 selected가 toggle되게 한다
-  const handleStackButtonSelect = (thisId)=>{
+  const handleStackButtonSelect = async (thisId)=>{
 
-    setTechStackList(techStackList.map((item)=>{
+    await setTechStackList(techStackList.map((item)=>{
         return item.id===thisId ? {...item, selected: (!item.selected)} : {...item};
       })
     );   
@@ -246,12 +305,25 @@ export const PortfolioEditScreen = () => {
         tmpItem.searched = false;
       }
     })
-    
     setTechStackList(tmpList);
-    
-    
   }
 
+  const handleNicknameChange = async (e)=>{
+    if(e.target.value!==""){
+
+      const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/duplicate/${e.target.value}`)
+      if(res.data){
+        setIsDuplicate(true);
+      }else{
+        setIsDuplicate(false);
+        setNewNickname(e.target.value);
+      }
+    }
+  }
+
+  const handleDescriptionChange = async e =>{
+    setNewDescription(e.target.value);
+  }
   return (
     <S.Body>
       <Container>
@@ -278,7 +350,7 @@ export const PortfolioEditScreen = () => {
                 # 내 기술스택
               </Stext>
               <DefaultButtonSm
-                onClick={onClickOpenModal}
+                onClick={onClickOpenStackModal}
                 line
                 title="추가/수정"
               />
@@ -289,12 +361,15 @@ export const PortfolioEditScreen = () => {
         <Row>
           <Col>
             <Sdiv row style={{ gap: "0px 4px", flexWrap: "wrap" }}>
-              {techStackList && techStackList.map((item) => (
-
-                item.selected && <BadgeDefaultGray title={item.skillName} />
-              ))}
+              {
+                techStackList && techStackList.map((item) => (
+                  item.selected && <BadgeDefaultGray title={item.skillName} />
+                ))
+              }
             </Sdiv>
+            
           </Col>
+
         </Row>
         <Sdiv h={40} />
         <Row>
@@ -302,11 +377,13 @@ export const PortfolioEditScreen = () => {
             <Stext mgb={30} h3 g0>
               # 내정보
             </Stext>
-            <InputWithTitle title="닉네임 변경" />
+            <InputWithTitle title="닉네임 변경" hooraceholder={member.nickname} onChange={handleNicknameChange}/>
+            {isDuplicate ? <S.WarningMsg>이미 사용중인 닉네임입니다.</S.WarningMsg> : <span></span>}
             <Sdiv h={20} />
-            <InputWithTitle title="소개 한마디 변경" />
+            <InputWithTitle title="소개 한마디 변경" hooraceholder={member.description} onChange={handleDescriptionChange} maxlength='50'/>
+            
             <Sdiv mgt={20} jed>
-              <DefaultButtonSm fill title="변경사항 저장하기" onClick={onClickSave}/>
+              <DefaultButtonSm fill title="변경사항 저장하기" onClick={onClickOpenConfirmModal}/>
             </Sdiv>
           </Col>
         </Row>
@@ -328,12 +405,7 @@ export const PortfolioEditScreen = () => {
                 {TMP_PRIFILE_ITEM.map((item) => {
                   return (
                     <Col onClick={handleTop}>
-                      <CardProfile
-                        onClickProfile={goProfile}
-                        name={item.name}
-                        subTitle={item.subTitle}
-                        
-                      />
+                      팔로워
                     </Col>
                   );
                 })}
@@ -359,12 +431,7 @@ export const PortfolioEditScreen = () => {
                 {TMP_PRIFILE_ITEM.map((item) => {
                   return (
                     <Col onClick={handleTop}>
-                      <CardProfile
-                        onClickProfile={goProfile}
-                        name={item.name}
-                        subTitle={item.subTitle}
-                        
-                      />
+                      팔로잉
                     </Col>
                   );
                 })}
@@ -413,7 +480,7 @@ export const PortfolioEditScreen = () => {
         </Row>
         <Sdiv h={40} />
       </Container>
-      <ModalContainer show={showModal}>
+      <ModalContainer show={showStackModal}>
         <Stext h3 g0 mgb={20}>
           # 기술스택 추가하기
         </Stext>
@@ -445,9 +512,23 @@ export const PortfolioEditScreen = () => {
         <Sdiv h={78} />
         <S.Line />
         <Sdiv row jed mgt={28}>
-          <DefaultButtonSm title="닫기" line onClick={onClickCloseModal} />
+          <DefaultButtonSm title="닫기" line onClick={onClickCloseStackModal} />
           <Sdiv w={4} />
-          <DefaultButtonSm title="완료" onClick={onClickCompleteModal} />
+          <DefaultButtonSm title="완료" onClick={onClickCompleteStackModal} />
+        </Sdiv>
+        
+      </ModalContainer>
+      <ModalContainer show={showConfirmModal}>
+        <Stext h3 g0 mgb={20}>
+          잠시만요!<br/>
+          Don't press the comfirm button yet.<br/>
+          이 엄마들은 무료로 해줍니다
+        </Stext>
+        
+        <Sdiv row jed mgt={28}>
+          <DefaultButtonSm title="그냥닫기" line onClick={onClickCloseConfirmModal} />
+          <Sdiv w={4} />
+          <DefaultButtonSm title="변경확정" onClick={onClickSave} />
         </Sdiv>
         
       </ModalContainer>
@@ -505,4 +586,9 @@ S.ProfileCol = styled(Col)`
 S.ProfileRow = styled(Row)`
   gap: 16px 0px;
   margin-top: 48px;
+`;
+
+S.WarningMsg = styled.span`
+  font-size:0.7em;
+  color: ${colors.primary}
 `;

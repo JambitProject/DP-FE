@@ -58,12 +58,10 @@ export const MyPortfolioScreen = () => {
   const history = useHistory();
 
   const [prjList, setPrjList] = useState([]);
-
  
   const cookies = new Cookies();
   const [member, setMember] = useState({});
   const [myTechStack, setMyTechStack] = useState([]);
-
 
   useEffect(() => {
     const getAjax = async () => {
@@ -75,12 +73,10 @@ export const MyPortfolioScreen = () => {
         ])
         .then(
           axios.spread((projectPromise, memberPromise, myStackPromise)=>{
-            
-            
             console.log(projectPromise.data)
-            setMember(memberPromise.data);
-            setMyTechStack([...myStackPromise.data]);
-            setPrjList([...projectPromise.data])
+            setMember(memberPromise.data);  //내정보(닉네임, 소개한마디 등)
+            setMyTechStack([...myStackPromise.data]); //내기술스택
+            setPrjList([...projectPromise.data])  //내프로젝트들
         }))
         .catch((e)=>{
           console.log('실패');
@@ -92,7 +88,6 @@ export const MyPortfolioScreen = () => {
     getAjax();
     
   },[]);
-
 
   const goProjectEdit = () => {
 
@@ -106,6 +101,7 @@ export const MyPortfolioScreen = () => {
   const goProject = (id) => {
     history.push(`/project/${id}`);
   };
+
   const handleTop = ()=>{
     window.scrollTo({
       top: 0,
