@@ -5,6 +5,8 @@ import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
 
 import Toggle from "react-toggle";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export const ListMyPost = ({ title = "title", subtitle = "subtitle" }) => {
   return (
@@ -75,7 +77,7 @@ export const ProejctTitle = ({
       <Sdiv row sb act mgb={16}>
         <TextProjectInfo>{`조회수: ${viewCount} 관심: ${likeCount} 댓글: ${commentCount}`}</TextProjectInfo>
         <Sdiv>
-          <DefaultButtonSm onClick={onClickAdd && onClickAdd} fill title="관심 추가하기" />
+          <DefaultButtonSm onClick={onClickAdd && onClickAdd} line title="관심 추가하기" />
         </Sdiv>
       </Sdiv>
       <Line />
@@ -135,24 +137,89 @@ export const CommentList = ({
   src,
   name = "name",
   comment = "comment",
+  dateString = "dateString",
   timeString = "timeString",
+  isDeleted,
+  isMine,
+  isOwner, 
+  onClickModify,
+  onClickDelete,
+  isEdited,
+  editedTime,
 }) => {
+  // const dateString = item.createdDate.slice(0,10);
+  // const timeString = item.createdDate.slice(11,16);
+
+  const parsedTime = editedTime.toString().slice(0,10) + " " + editedTime.toString().slice(11,16);
   return (
     <CommentContainer>
-      <Sdiv>
-        <CommentImg src={src} />
+      <Sdiv flex row>
+        <Sdiv ct>
+          <CommentImg src={src} />
+        </Sdiv>
+        <Sdiv col mgt={4} mgl={12}>
+          {
+            isMine ?
+            <Stext s3 g0 mgb={2} isMine>
+              {isDeleted? "알 수 없음" : name}
+              {
+                isOwner ? 
+                <Stext s3 mgl={10} secondary>
+                  글 작성자
+                </Stext>
+                :
+                null
+              }
+            </Stext>
+            :
+            <Stext s3 g0 mgb={2}>
+              {isDeleted? "알 수 없음" : name}
+              {
+                isOwner ? 
+                <Stext s3 mgl={10} secondary>
+                  글 작성자
+                </Stext>
+                :
+                null
+              }
+            </Stext>
+        
+          }
+          <Stext b2 g3>
+            {isDeleted ? "작성자에 의해 찢긴 댓글입니다." : comment}
+          </Stext>
+          <Sdiv>
+            <Stext c1 g4 mgr={5}>
+              {!isDeleted && dateString}
+            </Stext>
+            <Stext c1 g4 mgr={10}>
+              {!isDeleted && timeString}
+            </Stext>
+            <Stext c1 nigger>
+              {!isDeleted && isEdited && parsedTime + "에 수정됨"}
+            </Stext>
+          </Sdiv>
+        </Sdiv>
       </Sdiv>
-      <Sdiv col mgt={4} mgl={12}>
-        <Stext s3 g0 mgb={2}>
-          {name}
-        </Stext>
-        <Stext b2 g3>
-          {comment}
-        </Stext>
-        <Stext c1 g4>
-          {timeString}
-        </Stext>
-      </Sdiv>
+      {
+        isMine ? 
+        <Sdiv ct>
+          
+            <Sdiv mgr={18} >
+              {!isDeleted ? <EditIcon cursor='pointer' onClick={onClickModify}/> : null}
+            </Sdiv>
+          
+          
+            <Sdiv>
+              {!isDeleted ? <DeleteIcon cursor='pointer' onClick={onClickDelete}/> : null}
+              
+            </Sdiv>
+          
+        </Sdiv>  
+        :
+        null
+      }
+             
     </CommentContainer>
   );
 };
@@ -161,6 +228,8 @@ const CommentContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
+  justify-content:space-between;
+  
 `;
 
 const CommentImg = styled.img`

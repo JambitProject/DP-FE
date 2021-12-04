@@ -31,6 +31,7 @@ export const Stext = styled.span`
   ${(props) => props.g7 && g7} 
   ${(props) => props.white && white}
   ${(props) => props.disableSelect && disableSelect} 
+  ${(props) => props.isMine && isMine} 
 
   margin-top: ${(props) => props.mgt || 0}px;
   margin-bottom: ${(props) => props.mgb || 0}px;
@@ -41,7 +42,8 @@ export const Stext = styled.span`
   padding-bottom: ${(props) => props.pdb || 0}px;
   padding-left: ${(props) => props.pdl || 0}px;
   padding-right: ${(props) => props.pdr || 0}px;
-
+  
+  
   ${(props) => props.center && center}
   ${(props) => props.left && left}
   ${(props) => props.right && right}
@@ -121,6 +123,9 @@ const c3 = css`
   font-size: 10px;
   line-height: 14px;
 `;
+const isMine = css`
+  color:${colors.primary};
+`
 const primary = css`
   color: ${colors.primary};
 `;

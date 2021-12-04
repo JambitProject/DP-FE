@@ -6,10 +6,12 @@ import {
   BadgeDefaultGray,
   CardProfile,
   CommentList,
-  ProejctTitle,
+  
+  DefaultButtonSm,
   Sdiv,
   Stext,
   TextareaComment,
+  ModalContainer,
 } from "components";
 import defaultImg from 'images/pngs/defaultImg.png'
 import { colors } from "styles/colors";
@@ -18,6 +20,7 @@ import Slider from "react-slick";
 import { ReactComponent as IcArrowLeft } from "images/IcArrowLeft.svg";
 import { ReactComponent as IcArrowRight } from "images/IcArrowRight.svg";
 import axios from "axios";
+import Cookies from "universal-cookie";
 // slider 세팅
 let settings = {
   dots: true,
@@ -30,13 +33,6 @@ let settings = {
   beforeChange: (current, next) => console.log(current, next),
   afterChange: (current) => console.log(current),
 };
-
-const TMP_STACK_BADGE_ITEMS = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
 
 const TMP_PRIFILE_ITEM = [
   {
@@ -94,24 +90,50 @@ export const ProjectDetailScreen = () => {
   
   const history = useHistory();
   const [thisPrj, setThisPrj] = useState({});
+  const [commentList, setCommentList] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  let { id } = useParams(); //이 프로젝트의 고유아이디
+  const cookies = new Cookies();
   
-  let { id } = useParams();
+  const [targetComment, setTargetComment] = useState({});
+  const [inputValue, setInputValue] = useState("");
   
   //get요청 따로따로 2번하지말고 axios.all([axios.get(), axios.get()]) 하고 결과는 spread하면 된다
   useEffect(() => {
     const getAjax=async()=>{
-
+      
       await axios
-        .all([axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`), axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/skill/${id}`)])
+        .all([
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`), 
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/skill/${id}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/reply/project/${id}`)
+        ])
         .then(
-          axios.spread((res1, res2) =>{
-            setThisPrj({...res1.data, techStack:res2.data});
+          axios.spread((projectPromise, techStackPromise, commentPromise) =>{
+            setThisPrj({...projectPromise.data, techStack:techStackPromise.data});
+            setCommentList([...commentPromise.data]);
           })
-          ).catch(e=>console.log(e))
+        )
+        .catch(e=>console.log(e))
           
         }
         getAjax();
   },[]);
+
+  //수정, 삭제 모달창 열고 닫힐 때마다 commentList refresh
+  // useEffect(()=>{
+  //   const getCommentList = async ()=>{
+  //     await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/reply/project/${id}`)
+  //       .then(res=>{
+  //         setCommentList([...res.data]);
+  //       })
+  //       .catch(e=>{
+  //         console.log(e.response);
+  //       })
+  //   }
+  //   getCommentList();
+  // },[showModal, showDeleteModal])
 
   const sliderRef = useRef();
 
@@ -133,7 +155,119 @@ export const ProjectDetailScreen = () => {
       
     });
   }
+  const handleCommentChange = (e)=>{
+    setInputValue(e.target.value);
+  }
+
+  const postAjax = async (sendParam, urlParam)=>{
+    const headers = {
+      "Accept" : "application/json",
+      "Content-Type": "application/json;charset=UTF-8",
+    }
+    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
+    await axios.post(url, sendParam, {headers:headers})
+      .then(async ()=>{
+        await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/reply/project/${id}`)
+        .then(res=>{
+          setCommentList(res.data);
+        })
+      }) 
+    .catch((e)=>{
+      console.log(e.response)
+    })
+  }
+  const putAjax = async (sendParam, urlParam)=>{
+    const headers = {
+      "Accept" : "application/json",
+      "Content-Type": "application/json;charset=UTF-8",
+    }
+    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
+    await axios.put(url, sendParam, {headers:headers})
+    .then(async ()=>{
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/reply/project/${id}`)
+        .then(res=>{
+          setCommentList(res.data);
+        })
+    })
+    .catch((e)=>{
+      console.log(sendParam);
+      console.log(e);
+    })
+  }
+  const deleteAjax = async (sendParam, urlParam)=>{
+    const headers = {
+      "Accept" : "application/json",
+      "Content-Type": "application/json;charset=UTF-8",
+    }
+    const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
+    await axios.delete(url, sendParam, {headers:headers})
+    .then(async ()=>{
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/reply/project/${id}`)
+        .then(res=>{
+          setCommentList(res.data);
+        })
+    })
+    .catch((e)=>{
+      console.log(sendParam);
+      console.log(e);
+    })
+  }
+  const handleCommentUpload = async ()=>{
+    let newCommentObj = {
+      nickname: cookies.get('nickname'),
+      content: inputValue,
+      projectId: id,
+      targetType:1,
+
+    }
+    
+    postAjax(JSON.stringify(newCommentObj), '/reply');
+    
+  }
+
+  // //현재 연월날짜 스트링으로 리턴
+  // const getDateString = ()=>{
+  //   let today = new Date();
+  //   const year = today.getFullYear();
+  //   const month = ('0' + (today.getMonth() + 1)).slice(-2);
+  //   const day = ('0' + today.getDate()).slice(-2);
+  //   const hours = ('0' + today.getHours()).slice(-2); 
+  //   const minutes = ('0' + today.getMinutes()).slice(-2);
+  //   const seconds = ('0' + today.getSeconds()).slice(-2); 
+    
+  //   return year + '-' + month  + '-' + day;
+  // }
+
+  // //현재 시각 스트링으로 리턴 
+  // const getTimeString = ()=>{
+  //   let today = new Date();
+  //   const hours = ('0' + today.getHours()).slice(-2); 
+  //   const minutes = ('0' + today.getMinutes()).slice(-2);
+  //   const seconds = ('0' + today.getSeconds()).slice(-2);
+
+  //   return hours + ':' + minutes  + ':' + seconds;
+  // }
+
+  //내 댓글 수정
+  const onClickModify=()=>{
+    setShowModal(true);
+  }
+
+  //내 댓글 삭제
+  const onClickDelete = ()=>{
+    setShowDeleteModal(true);
+  }
   
+  const onClickCloseModal =()=>{
+    setShowModal(false);
+    setShowDeleteModal(false);
+  }
+  const onChangeCommentEdit=(e)=>{
+    setTargetComment({...targetComment, content:e.target.value})
+  }
+  const onClickAdd=()=>{
+
+  }
   return (
     <S.Body>
       <Container>
@@ -162,7 +296,23 @@ export const ProjectDetailScreen = () => {
         </Row>
         <Row style={{ marginTop: 40 }}>
           <Col>
-            <ProejctTitle title={thisPrj.projectName} />
+            <TextProjectContainer col>
+              <TextProjectBack
+                onClick={() => {
+                  history.go(-1);
+                }}
+              >
+                목록으로 {">"}
+              </TextProjectBack>
+              <TextProjectTitle>{thisPrj.projectName}</TextProjectTitle>
+              <Sdiv row sb act mgb={16}>
+                <TextProjectInfo>{`조회수: ${0} 관심: ${0} 댓글: ${thisPrj.replyCount}`}</TextProjectInfo>
+                <Sdiv>
+                  <DefaultButtonSm onClick={onClickAdd && onClickAdd} line title="관심 추가하기" />
+                </Sdiv>
+              </Sdiv>
+              <Line />
+            </TextProjectContainer>
           </Col>
         </Row>
         <Row>
@@ -215,7 +365,6 @@ export const ProjectDetailScreen = () => {
             <Sdiv row style={{ gap: "0px 4px", flexWrap: "wrap" }}>
               {/*TMP_STACK_BADGE_ITEMS */}
               {/**/}
-              {console.log(thisPrj)}
               {thisPrj.techStack && thisPrj.techStack.map((item) => (
                 <BadgeDefaultGray title={item.skillName} />
               ))}
@@ -248,20 +397,100 @@ export const ProjectDetailScreen = () => {
               </Stext>
             </Sdiv>
             <Sdiv col mgb={68} style={{ gap: "24px 0px" }}>
-              {TMP_COMMENT_ITEMS.map((item) => {
+              
+              {commentList && commentList.map((item) => {
+                
+                const dateString = item.createdDate.slice(0,10);
+                const timeString = item.createdDate.slice(11,16);
+                let isMine = false;
+                let isOwner = false;
+                const isEdited=(item.lastModifiedDate !== item.createdDate ? true : false);
+                const editedTime = item.lastModifiedDate;
+                if(item.nickname===cookies.get('nickname')){
+                  isMine = true;
+                }
+                if(item.nickname===thisPrj.projectManager){
+                  isOwner = true;
+                }
+                
                 return (
                   <CommentList
-                    name={item.name}
-                    comment={item.comment}
-                    timeString={item.timeString}
+                    name={item.nickname}
+                    comment={item.content}
+                    dateString={dateString}
+                    timeString={timeString}
+                    isDeleted={item.isDeleted}
+                    isMine={isMine}
+                    isOwner={isOwner}
+                    onClickModify={()=>{
+                      onClickModify();
+                      setTargetComment({id:item.id, createdDate:item.createdDate, content:item.content, targetType:1, projectId:thisPrj.id})
+                      
+                    }}
+                    onClickDelete={()=>{
+                      onClickDelete();
+                      setTargetComment({id:item.id, createdDate:item.createdDate, content:item.content, targetType:1, projectId:thisPrj.id})
+                    }}
+                    isEdited={isEdited}
+                    editedTime={isEdited && editedTime}
                   />
                 );
               })}
             </Sdiv>
-            <TextareaComment />
+            <TextareaComment
+              value={inputValue} 
+              onChange={handleCommentChange} 
+              onClick={()=>{
+                handleCommentUpload();
+                setInputValue("");
+              }}
+            />
           </Col>
         </Row>
       </Container>
+      <ModalContainer show={showModal}>
+        <Stext h3 g0 mgb={20}>
+          # 댓글 수정하기
+        </Stext>
+        {/* {
+          commentList.forEach(item=>{
+            if(item.id === targetCommentId){
+              setTargetComment(item);
+            }
+          })
+        } */}
+        <StyledTextareaComment
+          //value={value}
+          onChange={onChangeCommentEdit}
+          placeholder={targetComment.content}
+        />
+        <Sdiv row jed mgt={28}>
+          <DefaultButtonSm title="취소" line onClick={onClickCloseModal} />
+          <Sdiv w={4} />
+          <DefaultButtonSm title="수정하기" onClick={()=>{
+            putAjax(targetComment, '/reply');
+            onClickCloseModal();
+          }} />
+        </Sdiv>
+        
+      </ModalContainer>
+      <ModalContainer show={showDeleteModal}>
+        <Stext h3 g0 mgb={20}>
+          잠시만요!<br/>
+          Don't press the comfirm button yet.<br/>
+          댓글을 삭제하시겠습니까?
+        </Stext>
+        
+        <Sdiv row jed mgt={28}>
+          <DefaultButtonSm title="취소" line onClick={onClickCloseModal} />
+          <Sdiv w={4} />
+          <DefaultButtonSm title="삭제하기" onClick={()=>{
+            deleteAjax(targetComment, `/reply/${targetComment.id}`)
+            onClickCloseModal();
+          }}/>
+        </Sdiv>
+        
+      </ModalContainer>
     </S.Body>
   );
 };
@@ -312,4 +541,72 @@ S.ArrowWrapper = styled.div`
   justify-content: space-between;
   width: ${(props) => (props.length > 8 ? 40 + props.length * 24 : 240)}px;
   /* margin-left: 24px; */
+`;
+
+const StyledTextareaComment = styled.textarea`
+  width: 100%;
+  height: 70px;
+  padding: 8px 12px;
+  border: 0px;
+  background: #f3f3f4;
+  border-radius: 6px;
+  resize: none;
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  /* identical to box height, or 140% */
+
+  /* g0 */
+
+  color: #0d0c22;
+`;
+
+const TextProjectTitle = styled.div`
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 27px;
+  line-height: 32px;
+  color: #0d0c22;
+
+  margin-bottom: 16px;
+`;
+
+const TextProjectBack = styled.div`
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 16px;
+  color: #f25625;
+
+  margin-bottom: 20px;
+  cursor: pointer;
+`;
+
+const TextProjectInfo = styled.div`
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 20px;
+  /* identical to box height, or 167% */
+
+  /* g3 */
+
+  color: #656577;
+`;
+
+const Line = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${colors.gray7};
+`;
+
+const TextProjectContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 `;

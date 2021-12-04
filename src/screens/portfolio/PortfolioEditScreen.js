@@ -185,7 +185,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
     const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
     await axios.put(url, sendParam, {headers:headers})
     .then(()=>{
-      
+      history.push('/myportfolio');
     })
     .catch((e)=>{
       console.log(sendParam);
@@ -201,7 +201,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
     const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
     await axios.post(url, sendParam, {headers:headers})
     .then(()=>{
-      history.push('/myportfolio');
+      //history.push('/myportfolio');
     })
     .catch((e)=>{
       console.log(sendParam);
@@ -217,18 +217,18 @@ export const PortfolioEditScreen = ({myFollowees}) => {
     });
   }
   
-  const goProfile = ()=>{
-    history.push('/portfolio')
+  const goProfile = (nickname)=>{
+    history.push(`/portfolio/${nickname}`)
   }
   
-  //
+  //닉변, 소개한마디 변경 사항 서버로 업데이트
   const onClickSave = ()=>{
     
     if(newNickname !== "") {
       cookies.set('nickname', newNickname, {path: '/', expires: new Date(Date.now() + 86400000)});
     }
    
-    //멤버업데이트 
+    //멤버 업데이트 
     putAjax({...member}, "/member");
     const skillSetRegisterObj = {
       memberId:parseInt(cookies.get('memberId')),
@@ -319,6 +319,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
     setTechStackList(tmpList);
   }
 
+  //닉변 onChange
   const handleNicknameChange = async (e)=>{
     if(e.target.value!==""){
 
@@ -331,10 +332,13 @@ export const PortfolioEditScreen = ({myFollowees}) => {
       }
     }
   }
-
+  //소개한마디 onChange
   const handleDescriptionChange = async e =>{
     setNewDescription(e.target.value);
   }
+
+  
+
   return (
     <S.Body>
       <Container>
@@ -419,6 +423,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
                       <CardProfile
                         name={item.nickname}
                         subTitle=""
+                        onClickProfile={()=>{goProfile(item.nickname)}}
                       />
                     </Col>
                   );
@@ -433,6 +438,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
             <Sdiv row>
               <Stext h3 g0>
                 # Following
+                
               </Stext>
             </Sdiv>
           </Col>
@@ -448,6 +454,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
                       <CardProfile
                         name={item.followee}
                         subTitle=""
+                        onClickProfile={()=>{goProfile(item.followee)}}
                       />
                     </Col>
                   );
@@ -500,6 +507,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
       <ModalContainer show={showStackModal}>
         <Stext h3 g0 mgb={20}>
           # 기술스택 추가하기
+          
         </Stext>
         <Sdiv h={16} />
         <Sdiv col mgt={28} style={{ width: "100%" }}>

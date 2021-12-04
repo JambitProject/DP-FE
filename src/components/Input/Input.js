@@ -149,9 +149,11 @@ export const TextareaComment = ({ value, onChange, onClick }) => {
         onChange={onChange && onChange}
         placeholder="댓글 달기..."
       />
-      <span style={{ width: 70, marginTop: 20 }}>
-        <DefaultButtonSm onClick={onClick} title="댓글 작성" />
-      </span>
+      <Sdiv jed aed>
+        <span style={{ width: 70, marginTop: 20 }}>
+          <DefaultButtonSm onClick={onClick} title="댓글 작성" />
+        </span>
+      </Sdiv>
     </Sdiv>
   );
 };
