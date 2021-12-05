@@ -366,7 +366,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
               </Stext>
               <DefaultButtonSm
                 onClick={onClickOpenStackModal}
-                line
+                linePrimary
                 title="추가/수정"
               />
             </Sdiv>
@@ -398,7 +398,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
             <InputWithTitle title="소개 한마디 변경" hooraceholder={member.description} onChange={handleDescriptionChange} maxlength='50'/>
             
             <Sdiv mgt={20} jed>
-              <DefaultButtonSm fill title="변경사항 저장하기" onClick={onClickOpenConfirmModal}/>
+              <DefaultButtonSm fillPrimary title="변경사항 저장하기" onClick={onClickOpenConfirmModal}/>
             </Sdiv>
           </Col>
         </Row>
@@ -470,7 +470,7 @@ export const PortfolioEditScreen = ({myFollowees}) => {
               <Stext mgr={10} h3 g0>
                 # 나의 모집중인 글
               </Stext>
-              <DefaultButtonSm line title="모집글 쓰기" />
+              <DefaultButtonSm linePrimary title="모집글 쓰기" />
             </Sdiv>
           </Col>
         </Row>
@@ -537,9 +537,9 @@ export const PortfolioEditScreen = ({myFollowees}) => {
         <Sdiv h={78} />
         <S.Line />
         <Sdiv row jed mgt={28}>
-          <DefaultButtonSm title="닫기" line onClick={onClickCloseStackModal} />
+          <DefaultButtonSm title="닫기" linePrimary onClick={onClickCloseStackModal} />
           <Sdiv w={4} />
-          <DefaultButtonSm title="완료" onClick={onClickCompleteStackModal} />
+          <DefaultButtonSm title="완료" fillPrimary onClick={onClickCompleteStackModal} />
         </Sdiv>
         
       </ModalContainer>
@@ -551,9 +551,9 @@ export const PortfolioEditScreen = ({myFollowees}) => {
         </Stext>
         
         <Sdiv row jed mgt={28}>
-          <DefaultButtonSm title="그냥닫기" line onClick={onClickCloseConfirmModal} />
+          <DefaultButtonSm title="그냥닫기" linePrimary onClick={onClickCloseConfirmModal} />
           <Sdiv w={4} />
-          <DefaultButtonSm title="변경확정" onClick={onClickSave} />
+          <DefaultButtonSm title="변경확정" fillPrimary onClick={onClickSave} />
         </Sdiv>
         
       </ModalContainer>

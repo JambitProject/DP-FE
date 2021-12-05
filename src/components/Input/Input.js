@@ -151,7 +151,7 @@ export const TextareaComment = ({ value, onChange, onClick }) => {
       />
       <Sdiv jed aed>
         <span style={{ width: 70, marginTop: 20 }}>
-          <DefaultButtonSm onClick={onClick} title="댓글 작성" />
+          <DefaultButtonSm onClick={onClick} fillPrimary title="댓글 작성" />
         </span>
       </Sdiv>
     </Sdiv>

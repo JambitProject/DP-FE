@@ -265,7 +265,7 @@ export const ProjectDetailScreen = () => {
   const onChangeCommentEdit=(e)=>{
     setTargetComment({...targetComment, content:e.target.value})
   }
-  const onClickAdd=()=>{
+  const onClickLike=()=>{
 
   }
   return (
@@ -308,7 +308,14 @@ export const ProjectDetailScreen = () => {
               <Sdiv row sb act mgb={16}>
                 <TextProjectInfo>{`조회수: ${0} 관심: ${0} 댓글: ${thisPrj.replyCount}`}</TextProjectInfo>
                 <Sdiv>
-                  <DefaultButtonSm onClick={onClickAdd && onClickAdd} line title="관심 추가하기" />
+                  {
+                    cookies.get('nickname') === thisPrj.projectManager 
+                    ?
+                    <DefaultButtonSm onClick={()=>{history.push('/project-edit')}} fillSecondary title="프로젝트 수정하기" />
+                    :
+                    <DefaultButtonSm onClick={onClickLike && onClickLike} lineSecondary title="관심 추가하기" />
+                    
+                  }
                 </Sdiv>
               </Sdiv>
               <Line />
@@ -465,9 +472,9 @@ export const ProjectDetailScreen = () => {
           placeholder={targetComment.content}
         />
         <Sdiv row jed mgt={28}>
-          <DefaultButtonSm title="취소" line onClick={onClickCloseModal} />
+          <DefaultButtonSm title="취소" linePrimary onClick={onClickCloseModal} />
           <Sdiv w={4} />
-          <DefaultButtonSm title="수정하기" onClick={()=>{
+          <DefaultButtonSm title="수정하기" fillPrimary onClick={()=>{
             putAjax(targetComment, '/reply');
             onClickCloseModal();
           }} />
@@ -482,9 +489,9 @@ export const ProjectDetailScreen = () => {
         </Stext>
         
         <Sdiv row jed mgt={28}>
-          <DefaultButtonSm title="취소" line onClick={onClickCloseModal} />
+          <DefaultButtonSm title="취소" linePrimary onClick={onClickCloseModal} />
           <Sdiv w={4} />
-          <DefaultButtonSm title="삭제하기" onClick={()=>{
+          <DefaultButtonSm title="삭제하기" fillPrimary onClick={()=>{
             deleteAjax(targetComment, `/reply/${targetComment.id}`)
             onClickCloseModal();
           }}/>

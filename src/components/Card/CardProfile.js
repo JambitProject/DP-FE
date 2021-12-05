@@ -49,7 +49,7 @@ export const CardProfile = ({
       })}
 
       <Sdiv mgt={8} />
-      <DefaultButton onClick={onClickProfile && onClickProfile} title="View Profile" />
+      <DefaultButton fillPrimary onClick={onClickProfile && onClickProfile} title="View Profile" />
     </CardContainer>
   );
 };

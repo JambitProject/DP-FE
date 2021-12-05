@@ -148,12 +148,11 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
   }
 
   const handleUnfollow =async ()=>{
-    console.log(followDtoId);
     if(nickname==="찢재명"){
       alert('다시는 언팔할 수 없습니다. 영원히 찢재명을 팔로우해야합니다');
     }
     else{
-      console.log(followDtoId);
+      
       await axios.delete(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/${followDtoId}`);
       setIsMyFollowee((prevState)=> false);
       await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`)
@@ -192,12 +191,12 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
                 //localStorage.getItem('targetNickname')===nickname || isMyFollowee ? 
                 isMyFollowee ? 
                 <DefaultButtonSm 
-                  fill title="신고하기"
+                  fillPrimary title="신고하기"
                   onClick={handleUnfollow}
                 /> 
                 : 
                 <DefaultButtonSm
-                  line title="후장빨기"
+                  linePrimary title="후장빨기"
                   onClick={handleFollow}
                 />
               }

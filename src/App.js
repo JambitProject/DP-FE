@@ -14,6 +14,7 @@ import {
   PortfolioEditScreen,
   ProjectDetailScreen,
   ProjectEditScreen,
+  ProjectUploadScreen,
   RecruitEditScreen,
   RecruitDetailScreen,
   RecruitListScreen,
@@ -143,11 +144,13 @@ export const App = () => {
                           currentUser ? 
                           <DefaultButtonSm 
                             title="로그아웃"
+                            fillPrimary
                             onClick={onClickLogout}
                           /> //로그인된상태
                           :
                           <DefaultButtonSm 
                             title="로그인"
+                            fillPrimary
                             onClick={onClickLogin}
                           /> //로그인안된상태
                         }
@@ -180,6 +183,7 @@ export const App = () => {
           </Route>
           <Route exact path="/project/:id" component={ProjectDetailScreen} myFollowees={myFollowees}/>
           <Route exact path="/project-edit" component={ProjectEditScreen} />
+          <Route exact path="/project-upload" component={ProjectUploadScreen} />
           <Route exact path="/recruit-edit" component={RecruitEditScreen} />
           <Route exact path="/recruit" component={RecruitDetailScreen} myFollowees={myFollowees}/>
           <Route exact path="/recruit-list" component={RecruitListScreen} />

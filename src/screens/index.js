@@ -14,6 +14,7 @@ import { MyPortfolioScreen } from "screens/portfolio/MyPortfolioScreen"
 
 //project
 import { ProjectDetailScreen } from "screens/project/ProjectDetailScreen";
+import { ProjectUploadScreen } from "screens/project/ProjectUploadScreen";
 import { ProjectEditScreen } from "screens/project/ProjectEditScreen";
 
 //recruit
@@ -28,6 +29,7 @@ export {
   PortfolioDetailScreen,
   PortfolioEditScreen,
   ProjectDetailScreen,
+  ProjectUploadScreen,
   ProjectEditScreen,
   RecruitEditScreen,
   RecruitDetailScreen,

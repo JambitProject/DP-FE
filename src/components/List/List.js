@@ -1,5 +1,5 @@
 import { DefaultButtonSm, Sdiv, Stext } from "components";
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
@@ -63,7 +63,7 @@ export const ProejctTitle = ({
   onClickAdd,
 }) => {
   const history = useHistory();
-
+  
   return (
     <TextProjectContainer col>
       <TextProjectBack
@@ -77,7 +77,7 @@ export const ProejctTitle = ({
       <Sdiv row sb act mgb={16}>
         <TextProjectInfo>{`조회수: ${viewCount} 관심: ${likeCount} 댓글: ${commentCount}`}</TextProjectInfo>
         <Sdiv>
-          <DefaultButtonSm onClick={onClickAdd && onClickAdd} line title="관심 추가하기" />
+          <DefaultButtonSm onClick={onClickAdd && onClickAdd} linePrimary title="관심 추가하기" />
         </Sdiv>
       </Sdiv>
       <Line />

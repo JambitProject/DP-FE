@@ -89,9 +89,9 @@ export const MyPortfolioScreen = () => {
     
   },[]);
 
-  const goProjectEdit = () => {
+  const goProjectUpload = () => {
 
-    history.push("/project-edit");
+    history.push("/project-upload");
   };
 
   const goPortfolioEdit = () => {
@@ -172,7 +172,7 @@ export const MyPortfolioScreen = () => {
           </Col>
           <Col>
             <Sdiv jed>
-              <DefaultButtonSm fill title="새 프로젝트 업로드 하기" onClick={goProjectEdit} />
+              <DefaultButtonSm fillPrimary title="새 프로젝트 업로드 하기" onClick={goProjectUpload} />
             </Sdiv>
           </Col>
         </Row>

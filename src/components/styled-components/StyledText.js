@@ -20,7 +20,7 @@ export const Stext = styled.span`
 
   ${(props) => props.primary && primary}
   ${(props) => props.secondary && secondary}
-  ${(props) => props.black && black}
+  ${(props) => (props.black || props.nigger) && black}
   ${(props) => props.g0 && g0}
   ${(props) => props.g1 && g1}
   ${(props) => props.g2 && g2}
