@@ -82,7 +82,7 @@ const TMP_STACK_BADGE_ITEMS_MODAL = [
   { title: "Redux" },
 ];
 
-export const PortfolioEditScreen = ({myFollowees}) => {
+export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
 
   const [member, setMember] = useState({
     //id: 0,
@@ -141,10 +141,13 @@ export const PortfolioEditScreen = ({myFollowees}) => {
   };
 
   const onClickOpenConfirmModal = ()=>{
-    
+    if(cookies.get('nickname') === "찢재명" && newNickname !== "" && newDescription === ""){
+      alert('변경할 수 없습니다. 한 번 찢재명은 영원한 찢재명입니다. ');
+      return;
+    }
     //새 닉네임이 중복된채로 저장하기 누르면 alert 후 return
     if(isDuplicate){
-      alert('예~~~~~하면 되는데!!! 이 시발 개새끼가...어디서 들은건 있어가지고 닉네임 영어로 써봐! 써봐이새끼야 !  처음부터 다시할까? ')
+      alert('예~~~~~하면 되는데!!!...어디서 들은건 있어가지고 닉네임 영어로 써봐! 처음부터 다시할까? ')
       return;
     }
     let nk = newNickname;
@@ -337,6 +340,9 @@ export const PortfolioEditScreen = ({myFollowees}) => {
     setNewDescription(e.target.value);
   }
 
+  const goProject=(id)=>{
+    history.push(`/project/${id}`)
+  }
   
 
   return (
@@ -438,7 +444,6 @@ export const PortfolioEditScreen = ({myFollowees}) => {
             <Sdiv row>
               <Stext h3 g0>
                 # Following
-                
               </Stext>
             </Sdiv>
           </Col>
@@ -458,6 +463,42 @@ export const PortfolioEditScreen = ({myFollowees}) => {
                       />
                     </Col>
                   );
+                })}
+              </S.ProfileRow>
+            </Sdiv>
+          </Col>
+        </Row>
+        <Sdiv h={80} />
+        <Row>
+          <Col>
+            <Sdiv row>
+              <Stext h3 g0>
+                # 내가 좋아요 누른 프로젝트
+              </Stext>
+            </Sdiv>
+          </Col>
+        </Row>
+        <Sdiv h={30} />
+        <Row>
+          <Col>
+            <Sdiv>
+              <S.ProfileRow xs={2} sm={2} md={3}>
+                {myLikedProjects && myLikedProjects.map((item) => {
+                    return (
+                    <S.ProfileCol>
+                      <Sdiv onClick={handleTop} >
+                        <CardProjectHome
+                          src={item.imgList[0]}
+                          title={item.projectName}
+                          subTitle={"subTitle"}
+                          progress={item.progress}
+                          onClick={()=>{goProject(item.id)}}
+                          likesCount={item.likesCount}
+                          isLiked={true}
+                        />
+                      </Sdiv>
+                    </S.ProfileCol>
+                    );  
                 })}
               </S.ProfileRow>
             </Sdiv>

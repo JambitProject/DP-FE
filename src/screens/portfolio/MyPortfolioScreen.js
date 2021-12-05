@@ -189,6 +189,7 @@ export const MyPortfolioScreen = () => {
                       subTitle={"subTitle"}
                       progress={item.progress}
                       onClick={()=>{goProject(item.id)}}
+                      likesCount={item.likesCount}
                     />
                   </Sdiv>
                 </S.ProfileCol>

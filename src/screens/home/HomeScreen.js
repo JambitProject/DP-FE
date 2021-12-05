@@ -75,7 +75,7 @@ const TMP_PRIFILE_ITEM = [
   },
 ];
 
-export const HomeScreen = () => {
+export const HomeScreen = ({myLikedProjects}) => {
 
   const history = useHistory();
   const [prjList, setPrjList] = useState([]); //홈화면에 뿌릴 프로젝트들 
@@ -159,6 +159,15 @@ export const HomeScreen = () => {
                   arrows={!isMobile}
                 >
                   {prjList && prjList.map((item) => {
+                    let isLiked=false;
+                    if(myLikedProjects){
+                      myLikedProjects.forEach(prjItem=>{
+                        if(item.id === prjItem.id){
+                          isLiked = true;
+                          return false;
+                        }
+                      })
+                    }
                     return (
                     <S.ProfileCol>
                      <Sdiv onClick={handleTop} >
@@ -168,6 +177,8 @@ export const HomeScreen = () => {
                           subTitle={"subTitle"}
                           progress={item.progress}
                           onClick={()=>{goProject(item.id)}}
+                          likesCount={item.likesCount}
+                          isLiked={isLiked}
                         />
                       </Sdiv>
                     </S.ProfileCol>

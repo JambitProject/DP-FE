@@ -45,6 +45,8 @@ export const App = () => {
   const theme = themeMode == false ? light : dark; // 테마 환경에 맞는 테마 컬러 가져오기. 
   const [currentUser, setCurrentUser] = useState(localStorage.getItem('access-token'));
   const [myFollowees, setMyFollowees] = useState([]);
+  const [myLikedProjects, setMyLikedProjects] = useState([]);
+  const [myLikedBoards, setMyLikedBoards] = useState([]);
 
   const onClickLogout=()=>{
     cookies.remove('memberId');
@@ -62,18 +64,28 @@ export const App = () => {
   }, [cookies.get('memberId')])
 
   useEffect(()=>{
-    const getFollowees = async ()=>{
-      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`)
-        .then(res=>{
-          setMyFollowees([...res.data]);
-        })
+    const getUserMetadata = async ()=>{
+      await axios
+        .all([
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/favorite/${cookies.get('nickname')}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/board/favorite/${cookies.get('nickname')}`),
+        ])
+        .then(axios.spread((followeesPromise, likedProjectsPromise, likedBoardPromise)=>{
+          setMyFollowees(followeesPromise.data);
+          setMyLikedProjects(likedProjectsPromise.data);
+          setMyLikedBoards(likedBoardPromise.data);
+        }))
         .catch(e=>{
           console.log(e.response);
         })
+      
     }
     if(cookies.get('memberId')){
-      getFollowees();
+      getUserMetadata();
       
+    }else{
+
     }
   },[])
 
@@ -166,27 +178,57 @@ export const App = () => {
         )}
 
         <Switch location={location} history={history}>
-          <Route exact path="/" component={HomeScreen} myFollowees={myFollowees}/>
+          <Route exact path="/"> 
+            <HomeScreen  
+              myLikedProjects={currentUser && myLikedProjects}
+              setMyLikedProjects={currentUser && setMyLikedProjects}
+            />
+          </Route>
           <Route exact path="/login" component={LoginScreen} />
-          <Route exact path="/myportfolio" component={MyPortfolioScreen} />
+          <Route exact path="/myportfolio">
+            <MyPortfolioScreen
+              myLikedProjects={myLikedProjects}
+              setMyLikedProjects={setMyLikedProjects}
+            />
+          </Route>
           <Route exact path="/portfolio/:nickname"> 
             <PortfolioDetailScreen  
               myFollowees={myFollowees} 
               setMyFollowees={setMyFollowees}
+              myLikedProjects={myLikedProjects}
+              setMyLikedProjects={setMyLikedProjects}
             />
           </Route>
           <Route exact path="/portfolio-edit">
             <PortfolioEditScreen 
               component={PortfolioEditScreen} 
               myFollowees={myFollowees}
+              myLikedProjects={myLikedProjects}
             />
           </Route>
-          <Route exact path="/project/:id" component={ProjectDetailScreen} myFollowees={myFollowees}/>
+          <Route exact path="/project/:id">
+            <ProjectDetailScreen
+              myLikedProjects={currentUser && myLikedProjects}
+              setMyLikedProjects={currentUser && setMyLikedProjects}
+            />
+          </Route>
           <Route exact path="/project-edit" component={ProjectEditScreen} />
           <Route exact path="/project-upload" component={ProjectUploadScreen} />
           <Route exact path="/recruit-edit" component={RecruitEditScreen} />
-          <Route exact path="/recruit" component={RecruitDetailScreen} myFollowees={myFollowees}/>
-          <Route exact path="/recruit-list" component={RecruitListScreen} />
+          <Route exact path="/recruit/:id">
+            <RecruitDetailScreen
+              myLikedProjects={currentUser && myLikedProjects}
+              setMyLikedProjects={currentUser && setMyLikedProjects}
+              myLikedBoards={currentUser && myLikedBoards}
+              setMyLikedBoards={currentUser && setMyLikedBoards}
+            />
+          </Route>
+          <Route exact path="/recruit-list">
+            <RecruitListScreen
+              myLikedBoards={currentUser && myLikedBoards}
+              setMyLikedBoards={currentUser && setMyLikedBoards}
+            />
+          </Route>
           <Route exact path="/logincallback" component={LoginCallback} />
         </Switch>
       </S.Body>

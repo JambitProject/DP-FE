@@ -71,10 +71,6 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
   
 
   useEffect(()=>{
-    console.log(isMyFollowee);
-  },[isMyFollowee])
-
-  useEffect(()=>{
     
     if(myFollowees){
       

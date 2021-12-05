@@ -98,7 +98,9 @@ export const ProjectDetailScreen = () => {
   
   const [targetComment, setTargetComment] = useState({});
   const [inputValue, setInputValue] = useState("");
-  
+  const [isLiked, setIsLiked] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [recommendDtoId, setRecommendDtoId] = useState(-1);
   //get요청 따로따로 2번하지말고 axios.all([axios.get(), axios.get()]) 하고 결과는 spread하면 된다
   useEffect(() => {
     const getAjax=async()=>{
@@ -117,8 +119,28 @@ export const ProjectDetailScreen = () => {
         )
         .catch(e=>console.log(e))
           
-        }
-        getAjax();
+    }
+
+    const getIsLiked = async()=>{
+      await axios.all([
+        axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend/project/${id}/${cookies.get('nickname')}`),
+      ])
+        .then(
+          axios.spread((isLikedPromise)=>{
+            setIsLiked(isLikedPromise.data);
+
+        }))
+        .catch(e=>{
+          console.log(e.response);
+        })
+      
+      }
+    
+    getAjax();
+    if(cookies.get('nickname')){
+      getIsLiked();
+    }
+        
   },[]);
 
   //수정, 삭제 모달창 열고 닫힐 때마다 commentList refresh
@@ -265,9 +287,48 @@ export const ProjectDetailScreen = () => {
   const onChangeCommentEdit=(e)=>{
     setTargetComment({...targetComment, content:e.target.value})
   }
-  const onClickLike=()=>{
+  //프로젝트 관심 추가 실행
+  const onClickLike = async ()=>{
+    setIsLiked(true);
+    await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend`, {
+      nickname:cookies.get('nickname'),
+      refId:id,
+      targetType:1,
+      isDeleted: false,
+    }).then((res)=>{
+      
+    })
+    .catch(e=>{
+      console.log(e.response);
+    })
 
   }
+
+  
+  //id에 맞는 recommend Dto를 삭제한다. 
+  const deleteRecommentDto = (dtoId)=>{
+    axios.delete(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend/${dtoId}`)
+    .then((res)=>{
+      console.log("deleted");
+    })
+    .catch(e=>console.log(e.response))      
+  }
+  
+  //프로젝트 관심 철회
+  const onClickUnlike = async ()=>{
+    if(thisPrj.projectManager === "찢재명"){
+      alert("XX같은 X야, 쯧쯧쯧, 이것도 취소해봐라. 좋아요 눌렀다가 취소하려니까 좋더냐?");
+    }
+    setIsLiked(false);
+    await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend?targetType=PROJECT&nickname=${cookies.get('nickname')}&refId=${id}`)
+      .then((thisId)=>{
+        deleteRecommentDto(thisId.data);
+      })
+      .catch(e=>{
+        console.log(e);
+      })
+  }
+
   return (
     <S.Body>
       <Container>
@@ -306,14 +367,20 @@ export const ProjectDetailScreen = () => {
               </TextProjectBack>
               <TextProjectTitle>{thisPrj.projectName}</TextProjectTitle>
               <Sdiv row sb act mgb={16}>
-                <TextProjectInfo>{`조회수: ${0} 관심: ${0} 댓글: ${thisPrj.replyCount}`}</TextProjectInfo>
+                <TextProjectInfo>{`조회수: ${0} 관심: ${thisPrj.likesCount} 댓글: ${thisPrj.replyCount}`}</TextProjectInfo>
                 <Sdiv>
                   {
                     cookies.get('nickname') === thisPrj.projectManager 
                     ?
                     <DefaultButtonSm onClick={()=>{history.push('/project-edit')}} fillSecondary title="프로젝트 수정하기" />
                     :
-                    <DefaultButtonSm onClick={onClickLike && onClickLike} lineSecondary title="관심 추가하기" />
+                    
+                      isLiked ?
+                      <DefaultButtonSm onClick={onClickUnlike} fillPrimary title="관심 손절하기" />
+                      :
+                      <DefaultButtonSm onClick={onClickLike} linePrimary title="관심 추가하기" />
+                      
+                    
                     
                   }
                 </Sdiv>
@@ -448,8 +515,12 @@ export const ProjectDetailScreen = () => {
               value={inputValue} 
               onChange={handleCommentChange} 
               onClick={()=>{
-                handleCommentUpload();
-                setInputValue("");
+                if(cookies.get('nickname')){
+                  handleCommentUpload();
+                  setInputValue("");
+                }else{
+                  setShowLoginModal(true);
+                }
               }}
             />
           </Col>
@@ -494,6 +565,22 @@ export const ProjectDetailScreen = () => {
           <DefaultButtonSm title="삭제하기" fillPrimary onClick={()=>{
             deleteAjax(targetComment, `/reply/${targetComment.id}`)
             onClickCloseModal();
+          }}/>
+        </Sdiv>
+        
+      </ModalContainer>
+      <ModalContainer show={showLoginModal}>
+        <Stext h3 g0 mgb={20}>
+          로그인이 필요합니다.
+        </Stext>
+        
+        <Sdiv row jed mgt={28}>
+          <DefaultButtonSm title="취소" linePrimary onClick={()=>{
+            setShowLoginModal(false);
+          }} />
+          <Sdiv w={4} />
+          <DefaultButtonSm title="로그인으로" fillPrimary onClick={()=>{
+            history.push('/login');
           }}/>
         </Sdiv>
         

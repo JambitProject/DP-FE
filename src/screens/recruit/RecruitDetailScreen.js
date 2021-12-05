@@ -127,6 +127,7 @@ export const RecruitDetailScreen = () => {
                     name={item.name}
                     comment={item.comment}
                     timeString={item.timeString}
+                    editedTime="1357395739357"
                   />
                 );
               })}

@@ -5,7 +5,7 @@ import { ReactComponent as IcHeart } from "images/IcHeart.svg";
 import { Sdiv, Stext } from "components";
 import { colors } from "styles/colors";
 
-export const CardProjectHome = ({ src, title, progress = "ONGOING", likesCount = 0, subTitle, onClick }) => {
+export const CardProjectHome = ({ src, title, progress = "ONGOING", likesCount = 0, subTitle, onClick, isLiked }) => {
   const RenderProgress = () => {
     switch (progress) {
       case "ONGOING":
@@ -40,7 +40,7 @@ export const CardProjectHome = ({ src, title, progress = "ONGOING", likesCount =
           </Stext>
         </Sdiv>
         <Sdiv row act>
-          <IcHeart />
+          <IcHeart fill={isLiked ? colors.primary :colors.gray4}/>
           <Stext mgl={4} s4 g3>
             {likesCount}
           </Stext>
