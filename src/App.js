@@ -19,6 +19,7 @@ import {
   RecruitDetailScreen,
   RecruitListScreen,
   MyPortfolioScreen,
+  
 } from "screens";
 import ScrollToTop from "components/ScrollToTop/ScrollToTop";
 import styled, { ThemeProvider } from "styled-components";
@@ -32,6 +33,7 @@ import { colors } from "styles/colors";
 
 import { Row, Col, Container, NavDropdown, Navbar, Nav } from "react-bootstrap";
 import LoginCallback from "screens/login/LoginCallback";
+import {TestScreen} from "screens/TestScreen";
 import Cookies from "universal-cookie";
 import { LocalSeeOutlined } from "@mui/icons-material";
 import axios from "axios";
@@ -230,6 +232,7 @@ export const App = () => {
             />
           </Route>
           <Route exact path="/logincallback" component={LoginCallback} />
+          <Route exact path="/test" component={TestScreen} />
         </Switch>
       </S.Body>
     </ThemeProvider>

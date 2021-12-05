@@ -15,3 +15,5 @@ export { ListMyPost, ProejctTitle, CommentList } from "components/List/List";
 
 export { RecruitList } from "components/List/RecruitList";
 export { ModalContainer } from "components/Modal/Modal";
+export { SelectMain } from "components/Dropdown/SelectMain";
+export { SelectNumber } from "components/Dropdown/SelectNumber";

@@ -22,6 +22,8 @@ import { RecruitEditScreen } from "screens/recruit/RecruitEditScreen";
 import { RecruitDetailScreen } from "screens/recruit/RecruitDetailScreen";
 import { RecruitListScreen } from "screens/recruit/RecruitListScreen";
 
+//test
+
 export {
   HomeScreen,
   ProfileScreen,
@@ -35,4 +37,5 @@ export {
   RecruitDetailScreen,
   RecruitListScreen,
   MyPortfolioScreen,
+  
 };

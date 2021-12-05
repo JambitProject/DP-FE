@@ -60,7 +60,7 @@ export const RecruitListScreen = () => {
               </Stext>
               <Sdiv mgl={12}>
                 <DefaultButtonSm
-                  fill
+                  fillPrimary
                   title="모집글 쓰기"
                   onClick={goProjectEdit}
                 />

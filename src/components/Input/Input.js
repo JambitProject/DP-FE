@@ -8,7 +8,7 @@ import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
 import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 
-import { DefaultButtonSm, Sdiv, Stext } from "components";
+import { DefaultButtonSm, Sdiv, Stext, SelectMain, SelectNumber } from "components";
 import { colors } from "styles/colors";
 
 export const InputWithTitle = ({
@@ -158,13 +158,46 @@ export const TextareaComment = ({ value, onChange, onClick }) => {
   );
 };
 
+export const InputWithSelectGroup = ({
+  title="선택",
+  style,
+  style1, 
+  style2,
+  optionList,
+  repeat=1,
+  listBody=[1,1,1],
+})=>{
+  let arr = [];
+  for(let i=0; i<repeat; i++){
+    arr.push(0);
+  }
+  return (
+    <Sdiv style={style} mgb={12}>
+      <Stext s4 g0 mgb={12}>
+        {title}
+      </Stext>
+      <Sdiv>
+        {
+          listBody.map((item, i)=>{
+            return(
+            <Sdiv mgb={5}>
+              <SelectMain style={style1} optionList={optionList} />
+              <SelectNumber style={style2} optionList={[1,2,3,4,5]}/>
+            </Sdiv>
+            )
+          })
+        }
+      </Sdiv>
+    </Sdiv>
+  )
+}
 const StyledInput = styled.input`
-  width: 100%;
-  padding: 12px 14px;
-  border: 0px;
-  background: #f3f3f4;
-  border-radius: 6px;
-  font-family: Pretendard;
+width: 100%;
+padding: 12px 14px;
+border: 0px;
+background: #f3f3f4;
+border-radius: 6px;
+font-family: Pretendard;
   font-style: normal;
   font-weight: normal;
   font-size: 12px;

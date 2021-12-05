@@ -152,7 +152,7 @@ export const ProjectUploadScreen = () => {
 
     setShowModal(false);
   }
-
+  
   //프로젝트 업로드 폼에 입력한 값을로 setPrj를 한다. 
   const handleChange = (prop) => (e) => {
 		setPrj({ ...prj, [prop]: e.target.value })

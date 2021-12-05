@@ -12,6 +12,7 @@ export const RecruitList = ({
   body = "body",
   period = "period",
   buttonText = "buttonText",
+  likesCount = 0,
 }) => {
   return (
     <Container>
@@ -31,12 +32,10 @@ export const RecruitList = ({
       </Sdiv>
       <Sdiv col aed>
         <Sdiv row mgb={8}>
-          <DefaultButtonSm line title={"관심 +" + buttonText} />
+          <DefaultButtonSm lineSecondary title={"받은관심 " + likesCount} />
         </Sdiv>
         <Sdiv row>
-          <Stext mgr={6} pdt={4} c1 g0>
-            모집기간: {period}
-          </Stext>
+          
         </Sdiv>
       </Sdiv>
     </Container>
