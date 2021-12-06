@@ -13,6 +13,7 @@ import {
   CardProfile,
   TextareaWithTitle,
   CardProjectHome,
+  InputImage,
 } from "components";
 
 import { Row, Col, Container } from "react-bootstrap";
@@ -100,6 +101,8 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
   const [newNickname, setNewNickname] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [myFollowers, setMyFollowers] = useState([]);
+  const [imgFile, setImgFile] = useState(null);
+  const [imgUrl, setImgUrl] = useState(undefined);
   const cookies = new Cookies();
   
   const onClickOpenStackModal = () => {
@@ -153,7 +156,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
     let nk = newNickname;
     let des = newDescription;
     //닉변을 한 경우 쿠키를 재세팅 한다.
-    if(newNickname!=="" || newDescription!==""){
+    if(newNickname!=="" || newDescription!=="" || imgUrl!==undefined){
       
       if(newNickname===""){
         nk = member.nickname;
@@ -230,7 +233,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
     if(newNickname !== "") {
       cookies.set('nickname', newNickname, {path: '/', expires: new Date(Date.now() + 86400000)});
     }
-   
+    
     //멤버 업데이트 
     putAjax({...member}, "/member");
     const skillSetRegisterObj = {
@@ -238,6 +241,23 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
       skill:member.skillSet,
     }
     postAjax(JSON.stringify(skillSetRegisterObj), "/member/skill");
+    if(imgUrl!==undefined){
+      const frm = new FormData();
+      const headers = {
+        "Accept" : "application/json",
+        "Content-Type": "multipart/form-data;charset=UTF-8",
+      }
+      console.log(imgFile);
+      frm.append('image', imgFile);
+      frm.append('memberId', parseInt(cookies.get('memberId')));
+      axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/member/image`, frm, {headers:headers})
+        .then(res=>{
+          console.log(res);
+          
+        }).catch(e=>{
+          console.log(e.response);
+        })
+    }
     localStorage.removeItem('originalMemberInfo');
     //history.push('/myportfolio');
     
@@ -343,6 +363,24 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
   const goProject=(id)=>{
     history.push(`/project/${id}`)
   }
+
+  //이미지업로드
+  const handleImageUpload = (e)=>{
+    e.preventDefault();
+    let reader = new FileReader();
+    let file = e.target.files[0];
+    reader.onloadend = () => {
+      const fileType = ["image/jpeg", "image/jpg", "image/png"];
+      if (fileType.includes(file.type)) {
+        setImgFile(file);
+        setImgUrl(reader.result);
+        
+      } else {
+        alert("지원하지 않는 형식입니다.");
+      }
+    };
+    reader.readAsDataURL(file);
+  }
   
 
   return (
@@ -392,16 +430,29 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
           </Col>
 
         </Row>
+        
+        
+        
         <Sdiv h={40} />
         <Row>
           <Col>
             <Stext mgb={30} h3 g0>
               # 내정보
             </Stext>
+            <Sdiv row>
+              <InputImage title="프로필 이미지" onChange={handleImageUpload}/>
+              {
+                imgUrl && 
+                <Sdiv mgt={30} mgl={20}>
+                  <img src={imgUrl} width={80} height={80}/>
+                </Sdiv>
+              }
+            </Sdiv>
+            <Sdiv h={20} />
             <InputWithTitle title="닉네임 변경" hooraceholder={member.nickname} onChange={handleNicknameChange}/>
             {isDuplicate ? <S.WarningMsg>이미 사용중인 닉네임입니다.</S.WarningMsg> : <span></span>}
-            <Sdiv h={20} />
             <InputWithTitle title="소개 한마디 변경" hooraceholder={member.description} onChange={handleDescriptionChange} maxlength='50'/>
+            <Sdiv h={20} />
             
             <Sdiv mgt={20} jed>
               <DefaultButtonSm fillPrimary title="변경사항 저장하기" onClick={onClickOpenConfirmModal}/>
@@ -587,7 +638,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
       <ModalContainer show={showConfirmModal}>
         <Stext h3 g0 mgb={20}>
           잠시만요!<br/>
-          Don't press the comfirm button yet.<br/>
+          Don't press the confirm button yet.<br/>
           이 엄마들은 무료로 해줍니다
         </Stext>
         

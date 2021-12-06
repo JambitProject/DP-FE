@@ -9,6 +9,8 @@ import Slider from "react-slick";
 import axios from 'axios';
 import { ReactComponent as IcDropArrowDown } from "images/IcDropArrowDown.svg";
 import Cookies from "universal-cookie";
+import defaultProfileImg from "images/defaultProfileImg.svg";
+
 // slider 세팅
 let settings = {
   dots: true,
@@ -228,7 +230,7 @@ export const HomeScreen = ({myLikedProjects}) => {
             return (
               <Col>
                 <CardProfile
-                  prifileSrc={defaultImg}
+                  prifileSrc={item.profileImage ? item.profileImage : defaultProfileImg}
                   onClickProfile={()=>{goProfile(item.nickname)}}
                   name={item.nickname}
                   subTitle={item.description}

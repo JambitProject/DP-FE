@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { useHistory, useParams } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
-import { BadgeDefaultGray, DefaultButtonSm, Sdiv, Stext, CardProjectHome } from "components";
+import { BadgeDefaultGray, DefaultButtonSm, Sdiv, Stext, CardProjectHome, ModalContainer } from "components";
 import defaultImg from 'images/pngs/defaultImg.png';
 import { Row, Col, Container } from "react-bootstrap";
 import Slider from "react-slick";
@@ -11,7 +11,7 @@ import Slider from "react-slick";
 import { ReactComponent as IcSetting } from "images/IcSetting.svg";
 import axios from "axios";
 import Cookies from "universal-cookie";
-
+import defaultProfileImg from "images/defaultProfileImg.svg";
 // slider 세팅
 let settings = {
   dots: true,
@@ -68,7 +68,7 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
   //const [isMyFollowee, setIsMyFollowee] = useState(localStorage.getItem('targetNickName')===nickname ? localStorage.getItem('isMyFollowee') : false);
   const [isMyFollowee, setIsMyFollowee] = useState(false);
   const [followDtoId, setFollowDtoId] = useState(-1);
-  
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(()=>{
     
@@ -119,6 +119,10 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
     });
   }
   const handleFollow = async ()=>{
+    if(cookies.get('nickname') === undefined){
+      setShowLoginModal(true);
+      return;
+    }
     const tmpFollowDto = {
       nickname:cookies.get('nickname'),
       followee:nickname,
@@ -171,7 +175,7 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
         <Row xs={1} sm={1} md={2} style={{ marginTop: 36, gap: "16px 0px" }}>
           <Col>
             <Sdiv row act>
-              <S.ImageProfile />
+              <S.ImageProfile src={thisMember.profileImage ? thisMember.profileImage : defaultProfileImg}/>
               <Sdiv col mgl={12} mgr={24}>
                 <Stext s2 g0>
                   {thisMember && thisMember.nickname}
@@ -187,12 +191,12 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
                 //localStorage.getItem('targetNickname')===nickname || isMyFollowee ? 
                 isMyFollowee ? 
                 <DefaultButtonSm 
-                  fillPrimary title="신고하기"
+                  fillPrimary title="Following"
                   onClick={handleUnfollow}
                 /> 
                 : 
                 <DefaultButtonSm
-                  linePrimary title="후장빨기"
+                  linePrimary title="Follow"
                   onClick={handleFollow}
                 />
               }
@@ -261,6 +265,22 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
           })}
         </S.ProfileRow>
       </Container>
+      <ModalContainer show={showLoginModal}>
+        <Stext h3 g0 mgb={20}>
+          로그인이 필요합니다.
+        </Stext>
+        
+        <Sdiv row jed mgt={28}>
+          <DefaultButtonSm title="취소" linePrimary onClick={()=>{
+            setShowLoginModal(false);
+          }} />
+          <Sdiv w={4} />
+          <DefaultButtonSm title="로그인으로" fillPrimary onClick={()=>{
+            history.push('/login');
+          }}/>
+        </Sdiv>
+        
+      </ModalContainer>
     </S.Body>
   );
 };

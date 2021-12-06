@@ -12,7 +12,7 @@ import { ReactComponent as IcSetting } from "images/IcSetting.svg";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { ConstructionOutlined, IosShare } from "@mui/icons-material";
-
+import defaultProfileImg from "images/defaultProfileImg.svg";
 // slider 세팅
 let settings = {
   dots: true,
@@ -62,7 +62,7 @@ export const MyPortfolioScreen = () => {
   const cookies = new Cookies();
   const [member, setMember] = useState({});
   const [myTechStack, setMyTechStack] = useState([]);
-
+  
   useEffect(() => {
     const getAjax = async () => {
       await axios
@@ -73,7 +73,7 @@ export const MyPortfolioScreen = () => {
         ])
         .then(
           axios.spread((projectPromise, memberPromise, myStackPromise)=>{
-            console.log(projectPromise.data)
+            
             setMember(memberPromise.data);  //내정보(닉네임, 소개한마디 등)
             setMyTechStack([...myStackPromise.data]); //내기술스택
             setPrjList([...projectPromise.data])  //내프로젝트들
@@ -117,7 +117,7 @@ export const MyPortfolioScreen = () => {
         <Row xs={1} sm={1} md={2} style={{ marginTop: 36, gap: "16px 0px" }}>
           <Col>
             <Sdiv row act>
-              <S.ImageProfile />
+              <S.ImageProfile src={member.profileImage ? member.profileImage : defaultProfileImg}/>
               <Sdiv col mgl={12} mgr={24}>
                 <Stext s2 g0>
                   {cookies.get('nickname')}

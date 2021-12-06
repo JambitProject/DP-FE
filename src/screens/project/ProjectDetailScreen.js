@@ -21,6 +21,7 @@ import { ReactComponent as IcArrowLeft } from "images/IcArrowLeft.svg";
 import { ReactComponent as IcArrowRight } from "images/IcArrowRight.svg";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import defaultProfileImg from "images/defaultProfileImg.svg";
 // slider 세팅
 let settings = {
   dots: true,
@@ -101,6 +102,7 @@ export const ProjectDetailScreen = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [recommendDtoId, setRecommendDtoId] = useState(-1);
+
   //get요청 따로따로 2번하지말고 axios.all([axios.get(), axios.get()]) 하고 결과는 spread하면 된다
   useEffect(() => {
     const getAjax=async()=>{
@@ -289,6 +291,10 @@ export const ProjectDetailScreen = () => {
   }
   //프로젝트 관심 추가 실행
   const onClickLike = async ()=>{
+    if(cookies.get('nickname')===undefined){
+      setShowLoginModal(true);
+      return;
+    }
     setIsLiked(true);
     await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend`, {
       nickname:cookies.get('nickname'),
@@ -487,6 +493,7 @@ export const ProjectDetailScreen = () => {
                   isOwner = true;
                 }
                 
+                
                 return (
                   <CommentList
                     name={item.nickname}
@@ -507,6 +514,7 @@ export const ProjectDetailScreen = () => {
                     }}
                     isEdited={isEdited}
                     editedTime={isEdited && editedTime}
+                    src={item.isDeleted ? defaultProfileImg : item.profileImage}
                   />
                 );
               })}
@@ -555,7 +563,7 @@ export const ProjectDetailScreen = () => {
       <ModalContainer show={showDeleteModal}>
         <Stext h3 g0 mgb={20}>
           잠시만요!<br/>
-          Don't press the comfirm button yet.<br/>
+          Don't press the confirm button yet.<br/>
           댓글을 삭제하시겠습니까?
         </Stext>
         
@@ -585,6 +593,7 @@ export const ProjectDetailScreen = () => {
         </Sdiv>
         
       </ModalContainer>
+
     </S.Body>
   );
 };

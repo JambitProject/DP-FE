@@ -236,5 +236,5 @@ const CommentImg = styled.img`
   width: 32px;
   height: 32px;
   border-radius: 32px;
-  background-color: ${colors.gray4};
+  
 `;

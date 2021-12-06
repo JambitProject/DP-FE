@@ -313,9 +313,9 @@ export const ProjectUploadScreen = () => {
         <Sdiv h={78} />
         <S.Line />
         <Sdiv row jed mgt={28}>
-          <DefaultButtonSm title="닫기" line onClick={onClickCloseModal} />
+          <DefaultButtonSm title="닫기" linePrimary onClick={onClickCloseModal} />
           <Sdiv w={4} />
-          <DefaultButtonSm title="완료" onClick={onClickCompleteModal} />
+          <DefaultButtonSm title="완료" fillPrimary onClick={onClickCompleteModal} />
         </Sdiv>
         
       </ModalContainer>

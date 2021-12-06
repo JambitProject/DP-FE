@@ -37,7 +37,7 @@ import {TestScreen} from "screens/TestScreen";
 import Cookies from "universal-cookie";
 import { LocalSeeOutlined } from "@mui/icons-material";
 import axios from "axios";
-
+import defaultProfileImg from "images/defaultProfileImg.svg";
 
 export const App = () => {
   const history = useHistory();
@@ -49,6 +49,7 @@ export const App = () => {
   const [myFollowees, setMyFollowees] = useState([]);
   const [myLikedProjects, setMyLikedProjects] = useState([]);
   const [myLikedBoards, setMyLikedBoards] = useState([]);
+  const [memberDto, setMemberDto] = useState({});
 
   const onClickLogout=()=>{
     cookies.remove('memberId');
@@ -72,11 +73,13 @@ export const App = () => {
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`),
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/favorite/${cookies.get('nickname')}`),
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/board/favorite/${cookies.get('nickname')}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${cookies.get('nickname')}`),
         ])
-        .then(axios.spread((followeesPromise, likedProjectsPromise, likedBoardPromise)=>{
+        .then(axios.spread((followeesPromise, likedProjectsPromise, likedBoardPromise, memberPromise)=>{
           setMyFollowees(followeesPromise.data);
           setMyLikedProjects(likedProjectsPromise.data);
           setMyLikedBoards(likedBoardPromise.data);
+          setMemberDto(memberPromise.data);
         }))
         .catch(e=>{
           console.log(e.response);
@@ -86,14 +89,10 @@ export const App = () => {
     if(cookies.get('memberId')){
       getUserMetadata();
       
-    }else{
-
     }
   },[])
 
-  const handleFollowees = ()=>{
 
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -149,11 +148,14 @@ export const App = () => {
                         {/* <Sdiv mgl={20} pdt={4} pdb={4} pdr={4} pdl={4}>
                           <IcBell />
                         </Sdiv> */}
-                        {currentUser && <Sdiv mgl={16}>
-                          <Nav.Link href="/portfolio-edit">
-                            <S.Avatar />
-                          </Nav.Link>
-                        </Sdiv>}
+                        {
+                          currentUser && 
+                          <Sdiv mgl={16}>
+                            <Nav.Link href="/portfolio-edit">
+                              <S.Avatar src={memberDto.profileImage ? memberDto.profileImage : defaultProfileImg}/>
+                            </Nav.Link>
+                          </Sdiv>
+                        }
                         {
                           currentUser ? 
                           <DefaultButtonSm 
@@ -257,7 +259,7 @@ S.IcMore = styled(IcMore)`
 `;
 
 S.Avatar = styled.img`
-  background-image: url('https://source.unsplash.com/random/32x32');
+  
   height: 32px;
   width: 32px;
   border-radius: 100px;

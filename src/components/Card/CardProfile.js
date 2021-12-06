@@ -23,7 +23,7 @@ export const CardProfile = ({
         </Stext>
 
         <Stext center mgb={16} c2 g4>
-          {subTitle}
+          {subTitle.length >= 19 ? subTitle.slice(0, 16) + "..." : subTitle}
         </Stext>
       </Sdiv>
 
@@ -72,5 +72,5 @@ const CardProfileImage = styled.img`
   height: 60px;
   border-radius: 60px;
   object-fit: cover;
-  background-image: url('https://source.unsplash.com/random/60x60');
+  
 `;

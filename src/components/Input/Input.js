@@ -85,13 +85,13 @@ export const InputWithToggleBtn = ({
   );
 }
 
-export const TextareaWithTitle = ({ title = "title", value, onChange, name }) => {
+export const TextareaWithTitle = ({ title = "title", value, onChange, name, placeholder }) => {
   return (
     <Sdiv>
       <Stext s4 g0 mgb={12}>
         {title}
       </Stext>
-      <StyledTextarea value={value} onChange={onChange && onChange} />
+      <StyledTextarea value={value} onChange={onChange && onChange} placeholder={placeholder && placeholder}/>
     </Sdiv>
   );
 };
@@ -166,6 +166,8 @@ export const InputWithSelectGroup = ({
   optionList,
   repeat=1,
   listBody=[1,1,1],
+  onChangePosition,
+  onChangeNumber,
 })=>{
   let arr = [];
   for(let i=0; i<repeat; i++){
@@ -180,10 +182,10 @@ export const InputWithSelectGroup = ({
         {
           listBody.map((item, i)=>{
             return(
-            <Sdiv mgb={5}>
-              <SelectMain style={style1} optionList={optionList} />
-              <SelectNumber style={style2} optionList={[1,2,3,4,5]}/>
-            </Sdiv>
+              <Sdiv mgb={5}>
+                <SelectMain style={style1} onChange={(e)=>{onChangePosition(e,i)}} optionList={optionList} />
+                <SelectNumber style={style2} onChange={(e)=>{onChangeNumber(e,i)}} optionList={[1,2,3,4,5]}/>
+              </Sdiv>
             )
           })
         }
