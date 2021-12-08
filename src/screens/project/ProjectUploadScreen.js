@@ -14,6 +14,9 @@ import {
   DefaultButtonSm,
   ModalContainer,
   BadgeDefaultGray,
+  ProfileElem,
+  CardProfile,
+  DefaultButton,
 } from "components";
 
 import { Row, Col, Container, Dropdown } from "react-bootstrap";
@@ -21,68 +24,12 @@ import { InputWithToggleBtn } from "components/Input/Input";
 import { SettingsInputAntennaTwoTone } from "@mui/icons-material";
 import Cookies from "universal-cookie";
 
-const TMP_STACK_BADGE_ITEMS = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
 
-const TMP_STACK_BADGE_ITEMS_MODAL = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
-
-//프로젝트 엔티티 형식
-/*
-  {
-    id: number,         
-    participatedNickname: string,
-    progress: boolean,
-    projectName: string, 
-    content: string,
-    link: string,
-    viewCount: number,
-    replyCount: number,
-    techStack: string[],
-    likesCount: number,
-  }
-*/
 export const ProjectUploadScreen = () => {
   const cookies = new Cookies();
   const [prj, setPrj] = useState({
     //id: 0,
-    participatedNickname: cookies.get('memberId'),
+    participatedNickname: "",
     projectManager: cookies.get('nickname'),
     progress: -1, // 0:ongoing, 1: complete
     projectName: "",
@@ -98,16 +45,20 @@ export const ProjectUploadScreen = () => {
   const [techStackList, setTechStackList] = useState([]);
   const [imgFile, setImgFile] = useState(null);
   const [imgUrl, setImgUrl] = useState(undefined);
-  
+  const [participants, setParticipants] = useState([]);
+  const [searchedMembers, setSearchedMembers] = useState([]);
+  const [showSearchFilter, setShowSearchFilter] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [memberString, setMemberString] = useState("");
   const frm = new FormData();
-
+  
   const history = useHistory();
-
+  
   const [showModal, setShowModal] = useState(false);
-
+  
   useEffect(()=>{
     const getTechStack = async ()=>{
-
+      
       const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/all`);
       
       res.data.map(item=>{
@@ -121,7 +72,16 @@ export const ProjectUploadScreen = () => {
     setPrj({...prj, participatedNickname:cookies.get('memberId'), projectManager:cookies.get('nickname')})
     
   },[])
-
+  
+  const handleCloseFilter=()=>{
+    setShowSearchFilter(false);
+  }
+  useEffect(()=>{
+    window.addEventListener('click', handleCloseFilter);
+    return()=>{
+      window.removeEventListener('click', handleCloseFilter);
+    }
+  },[])
   const onClickOpenModal = () => {
     setShowModal(true);
   };
@@ -142,7 +102,7 @@ export const ProjectUploadScreen = () => {
         
       }
     })  
-    console.log(prjStack);
+    
     setPrj({...prj, techStack:prjStack});
     setShowModal(false);
   };
@@ -211,10 +171,24 @@ export const ProjectUploadScreen = () => {
     );   
   }
 
+  useEffect(()=>{
+    let addedMemId = "";
+    participants.forEach((item, i)=>{
+      if(i===0){
+        addedMemId = addedMemId + String(item.id);
+      }else{
+        addedMemId = addedMemId + "#" +String(item.id);
+
+      }
+    })
+    
+    setPrj({...prj, participatedNickname:addedMemId});
+  },[participants])
+
   //스택 추가 모달창 안의 검색 기능 - input으로 get요청을 한다. 
   const handleStackSearch = async (searchInput)=>{
     const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/list?skillName=${searchInput}`);
-    console.log(res.data);
+    
     const tmpList = [...techStackList];
     tmpList.forEach(tmpItem=>{
       if(res.data.filter(e=>e.id === tmpItem.id).length>0){
@@ -223,11 +197,12 @@ export const ProjectUploadScreen = () => {
         tmpItem.searched = false;
       }
     })
-    console.log(tmpList);
+    
     setTechStackList(tmpList);
     
     
   }
+  
 
   //이미지를 컴퓨터에서 가져오고 대상 파일을 setImgFile한다. 
   const handleImageUpload = (e)=>{
@@ -246,7 +221,47 @@ export const ProjectUploadScreen = () => {
     };
     reader.readAsDataURL(file);
   }
-  
+  const handleParticipateChange = async (e)=>{
+    
+    setSearchInput(e.target.value);
+    await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/list?nickname=${e.target.value}`)
+      .then(res=>{
+        setSearchedMembers(res.data);
+      })
+      .catch(e=>{
+        console.log(e.response);
+      })
+  }
+  useEffect(()=>{
+    if(searchInput && searchedMembers.length>0){
+      setShowSearchFilter(true);
+    }
+  },[searchInput])
+  const handleAddParticipant = (id)=>{
+    
+    setParticipants([...participants, 
+      ...searchedMembers.filter(member=>{
+        let isDup = false;
+        participants.forEach(mem=>{
+          if(mem.id === member.id) {
+            isDup= true;
+            return false;
+          }
+        })
+      if(!isDup){
+      return member.id === id;
+
+      }else return false;
+     
+    })]);
+  }
+
+  const handleRemoveParticipant = (id)=>{
+    setParticipants(participants.filter(member=>{
+      return member.id !== id;
+    }))
+  }
+
   return (
     <S.Body>
       <Container>
@@ -259,9 +274,24 @@ export const ProjectUploadScreen = () => {
           <Sdiv>
             <InputWithTitle title="프로젝트 제목" onChange={handleChange('projectName')} name="projectName"/>
             <Sdiv mgt={24} />
-            <InputWithToggleBtn title="프로젝트 상태"  name="progress" handleProgress={handleProgress}/>
+            <InputWithToggleBtn 
+              title="프로젝트 상태"  
+              name="progress" 
+              handleProgress={handleProgress}
+              name1="진행중"
+              name2="완료됨"
+              selected={undefined}
+            />
             <Sdiv mgt={24} />
-            <InputImage title="프로젝트 이미지" onChange={handleImageUpload}/>
+            <Sdiv row>
+              <InputImage title="프로젝트 이미지" onChange={handleImageUpload}/>
+              {
+                imgUrl && 
+                <Sdiv mgt={30} mgl={20}>
+                  <img src={imgUrl} width={80} height={80}/>
+                </Sdiv>
+              }
+            </Sdiv>
             <Sdiv mgt={24} />
             <InputWithTitle title="프로젝트 링크" onChange={handleChange('projectLink')} name="projectLink"/>
             <Sdiv mgt={24} />
@@ -272,12 +302,53 @@ export const ProjectUploadScreen = () => {
               onClick={onClickOpenModal}
             />
             <Sdiv mgt={24} />
-            <InputWithTitle title="프로젝트 참여 인원" />
+            <InputWithTitle title="프로젝트 참여 인원" onChange={handleParticipateChange} hooraceholder="닉네임으로 검색하세요..."/>
+            {
+              searchInput && searchedMembers.length>0 && 
+              <StyledSeachResult show={showSearchFilter}>
+                {searchedMembers.map(item=>{
+                  console.log(item)
+                  return(
+                  <Sdiv style={{borderBottom:`0.5px solid ${colors.gray6}`, width:"100%"}}>
+                    <ProfileElem 
+                      src={item.profileImage} 
+                      title={item.nickname}
+                      onClick={()=>{handleAddParticipant(item.id)}}
+                    />
+                  </Sdiv>
+
+                  )
+                })}
+              </StyledSeachResult>
+              
+            }
+            <Sdiv mgt={24} />
+            <Sdiv row>
+            {
+              participants.map(item=>{
+                return(
+                    <Sdiv w={200} mgr={10}>
+                      <CardContainer>
+                        <Sdiv col jct act>
+                          <CardProfileImage src={item.profileImage} />
+                          <Stext mgt={4} mgb={8} s1 g0>
+                            {item.nickname}
+                          </Stext>
+                          
+                        </Sdiv>
+                        <Sdiv mgt={8} />
+                        <DefaultButton fillPrimary onClick={()=>{handleRemoveParticipant(item.id)}} title="삭제" />
+                      </CardContainer>
+                    </Sdiv>
+                )
+              })
+            }
+              </Sdiv>
             <Sdiv mgt={24} />
             <TextareaWithTitle title="프로젝트 설명" onChange={handleChange('content')} name="content"/>
           </Sdiv>
           <Sdiv mgt={40} jed>
-            <DefaultButtonSm fill title="프로젝트 등록하기" onClick={handleRegister}/>
+            <DefaultButtonSm fillPrimary title="프로젝트 등록하기" onClick={handleRegister}/>
           </Sdiv>
         </Sdiv>
       </Container>
@@ -363,4 +434,47 @@ S.Line = styled.div`
   width: 100%;
   height: 1px;
   background-color: ${colors.gray7};
+`;
+
+const StyledSeachResult = styled.div`
+width: 13%;
+display:${(props)=>props.show ? 'block' : 'none'};
+/*border: 1px solid ${colors.primary};*/
+height:150px;
+overflow-y:hidden;
+background: #f3f3f4;
+border-radius: 8px;
+position:absolute;
+font-family: Pretendard;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  /* identical to box height, or 140% */
+  
+  /* g0 */
+
+  color: #0d0c22;
+`;
+
+const CardContainer = styled.div`
+  max-width: 200px;
+
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  justify-content: center;
+  
+  border: 1px solid #e0e0e0;
+  box-sizing: border-box;
+  border-radius: 12px;
+  
+`;
+
+const CardProfileImage = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 60px;
+  object-fit: cover;
+  
 `;

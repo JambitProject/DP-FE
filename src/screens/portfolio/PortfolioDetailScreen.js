@@ -92,9 +92,11 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
       await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${nickname}`)
       .then((res)=>{
         setThisMember(res.data);
+        
         axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/project/${res.data.id}`)
         .then((prjPromise)=>{
           setPrjList(prjPromise.data);
+          console.log(prjPromise)
         }).catch(e=>{
           console.log(e.response);
         })
@@ -103,7 +105,9 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
       })
       
     }
+    
     getAjax();
+   
     
   },[]);
 
@@ -184,6 +188,9 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
                 <Stext b2 g0>
                   {thisMember && thisMember.description}
                 </Stext>
+                {/* <Stext s3 g0 style={{color:`${colors.primary}`}}>
+                  {'팔로워: '+totalFollowers +"명"}
+                </Stext> */}
               </Sdiv>
               
               {

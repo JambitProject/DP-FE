@@ -62,18 +62,19 @@ export const MyPortfolioScreen = () => {
   const cookies = new Cookies();
   const [member, setMember] = useState({});
   const [myTechStack, setMyTechStack] = useState([]);
-  
+  const [totalFollowers, setTotalFollowers] = useState(0);
   useEffect(() => {
     const getAjax = async () => {
       await axios
         .all([
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/project/${parseInt(cookies.get('memberId'))}`),
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${cookies.get('nickname')}`),
-          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/skill/me?member_id=${parseInt(cookies.get('memberId'))}`)
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/skill/me?member_id=${parseInt(cookies.get('memberId'))}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/total/following/${cookies.get('nickname')}`)
         ])
         .then(
-          axios.spread((projectPromise, memberPromise, myStackPromise)=>{
-            
+          axios.spread((projectPromise, memberPromise, myStackPromise, followerCnt)=>{
+            setTotalFollowers(followerCnt.data);
             setMember(memberPromise.data);  //내정보(닉네임, 소개한마디 등)
             setMyTechStack([...myStackPromise.data]); //내기술스택
             setPrjList([...projectPromise.data])  //내프로젝트들
@@ -113,7 +114,9 @@ export const MyPortfolioScreen = () => {
   return (
     <S.Body>
       <Container>
-        <S.PortFolioImage />
+        <Sdiv mgt={10}>
+          <S.PortFolioImage />
+        </Sdiv>
         <Row xs={1} sm={1} md={2} style={{ marginTop: 36, gap: "16px 0px" }}>
           <Col>
             <Sdiv row act>
@@ -125,10 +128,17 @@ export const MyPortfolioScreen = () => {
                 <Stext b2 g0>
                   {member.description}
                 </Stext>
+                <Stext s3 g0 style={{color:`${colors.primary}`}}>
+                  {'팔로워: '+totalFollowers +"명"}
+                </Stext>
+            
+                
               </Sdiv>
               {/*<DefaultButtonSm line />*/}
             </Sdiv>
           </Col>
+          
+          
           <Col>
             <Sdiv act row style={{ gap: "0px 4px", flexWrap: "wrap" }} jed>
               {myTechStack && myTechStack.map((item) => (
@@ -238,4 +248,16 @@ S.ProfileCol = styled(Col)`
 S.ProfileRow = styled(Row)`
   gap: 40px 0px;
   margin-top: 18px;
+`;
+
+const BadgeContainerSm = styled.div`
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  display: flex;
+  margin-top:8px;
+  flex-direction: row;
+  justify-content: center;
+  color: ${props=> props.selected ? 'white' : 'black'};
+  background-color: ${props => props.selected ? colors.primary : colors.gray7}
 `;

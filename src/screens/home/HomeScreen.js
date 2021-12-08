@@ -116,6 +116,7 @@ export const HomeScreen = ({myLikedProjects}) => {
         ])
         .then(axios.spread((prjPromise, memberPromise)=>{
           setPrjList(prjPromise.data);
+          console.log(memberPromise.data);
           setShowMembers(memberPromise.data.content);
         }))
         .catch(e=>{

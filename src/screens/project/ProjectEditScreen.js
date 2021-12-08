@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
 import axios from "axios";
-import dotenv from 'dotenv';
+
 import {
   InputWithTitle,
   TextareaWithTitle,
@@ -80,45 +80,51 @@ const TMP_STACK_BADGE_ITEMS_MODAL = [
 */
 export const ProjectEditScreen = () => {
   const cookies = new Cookies();
-  const [prj, setPrj] = useState({
-    //id: 0,
-    participatedNickname: cookies.get('memberId'),
-    projectManager: cookies.get('nickname'),
-    progress: -1, // 0:ongoing, 1: complete
-    projectName: "",
-    content: "",
-    projectLink: "https://jambit.com",
-    githubLink: "https://github/jambit.com",
-    viewCount: 0,
-    replyCount: 0,
-    techStack: "",
-    likesCount: 0,
-  });
+  const {id} = useParams();
+  const [prj, setPrj] = useState({});
 
   const [techStackList, setTechStackList] = useState([]);
-  const [imgFile, setImgFile] = useState(null);
-  const [imgUrl, setImgUrl] = useState(undefined);
   
   const frm = new FormData();
 
   const history = useHistory();
 
   const [showModal, setShowModal] = useState(false);
-
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   useEffect(()=>{
     const getTechStack = async ()=>{
 
-      const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/all`);
-      
-      res.data.map(item=>{
-        item.selected = false;
-        item.searched = true;
-      })
-      setTechStackList(res.data);
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/all`)
+        .then(async (res)=>{
+          await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/skill/${id}`)
+            .then(res2=>{
+              const tmpList = [];
+              res.data.forEach(item=>{
+                tmpList.push({...item, searched:true, selected:false});
+              })
+              tmpList.forEach(item=>{
+                res2.data.forEach(item2=>{
+                  if(item2.id === item.id){
+                    item.selected = true;
+                    return false;
+                  }
+                })
+              })
+              setTechStackList(tmpList);
+
+            })
+        })
+     
       
     }
+    const getPrj = async()=>{
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`)
+        .then(res=>{
+          setPrj(res.data);
+        })
+    }
     getTechStack();
-    setPrj({...prj, participatedNickname:cookies.get('memberId'), projectManager:cookies.get('nickname')})
+    getPrj();
     
   },[])
 
@@ -149,7 +155,7 @@ export const ProjectEditScreen = () => {
 
   //setPrj없이 모달을 그냥 닫는다. 
   const onClickCloseModal = ()=>{
-
+    setShowConfirmModal(false);
     setShowModal(false);
   }
 
@@ -157,7 +163,12 @@ export const ProjectEditScreen = () => {
   const handleChange = (prop) => (e) => {
 		setPrj({ ...prj, [prop]: e.target.value })
 	}
-
+  const deletePrj = async ()=>{
+    await axios.delete(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`)
+      .then(()=>{history.push('/myportfolio')})
+      .catch(e=>console.log(e.response));
+    
+  }
   //prj를 이용해서 서버에 post한다. 
   const postAjax = (sendParam)=>{
     const headers = {
@@ -176,7 +187,7 @@ export const ProjectEditScreen = () => {
       })
   }
 
-  //입력이 완료된 프로젝트를 이미지와 함께 등록한다. 
+  //수정이 완료된 프로젝트를 수정요청한다. 
   const handleRegister = () => {
     
     if(prj.projectName===""){
@@ -189,10 +200,17 @@ export const ProjectEditScreen = () => {
       alert("프로젝트 상태는 필수 선택 사항입니다");
       return;
     }else{
-     //frm.append("image", []);
-      frm.append('projectDto',JSON.stringify({...prj})); 
-      frm.append('image', imgFile);
-      postAjax(frm);
+      const headers = {
+        "Accept" : "application/json",
+        "Content-Type": "application/json;charset=UTF-8",
+      }
+     axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/project`, JSON.stringify(prj), {headers:headers})
+      .then(()=>{
+        history.push(`/project/${id}`);
+      })
+      .catch(e=>{
+        console.log(e.response);
+      })
       
     }
   }
@@ -229,55 +247,78 @@ export const ProjectEditScreen = () => {
     
   }
 
-  //이미지를 컴퓨터에서 가져오고 대상 파일을 setImgFile한다. 
-  const handleImageUpload = (e)=>{
-    e.preventDefault();
-    let reader = new FileReader();
-    let file = e.target.files[0];
-    reader.onloadend = () => {
-      const fileType = ["image/jpeg", "image/jpg", "image/png"];
-      if (fileType.includes(file.type)) {
-        setImgFile(file);
-        setImgUrl(reader.result);
-        
-      } else {
-        alert("지원하지 않는 형식입니다.");
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-  
+  useEffect(()=>{
+    console.log(prj)
+  },[prj])
   return (
     <S.Body>
       <Container>
         <Sdiv col>
           <Sdiv row act>
             <Stext mgb={18} mgt={40} h3 g0>
-              # 프로젝트 등록하기
+              # 프로젝트 수정하기
             </Stext>
           </Sdiv>
           <Sdiv>
-            <InputWithTitle title="프로젝트 제목" onChange={handleChange('projectName')} name="projectName"/>
+            <InputWithTitle title="프로젝트 제목" onChange={handleChange('projectName')} name="projectName" placeholder={prj.projectName}/>
             <Sdiv mgt={24} />
-            <InputWithToggleBtn title="프로젝트 상태"  name="progress" handleProgress={handleProgress}/>
-            <Sdiv mgt={24} />
-            <InputImage title="프로젝트 이미지" onChange={handleImageUpload}/>
-            <Sdiv mgt={24} />
-            <InputWithTitle title="프로젝트 링크" onChange={handleChange('projectLink')} name="projectLink"/>
-            <Sdiv mgt={24} />
-            <InputWithTitle title="프로젝트 Github 링크" onChange={handleChange('githubLink')} name="githubLink"/>
-            <Sdiv mgt={24} />
-            <InputWithTitle
-              title="사용한 언어, 프레임워크"
-              onClick={onClickOpenModal}
+            <InputWithToggleBtn 
+              title="프로젝트 상태"  
+              name="progress" 
+              handleProgress={handleProgress} 
+              name1="진행중" 
+              name2="완료됨"
+              selected={prj.progress}
             />
+            <Sdiv mgt={24} />
+            
+            <InputWithTitle title="프로젝트 링크" onChange={handleChange('projectLink')} name="projectLink" placeholder={prj.projectLink}/>
+            <Sdiv mgt={24} />
+            <InputWithTitle title="프로젝트 Github 링크" onChange={handleChange('githubLink')} name="githubLink" placeholder={prj.githubLink}/>
+            <Sdiv mgt={24} />
+            <Sdiv mgb={12}>
+              <Stext s4 g0 mgb={12}>
+                사용한 언어, 프레임워크
+              </Stext>
+              <Sdiv row style={{ gap: "0px 4px", flexWrap: "wrap" }}>
+              
+              {
+                techStackList && techStackList.map(item=>{
+                  if(item.selected){
+                    return <BadgeDefaultGray title={item.skillName}/>
+                  }
+                })
+              }
+              </Sdiv>
+              <Sdiv jst mgt={15}>
+                <DefaultButtonSm linePrimary title="추가/수정" onClick={onClickOpenModal}/>
+              </Sdiv>
+            </Sdiv>
             <Sdiv mgt={24} />
             <InputWithTitle title="프로젝트 참여 인원" />
             <Sdiv mgt={24} />
-            <TextareaWithTitle title="프로젝트 설명" onChange={handleChange('content')} name="content"/>
+            <TextareaWithTitle title="프로젝트 설명" onChange={handleChange('content')} name="content" placeholder={prj.content}/>
           </Sdiv>
-          <Sdiv mgt={40} jed>
-            <DefaultButtonSm fill title="프로젝트 등록하기" onClick={handleRegister}/>
+          
+          <Sdiv mgt={40} ct>
+            <ButtonContainerSm 
+                onClick={handleRegister}
+                style={{width:"300px"}}
+                fillSecondary
+                
+              >
+              <Sdiv s2>수정하기</Sdiv>
+            </ButtonContainerSm>
+          </Sdiv>
+          <Sdiv mgt={40} ct>
+            <ButtonContainerSm 
+                onClick={()=>{setShowConfirmModal(true)}}
+                style={{width:"300px"}}
+                fillPrimary
+                
+              >
+              <Sdiv s2>프로젝트 삭제하기</Sdiv>
+            </ButtonContainerSm>
           </Sdiv>
         </Sdiv>
       </Container>
@@ -316,6 +357,23 @@ export const ProjectEditScreen = () => {
           <DefaultButtonSm title="닫기" line onClick={onClickCloseModal} />
           <Sdiv w={4} />
           <DefaultButtonSm title="완료" onClick={onClickCompleteModal} />
+        </Sdiv>
+        
+      </ModalContainer>
+      <ModalContainer show={showConfirmModal}>
+        <Stext h3 g0 mgb={20}>
+          정말 프로젝트를 삭제하시겠습니까?
+        </Stext>
+        
+        <Sdiv row jed mgt={28}>
+          <DefaultButtonSm title="취소" linePrimary onClick={()=>{
+            setShowConfirmModal(false);
+          }} />
+          <Sdiv w={4} />
+          <DefaultButtonSm title="삭제하기" fillPrimary onClick={()=>{
+            deletePrj();
+            setShowConfirmModal(false);
+          }}/>
         </Sdiv>
         
       </ModalContainer>
@@ -363,4 +421,45 @@ S.Line = styled.div`
   width: 100%;
   height: 1px;
   background-color: ${colors.gray7};
+`;
+
+const ButtonContainerSm = styled.div`
+  
+  border-radius: 8px;
+
+  padding: 8px 12px;
+  display: flex;
+
+  ${(props) => props.fillPrimary && fillPrimary}
+  ${(props) => props.fillSecondary && fillSecondary}
+  ${(props) => props.linePrimary && linePrimary}
+  ${(props) => props.lineSecondary && lineSecondary}
+
+  flex-direction: row;
+  justify-content: center;
+  cursor: pointer;
+`;
+
+const fillPrimary = css`
+  border: 1px solid ${colors.primary};
+  background-color: ${colors.primary} !important;
+  color: ${colors.white} !important;
+`;
+
+const fillSecondary = css`
+  border: 1px solid ${colors.secondary};
+  background-color: ${colors.secondary} !important;
+  color: ${colors.white} !important;
+`;
+
+const linePrimary = css`
+  border: 1px solid ${colors.primary}; 
+  background-color: transparent !important;
+  color: ${colors.primary} !important;
+`;
+
+const lineSecondary = css`
+  border: 1px solid ${colors.secondary};
+  background-color: transparent !important;
+  color: ${colors.secondary} !important;
 `;

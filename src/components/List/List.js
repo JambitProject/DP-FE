@@ -57,9 +57,8 @@ const MyPostContainer = styled.div`
 export const ProejctTitle = ({
   title,
   viewCount = 0,
-  likeCount = 0,
-  commentCount = 0,
-  onClickBack,
+  likesCount = 0,
+  replyCount = 0,
   onClickAdd,
 }) => {
   const history = useHistory();
@@ -75,7 +74,7 @@ export const ProejctTitle = ({
       </TextProjectBack>
       <TextProjectTitle>{title}</TextProjectTitle>
       <Sdiv row sb act mgb={16}>
-        <TextProjectInfo>{`조회수: ${viewCount} 관심: ${likeCount} 댓글: ${commentCount}`}</TextProjectInfo>
+        <TextProjectInfo>{`조회수: ${viewCount} 관심: ${likesCount} 댓글: ${replyCount}`}</TextProjectInfo>
         <Sdiv>
           <DefaultButtonSm onClick={onClickAdd && onClickAdd} linePrimary title="관심 추가하기" />
         </Sdiv>

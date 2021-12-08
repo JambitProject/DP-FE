@@ -19,6 +19,7 @@ import { ProjectEditScreen } from "screens/project/ProjectEditScreen";
 
 //recruit
 import { RecruitEditScreen } from "screens/recruit/RecruitEditScreen";
+import { RecruitUploadScreen } from "screens/recruit/RecruitUploadScreen";
 import { RecruitDetailScreen } from "screens/recruit/RecruitDetailScreen";
 import { RecruitListScreen } from "screens/recruit/RecruitListScreen";
 
@@ -37,5 +38,5 @@ export {
   RecruitDetailScreen,
   RecruitListScreen,
   MyPortfolioScreen,
-  
+  RecruitUploadScreen,
 };

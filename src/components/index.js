@@ -4,12 +4,14 @@ export { ButtonLogin } from "components/Button/ButtonLogin";
 export { CardProjectHome } from "components/Card/CardProject";
 export { CardProfile } from "components/Card/CardProfile";
 export { DefaultButton, DefaultButtonSm } from "components/Button/DefaultButton";
-export { BadgeDefaultGray } from "components/Badge/Badges";
+export { BadgeDefaultGray, ProfileElem } from "components/Badge/Badges";
+
 export {
   InputWithTitle,
   TextareaWithTitle,
   TextareaComment,
   InputImage,
+  InputWithToggleBtn,
 } from "components/Input/Input";
 export { ListMyPost, ProejctTitle, CommentList } from "components/List/List";
 

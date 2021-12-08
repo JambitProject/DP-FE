@@ -1,4 +1,4 @@
-import { Sdiv, Stext } from "components";
+import { BadgeDefaultGray, Sdiv, Stext } from "components";
 import React from "react";
 import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
@@ -13,31 +13,53 @@ export const RecruitList = ({
   period = "period",
   buttonText = "buttonText",
   likesCount = 0,
+  progress = "ONGOING",
+  viewCount,
+  src,
+  replyCount,
+  skillList=[],
 }) => {
   return (
     <Container>
+      
       <Sdiv row>
-        <Avatar />
-        <Sdiv col mgl={16}>
-          <Stext c1 g3>
-            {date}
-          </Stext>
-          <Stext h3 g0 mgb={6}>
-            {title}
-          </Stext>
-          <Stext b2 g3>
-            {body}
-          </Stext>
+        <Sdiv row mgt={30}>
+          <Avatar src={src}/>
         </Sdiv>
+        
+        
+          <Sdiv col mgl={16}>
+            <Sdiv row mgb={8}>
+              {
+                progress==="ONGOING" ?
+                <DefaultButtonSm fillPrimary title="모집중" />
+                :
+                <DefaultButtonSm fillSecondary title="모집마감" />
+              }
+            </Sdiv>
+            <Stext h3 g0 mgb={6}>
+              {title}
+            </Stext>
+          <Sdiv row jst>
+            <Sdiv row>
+              {
+                skillList.length > 0 ?
+                skillList.map((item)=>{
+                  return <Sdiv mgr={5}>
+                    <BadgeDefaultGray title={item}/>
+                  </Sdiv>
+                })
+                :
+                null
+              }
+            </Sdiv>
+          </Sdiv>
+            </Sdiv>
       </Sdiv>
-      <Sdiv col aed>
-        <Sdiv row mgb={8}>
-          <DefaultButtonSm lineSecondary title={"받은관심 " + likesCount} />
-        </Sdiv>
-        <Sdiv row>
-          
-        </Sdiv>
-      </Sdiv>
+            <TextProjectInfo>{`조회수: ${viewCount} 관심: ${likesCount} 댓글: ${replyCount}`}</TextProjectInfo>
+      
+     
+      
     </Container>
   );
 };
@@ -45,7 +67,7 @@ export const RecruitList = ({
 const Container = styled.div`
   width: 100%;
   padding: 34px 0px;
-  border-top: 1px solid ${colors.gray7};
+  border-top: 1px solid ${colors.gray6};
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -61,4 +83,19 @@ const Avatar = styled.img`
   @media (max-width: 800px) {
     display: none;
   }
+`;
+
+const TextProjectInfo = styled.div`
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 20px;
+  /* identical to box height, or 167% */
+  display:flex;
+  align-items:center;
+  justify-contents:center;
+  /* g3 */
+  margin-bottom:28px;
+  color: #656577;
 `;

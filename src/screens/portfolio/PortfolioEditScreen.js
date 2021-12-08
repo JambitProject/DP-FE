@@ -14,6 +14,7 @@ import {
   TextareaWithTitle,
   CardProjectHome,
   InputImage,
+  RecruitList,
 } from "components";
 
 import { Row, Col, Container } from "react-bootstrap";
@@ -83,7 +84,7 @@ const TMP_STACK_BADGE_ITEMS_MODAL = [
   { title: "Redux" },
 ];
 
-export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
+export const PortfolioEditScreen = ({myFollowees, myLikedProjects, myLikedBoards}) => {
 
   const [member, setMember] = useState({
     //id: 0,
@@ -101,6 +102,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
   const [newNickname, setNewNickname] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [myFollowers, setMyFollowers] = useState([]);
+  const [myBoardList, setMyBoardList] = useState([]);
   const [imgFile, setImgFile] = useState(null);
   const [imgUrl, setImgUrl] = useState(undefined);
   const cookies = new Cookies();
@@ -142,7 +144,9 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
   const onClickCloseStackModal = () => {
     setShowStackModal(false);
   };
-
+  const goRecruitDetail = (id)=>{
+    history.push(`/recruit/${id}`);
+  }
   const onClickOpenConfirmModal = ()=>{
     if(cookies.get('nickname') === "찢재명" && newNickname !== "" && newDescription === ""){
       alert('변경할 수 없습니다. 한 번 찢재명은 영원한 찢재명입니다. ');
@@ -183,7 +187,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
   
   //서버에 put한다. 
   const putAjax = async (sendParam, urlParam)=>{
-    console.log(sendParam)
+    
     const headers = {
       "Accept" : "application/json",
       "Content-Type": "application/json;charset=UTF-8",
@@ -247,12 +251,12 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
         "Accept" : "application/json",
         "Content-Type": "multipart/form-data;charset=UTF-8",
       }
-      console.log(imgFile);
+     
       frm.append('image', imgFile);
       frm.append('memberId', parseInt(cookies.get('memberId')));
       axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/member/image`, frm, {headers:headers})
         .then(res=>{
-          console.log(res);
+          
           
         }).catch(e=>{
           console.log(e.response);
@@ -273,9 +277,10 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/all`),
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/skill/me?member_id=${parseInt(cookies.get('memberId'))}`),
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${cookies.get('nickname')}`),
-         ])
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/board/me/${cookies.get('nickname')}`)
+        ])
         .then(
-          axios.spread((allStack, myStack, memberInfo) =>{
+          axios.spread((allStack, myStack, memberInfo, myBoards) =>{
             const tmpMyStack = [...myStack.data];
             let tmpAllStack = [...allStack.data];
             tmpAllStack.forEach(tmpItem=>{
@@ -289,7 +294,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
             localStorage.setItem('originalMemberInfo', JSON.stringify(memberInfo.data));
             setTechStackList([...tmpAllStack]);
             setMember(memberInfo.data);
-            
+            setMyBoardList(myBoards.data);
             //console.log(memberInfo);
             //console.log(myStack);
           })
@@ -330,7 +335,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
   //스택 추가 모달창 안의 검색 기능 - input으로 get요청을 한다. 
   const handleStackSearch = async (searchInput)=>{
     const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/list?skillName=${searchInput}`);
-    console.log(res.data);
+    
     const tmpList = [...techStackList];
     tmpList.forEach(tmpItem=>{
       if(res.data.filter(e=>e.id === tmpItem.id).length>0){
@@ -478,6 +483,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
                   return (
                     <Col onClick={handleTop}>
                       <CardProfile
+                        prifileSrc={item.profileImage}
                         name={item.nickname}
                         subTitle=""
                         onClickProfile={()=>{goProfile(item.nickname)}}
@@ -505,9 +511,11 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
             <Sdiv>
               <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
                 {myFollowees && myFollowees.map((item) => {
+                  console.log(item)
                   return (
                     <Col onClick={handleTop}>
                       <CardProfile
+                        prifileSrc={item.profileImage}
                         name={item.followee}
                         subTitle=""
                         onClickProfile={()=>{goProfile(item.followee)}}
@@ -562,7 +570,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
               <Stext mgr={10} h3 g0>
                 # 나의 모집중인 글
               </Stext>
-              <DefaultButtonSm linePrimary title="모집글 쓰기" />
+              <DefaultButtonSm linePrimary title="모집글 쓰기" onClick={()=>{history.push('/recruit-upload')}}/>
             </Sdiv>
           </Col>
         </Row>
@@ -570,8 +578,26 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
         <Row>
           <Col>
             <Sdiv>
-              <ListMyPost />
-              <ListMyPost />
+              
+              <Sdiv>
+                {myBoardList && myBoardList.map((item) => {
+                  return (
+                    <Sdiv onClick={()=>{goRecruitDetail(item.id)}}>
+                      <RecruitList
+                        date={item.date}
+                        title={item.title}
+                        body={item.body}
+                        progress={item.progressType}
+                        src={item.profileImage}
+                        replyCount={item.replyCount}
+                        viewCount={item.viewCount}
+                        likesCount={item.likesCount}
+                        skillList={item.skillList}
+                      />
+                    </Sdiv>
+                  );
+                })}
+              </Sdiv>
             </Sdiv>
           </Col>
         </Row>
@@ -589,8 +615,25 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects}) => {
         <Row>
           <Col>
             <Sdiv>
-              <ListMyPost />
-              <ListMyPost />
+              <Sdiv>
+                {myLikedBoards && myLikedBoards.map((item) => {
+                  return (
+                    <Sdiv onClick={()=>{goRecruitDetail(item.id)}}>
+                      <RecruitList
+                        date={item.date}
+                        title={item.title}
+                        body={item.body}
+                        progress={item.progressType}
+                        src={item.profileImage}
+                        replyCount={item.replyCount}
+                        viewCount={item.viewCount}
+                        likesCount={item.likesCount}
+                        skillList={item.skillList}
+                      />
+                    </Sdiv>
+                  );
+                })}
+              </Sdiv>
             </Sdiv>
           </Col>
         </Row>

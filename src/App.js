@@ -19,7 +19,7 @@ import {
   RecruitDetailScreen,
   RecruitListScreen,
   MyPortfolioScreen,
-  
+  RecruitUploadScreen,
 } from "screens";
 import ScrollToTop from "components/ScrollToTop/ScrollToTop";
 import styled, { ThemeProvider } from "styled-components";
@@ -49,6 +49,7 @@ export const App = () => {
   const [myFollowees, setMyFollowees] = useState([]);
   const [myLikedProjects, setMyLikedProjects] = useState([]);
   const [myLikedBoards, setMyLikedBoards] = useState([]);
+  
   const [memberDto, setMemberDto] = useState({});
 
   const onClickLogout=()=>{
@@ -171,7 +172,7 @@ export const App = () => {
                           /> //로그인안된상태
                         }
                       </Sdiv>
-                      {console.log(myFollowees)}
+                      
                     </S.NoShowInMobile>
                   </Nav>
                 </Navbar.Collapse>
@@ -208,6 +209,7 @@ export const App = () => {
               component={PortfolioEditScreen} 
               myFollowees={myFollowees}
               myLikedProjects={myLikedProjects}
+              myLikedBoards={myLikedBoards}
             />
           </Route>
           <Route exact path="/project/:id">
@@ -216,9 +218,10 @@ export const App = () => {
               setMyLikedProjects={currentUser && setMyLikedProjects}
             />
           </Route>
-          <Route exact path="/project-edit" component={ProjectEditScreen} />
+          <Route exact path="/project-edit/:id" component={ProjectEditScreen} />
           <Route exact path="/project-upload" component={ProjectUploadScreen} />
-          <Route exact path="/recruit-edit" component={RecruitEditScreen} />
+          <Route exact path="/recruit-upload" component={RecruitUploadScreen} />
+          <Route exact path="/recruit-edit/:id" component={RecruitEditScreen} />
           <Route exact path="/recruit/:id">
             <RecruitDetailScreen
               myLikedProjects={currentUser && myLikedProjects}
@@ -233,6 +236,7 @@ export const App = () => {
               setMyLikedBoards={currentUser && setMyLikedBoards}
             />
           </Route>
+          
           <Route exact path="/logincallback" component={LoginCallback} />
           <Route exact path="/test" component={TestScreen} />
         </Switch>

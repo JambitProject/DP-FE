@@ -101,6 +101,7 @@ export const ProjectDetailScreen = () => {
   const [inputValue, setInputValue] = useState("");
   const [isLiked, setIsLiked] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [participants, setParticipants] = useState([]);
   const [recommendDtoId, setRecommendDtoId] = useState(-1);
 
   //get요청 따로따로 2번하지말고 axios.all([axios.get(), axios.get()]) 하고 결과는 spread하면 된다
@@ -111,12 +112,15 @@ export const ProjectDetailScreen = () => {
         .all([
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`), 
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/skill/${id}`),
-          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/reply/project/${id}`)
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/reply/project/${id}`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/member/${id}`)
         ])
         .then(
-          axios.spread((projectPromise, techStackPromise, commentPromise) =>{
+          axios.spread((projectPromise, techStackPromise, commentPromise, participantsPromise) =>{
             setThisPrj({...projectPromise.data, techStack:techStackPromise.data});
+            console.log(techStackPromise.data);
             setCommentList([...commentPromise.data]);
+            setParticipants(participantsPromise.data);
           })
         )
         .catch(e=>console.log(e))
@@ -161,8 +165,8 @@ export const ProjectDetailScreen = () => {
 
   const sliderRef = useRef();
 
-  const goProfile = () => {
-    history.push("/portfolio");
+  const goProfile = (id) => {
+    history.push(`/portfolio/${id}`);
   };
 
   const slickNext = () => {
@@ -205,6 +209,7 @@ export const ProjectDetailScreen = () => {
       "Accept" : "application/json",
       "Content-Type": "application/json;charset=UTF-8",
     }
+    console.log(sendParam);
     const url = `${process.env.REACT_APP_SERVER_BASE_URL}${urlParam}`;
     await axios.put(url, sendParam, {headers:headers})
     .then(async ()=>{
@@ -321,18 +326,21 @@ export const ProjectDetailScreen = () => {
   }
   
   //프로젝트 관심 철회
-  const onClickUnlike = async ()=>{
+  const onClickUnlike = ()=>{
     if(thisPrj.projectManager === "찢재명"){
       alert("XX같은 X야, 쯧쯧쯧, 이것도 취소해봐라. 좋아요 눌렀다가 취소하려니까 좋더냐?");
+      return;
+    }else{
+
+      setIsLiked(false);
+      axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend?targetType=PROJECT&nickname=${cookies.get('nickname')}&refId=${id}`)
+        .then((thisId)=>{
+          deleteRecommentDto(thisId.data);
+        })
+        .catch(e=>{
+          console.log(e);
+        })
     }
-    setIsLiked(false);
-    await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend?targetType=PROJECT&nickname=${cookies.get('nickname')}&refId=${id}`)
-      .then((thisId)=>{
-        deleteRecommentDto(thisId.data);
-      })
-      .catch(e=>{
-        console.log(e);
-      })
   }
 
   return (
@@ -378,7 +386,7 @@ export const ProjectDetailScreen = () => {
                   {
                     cookies.get('nickname') === thisPrj.projectManager 
                     ?
-                    <DefaultButtonSm onClick={()=>{history.push('/project-edit')}} fillSecondary title="프로젝트 수정하기" />
+                    <DefaultButtonSm onClick={()=>{history.push(`/project-edit/${id}`)}} fillSecondary title="프로젝트 수정하기" />
                     :
                     
                       isLiked ?
@@ -461,10 +469,10 @@ export const ProjectDetailScreen = () => {
           </Col>
         </Row>
         <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
-          {TMP_PRIFILE_ITEM.map((item) => {
+          {participants && participants.map((item) => {
             return (
-              <Col onClick={handleTop}>
-                <CardProfile onClickProfile={goProfile} name={item.name} subTitle={item.subTitle} />
+              <Col >
+                <CardProfile onClickProfile={()=>{goProfile(item.id)}} name={item.name} subTitle={item.subTitle} />
               </Col>
             );
           })}

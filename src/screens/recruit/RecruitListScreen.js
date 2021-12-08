@@ -1,53 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { RecruitList, Sdiv, Stext, DefaultButtonSm } from "components";
+import { RecruitList, Sdiv, Stext, DefaultButtonSm, ModalContainer } from "components";
 
 import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import Slider from "react-slick";
+import Cookies from "universal-cookie";
+import axios from "axios";
 
-const TMP_RECRUIT_ITEM = [
-  {
-    date: "4시간 전",
-    title: "Brand  승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다 ",
-    body: "AI  승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다 ",
-    buttonText: "100",
-    period: "2021/09/22 ~ 2021/10/02",
-  },
-  {
-    date: "4시간 전",
-    title: "Brand  승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다 ",
-    body: "AI  승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다 ",
-    buttonText: "100",
-    period: "2021/09/22 ~ 2021/10/02",
-  },
-  {
-    date: "4시간 전",
-    title: "Brand  승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다 ",
-    body: "AI  승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다 ",
-    buttonText: "100",
-    period: "2021/09/22 ~ 2021/10/02",
-  },
-  {
-    date: "4시간 전",
-    title: "Brand  승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다 ",
-    body: "AI  승부 예측 프로그램 만드실 프론트엔드 개발자 분 구합니다 ",
-    buttonText: "100",
-    period: "2021/09/22 ~ 2021/10/02",
-  },
-];
+
 
 export const RecruitListScreen = () => {
   const history = useHistory();
+  const cookies = new Cookies();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  
+  const [boardDtoList, setBoardDtoList] = useState([]);
 
-  const goRecruitDetail = () => {
-    history.push("/recruit");
+  const goRecruitUpload = () => {
+    
+    if(cookies.get('nickname') === undefined){
+      setShowLoginModal(true);
+      return;
+    }
+    history.push("/recruit-upload");
   };
 
-  const goProjectEdit = () => {
-    history.push("/recruit-edit");
-  };
+  const goRecruitDetail = (id)=>{
+    history.push(`/recruit/${id}`);
+  }
+  //첫 마운트 시 board를 가져온다 
+  useEffect(()=>{
+    const getBoardDtoList = async ()=>{
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/board/list`)
+        .then((res)=>{
+          setBoardDtoList(res.data.content);
+          
+        })
+        .catch(e=>{
+          console.log(e.response);
+        })
+    }
+    getBoardDtoList();
+  },[])
 
   return (
     <S.Body>
@@ -62,21 +58,25 @@ export const RecruitListScreen = () => {
                 <DefaultButtonSm
                   fillPrimary
                   title="모집글 쓰기"
-                  onClick={goProjectEdit}
+                  onClick={goRecruitUpload}
                 />
               </Sdiv>
             </Sdiv>
           </Row>
           <Sdiv>
-            {TMP_RECRUIT_ITEM.map((item) => {
+            {boardDtoList && boardDtoList.map((item) => {
               return (
-                <Sdiv onClick={goRecruitDetail}>
+                <Sdiv onClick={()=>{goRecruitDetail(item.id)}}>
                   <RecruitList
                     date={item.date}
                     title={item.title}
                     body={item.body}
-                    buttonText={item.buttonText}
-                    period={item.period}
+                    progress={item.progressType}
+                    src={item.profileImage}
+                    replyCount={item.replyCount}
+                    viewCount={item.viewCount}
+                    likesCount={item.likesCount}
+                    skillList={item.skillList}
                   />
                 </Sdiv>
               );
@@ -84,6 +84,22 @@ export const RecruitListScreen = () => {
           </Sdiv>
         </Sdiv>
       </Container>
+      <ModalContainer show={showLoginModal}>
+        <Stext h3 g0 mgb={20}>
+          로그인이 필요합니다.
+        </Stext>
+        
+        <Sdiv row jed mgt={28}>
+          <DefaultButtonSm title="취소" linePrimary onClick={()=>{
+            setShowLoginModal(false);
+          }} />
+          <Sdiv w={4} />
+          <DefaultButtonSm title="로그인으로" fillPrimary onClick={()=>{
+            history.push('/login');
+          }}/>
+        </Sdiv>
+        
+      </ModalContainer>
     </S.Body>
   );
 };

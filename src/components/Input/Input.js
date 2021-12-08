@@ -47,8 +47,11 @@ export const InputWithToggleBtn = ({
   onChange,
   style,
   onClick,
+  name1,
+  name2,
   name,
   handleProgress,
+  selected,
 })=>{
   const [alignment, setAlignment] = useState('left');
 
@@ -71,27 +74,27 @@ export const InputWithToggleBtn = ({
         onChange={handleAlignment}
         aria-label="text alignment"
       >
-        <ToggleButton value={"ONGOING"} onClick={()=>{
-          handleSelect("ONGOING")}} >
-          진행중
+        <ToggleButton value={"ONGOING"} selected={selected ? (selected=="ONGOING" ? true : false) : undefined} onClick={()=>{
+          handleSelect("ONGOING")}} style={{color:`${colors.primary}`}}>
+          {name1}
         </ToggleButton>
-        <ToggleButton value={"COMPLETE"} onClick={()=>{
+        <ToggleButton value={"COMPLETE"} selected={selected ? (selected=="COMPLETE" ? true : false) : undefined} onClick={()=>{
           handleSelect("COMPLETE");
-        }}>
-          완료됨
+        }} style={{color:`${colors.secondary}`}}>
+          {name2}
         </ToggleButton>
       </ToggleButtonGroup>
     </Sdiv>
   );
 }
 
-export const TextareaWithTitle = ({ title = "title", value, onChange, name, placeholder }) => {
+export const TextareaWithTitle = ({ title = "title", value, onChange, name, placeholder, hooraceholder }) => {
   return (
     <Sdiv>
       <Stext s4 g0 mgb={12}>
         {title}
       </Stext>
-      <StyledTextarea value={value} onChange={onChange && onChange} placeholder={placeholder && placeholder}/>
+      <StyledTextarea value={value} onChange={onChange && onChange} placeholder={placeholder && placeholder || hooraceholder}/>
     </Sdiv>
   );
 };

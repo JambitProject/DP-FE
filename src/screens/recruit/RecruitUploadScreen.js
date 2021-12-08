@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
 import { Form } from 'react-bootstrap';
@@ -20,8 +20,6 @@ import {
   SelectMain,
   SelectNumber,
   CardProjectHome,
-  InputWithToggleBtn,
-  
 } from "components";
 
 import { Row, Col, Container, Dropdown, InputGroup } from "react-bootstrap";
@@ -51,22 +49,37 @@ const optionList = [
   "AI",
   "데이터"
 ]
-const numberList = [0,1,2,3,4,5];
+const numberList = [1,2,3,4,5];
 
-export const RecruitEditScreen = () => {
+export const RecruitUploadScreen = () => {
   const cookies = new Cookies();
   const history = useHistory();
-  const {id} = useParams();
+
   const [showModal, setShowModal] = useState(false);  //스택추가 모달
   const [showPrjModal, setShowPrjModal] = useState(false);  //프로젝트 연동 모달
   const [showConfirmModal, setShowConfirmModal] = useState(false);  //프로젝트 연동 모달
   const [selectCnt, setSelectCnt] = useState(1);  //몇 개의 포지션을 구하는지
-  const [positionList, setPositionList] = useState([]);  //포지션 별 정보 담은 obj 리스트
+  const [positionList, setPositionList] = useState([JSON.stringify({
+    position:"프론트",
+    count:1,
+  }),]);  //포지션 별 정보 담은 obj 리스트
   const [refPrjId, setRefPrjId] = useState(-1);
   const [myPrjList, setMyPrjList] = useState([]);
   const [techStackList, setTechStackList] = useState([]);
-  const [recruitDto, setRecruitDto] = useState({});
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [recruitDto, setRecruitDto] = useState({
+    title:"",
+    nickname:cookies.get('nickname'),
+    content:"",
+    viewCount:0,
+    replyCount:0,
+    likesCount:0,
+    isPublic:true,
+    positionList:positionList,
+    projectRefId:refPrjId,
+    skillSet:"",
+    progressType:"ONGOING",
+    contact:"",
+  });
 
 
   const onClickOpenModal = () => {
@@ -188,7 +201,7 @@ export const RecruitEditScreen = () => {
   const onClickPositionAdd = ()=>{
     setSelectCnt(selectCnt + 1);
     let tmpObj = {
-      position:"프론트엔드",
+      position:"프론트",
       count:1,
     }
     setPositionList([...positionList, JSON.stringify(tmpObj)]);
@@ -206,7 +219,7 @@ export const RecruitEditScreen = () => {
   useEffect(()=>{
     setRecruitDto({...recruitDto, positionList:positionList})
   },[positionList])
-  
+
   //Input 내용들을 recruitDto에 반영 
   const handleInputChange = (prop)=>(e)=>{
     setRecruitDto({ ...recruitDto, [prop]: e.target.value });
@@ -222,132 +235,70 @@ export const RecruitEditScreen = () => {
   //recruitDto를 폼데이터로 만들어서 post 날림
   const handleRegister=async ()=>{
     
-    //const frm = new FormData();
+    const frm = new FormData();
     const headers = {
       "Accept" : "application/json",
       "Content-Type": "application/json;charset=UTF-8",
     }
-    //frm.append('boardDto', JSON.stringify({...recruitDto}));
+    frm.append('boardDto', JSON.stringify({...recruitDto}));
 
-    await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/board`, JSON.stringify(recruitDto), {headers:headers})
+    await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/board`, frm, {headers:headers})
       .then(()=>{
-        history.push(`/recruit/${id}`);
+        history.push('/recruit-list');
       }).catch(e=>{
         console.log(e.response);
       })
 
   }
-
-  const checkDuplicate = ()=>{
-    let tmpList = [];
-    let tmpSet = new Set();
-    positionList.forEach(item=>{
-      tmpList.push(JSON.parse(item));
-    })
-    tmpList.forEach(item=>{
-      tmpSet.add(item.position);
-    })
-    console.log(tmpSet)
-    console.log(positionList);
-    return tmpSet.size !== positionList.length;
-  }
-
-  useEffect(()=>{
-    console.log(recruitDto)
-  },[recruitDto])
+  
   //mount될 때 내 프로젝트 리스트와 스택리스트를 get해와서 techStackList와 
   useEffect(()=>{
     const getData = async ()=>{
       await axios.all([
         axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/project/${parseInt(cookies.get('memberId'))}`),
         axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/all`),
-        axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/board/${id}`),
-        axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/position/list?postId=${id}`)
-        
       ])
       .then(
-        axios.spread(async (prjPromise, stackPromise, boardPromise, res)=>{
-          const prj = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${boardPromise.data.projectRefId}`)
-
+        axios.spread((prjPromise, stackPromise)=>{
           prjPromise.data.map(item=>{
-            item.selected = item.id === prj.data.id;
+            item.selected = false;
             item.searched = true;
           })
           setMyPrjList([...prjPromise.data]);
-          stackPromise.data.forEach(item=>{
+          stackPromise.data.map(item=>{
             item.selected = false;
-            boardPromise.data.skillList.forEach(skill=>{
-              if(item.skillName === skill) item.selected = true;
-            })
             item.searched = true;
           })
-          console.log(boardPromise.data);
-          console.log(stackPromise.data);
           setTechStackList([...stackPromise.data]);
-          
-          setRecruitDto({...boardPromise.data, positionList:res.data.map(item=>{return JSON.stringify(item)})});
-          setPositionList(res.data.map(item=>{return JSON.stringify(item)}));
-          setSelectCnt(res.data.length);
         })
       )
       .catch(e=>{
-        console.log(e);
+        console.log(e.response);
       })
     }
-    
     getData();
+    
   },[]);
 
-  // useEffect(()=>{
-  //   const getPositionList = async()=>{
-  //     await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/position/list?postId=${id}`)
-  //       .then(res=>{
-  //         setRecruitDto({...recruitDto, positionList:res.data.map(item=>{return JSON.stringify(item)})});
-  //         setPositionList(res.data.map(item=>{return JSON.stringify(item)}));
-  //         setSelectCnt(res.data.length);
-  //       })
-  //       .catch(e=>{
-  //         console.log(e.response);
-  //       })
-  //   }
-  //   getPositionList();
-
-  // },[])
-
+  useEffect(()=>{
+    console.log(recruitDto);
+  },[positionList])
 
   const goProject = (id)=>{
     history.push(`/project/${id}`);
   }
-  const deleteBoard = async ()=>{
-    await axios.delete(`${process.env.REACT_APP_SERVER_BASE_URL}/board/${id}`)
-      .then(()=>{history.push('/recruit-list')})
-      .catch(e=>console.log(e.response));
-    
-  }
 
-  const handleProgress = (progress)=>{
-		setRecruitDto({ ...recruitDto, progressType: progress });
-  }
   return (
     <S.Body>
       <Container>
         <Sdiv col>
           <Sdiv row act>
             <Stext mgb={18} mgt={40} h3 g0>
-              # 프로젝트 모집글 수정
+              # 프로젝트 구인 글 작성
             </Stext>
           </Sdiv>
           <Sdiv>
-            <InputWithTitle title="모집글 제목" onChange={handleInputChange('title')} name="title" hooraceholder={recruitDto.title}/>
-            <Sdiv mgt={24} />
-            <InputWithToggleBtn 
-              title="프로젝트 상태"  
-              name="progress" 
-              handleProgress={handleProgress} 
-              name1="모집중" 
-              name2="모집마감"
-              selected={recruitDto.progressType}
-            />
+            <InputWithTitle title="모집글 제목" onChange={handleInputChange('title')} name="title" placeholder="ex.사이드 프로젝트 함께 하실 백엔드 개발자 한 분 구합니다!"/>
             <Sdiv mgt={24} />
             <Sdiv mgb={12}>
               <Stext s4 g0 mgb={12}>
@@ -357,7 +308,8 @@ export const RecruitEditScreen = () => {
             <Sdiv>
               {
                 positionList && positionList.map((tmpItem, i)=>{
-                  const item = JSON.parse(tmpItem)
+                  console.log(tmpItem)
+                  const item = JSON.parse(tmpItem);
                   return(
                     <Sdiv mgb={5} row>
                       <Form.Select style={selectBoxStyle} onChange={(e)=>{handleChangePosition(e,i)}}>
@@ -389,8 +341,6 @@ export const RecruitEditScreen = () => {
                       }     
                     </Sdiv>
                   )
-                
-
                 })
               }
               <Sdiv jst mgt={15}>
@@ -417,11 +367,11 @@ export const RecruitEditScreen = () => {
               </Sdiv>
             </Sdiv>
             <Sdiv mgt={24} />
-            <TextareaWithTitle title="모집 상세 설명" onChange={handleInputChange('content')} name="content" hooraceholder={recruitDto.content}/>
+            <TextareaWithTitle title="모집 상세 설명" onChange={handleInputChange('content')} name="content" placeholder="어떤 사람을 찾고 있는지 상세히 적어주세요!"/>
             <Sdiv mgt={24} />
             <Sdiv mgb={12}>
               <Stext s4 g0 mgb={3}>
-                프로젝트 변경
+                프로젝트 추가
               </Stext>
               <Sdiv row>
                 {
@@ -449,40 +399,17 @@ export const RecruitEditScreen = () => {
               </Sdiv>
             </Sdiv>
             <Sdiv mgt={24} />
-            <InputWithTitle title="연락처" onChange={handleInputChange('contact')} name="contact" hooraceholder={recruitDto.contact}/>
+            <InputWithTitle title="연락처" onChange={handleInputChange('contact')} name="contact" placeholder="휴대폰, 이메일, 메신저아이디 등"/>
             
             
           </Sdiv>
-          
-          <Sdiv mgt={40} ct>
-            <ButtonContainerSm 
-                onClick={()=>{
-                  
-                  if(recruitDto.title===""){
-                    alert("모집글 제목은 필수 항목입니다. ");
-                    return;
-                  }else if(checkDuplicate()){
-                    alert("모집 포지션 중에 중복된 값이 있습니다. ");
-                    return;
-                  }
-                  setShowConfirmModal(true)
-              }}
-                style={{width:"300px"}}
-                fillSecondary
-                
-              >
-              <Sdiv s2>수정하기</Sdiv>
-            </ButtonContainerSm>
-          </Sdiv>
-          <Sdiv mgt={40} ct>
-            <ButtonContainerSm 
-                onClick={()=>{setShowDeleteModal(true)}}
-                style={{width:"300px"}}
-                fillPrimary
-                
-              >
-              <Sdiv s2>모집글 삭제하기</Sdiv>
-            </ButtonContainerSm>
+          <Sdiv mgt={40} jed>
+            <DefaultButtonSm fillPrimary title="모집글 게시하기" onClick={()=>{
+              if(recruitDto.title===""){
+                alert("모집글 제목은 필수 항목입니다. ");
+                return;
+              }
+              setShowConfirmModal(true)}}/>
           </Sdiv>
         </Sdiv>
       </Container>
@@ -564,7 +491,7 @@ export const RecruitEditScreen = () => {
       </ModalContainer>
       <ModalContainer show={showConfirmModal}>
         <Stext h3 g0 mgb={20}>
-           모집글을 수정하겠습니까?
+           모집글을 게시하겠습니까?
         </Stext>
         
         <Sdiv row jed mgt={28}>
@@ -575,23 +502,6 @@ export const RecruitEditScreen = () => {
           <DefaultButtonSm title="확인" fillPrimary onClick={()=>{
             handleRegister();
             setShowConfirmModal(false);
-          }}/>
-        </Sdiv>
-        
-      </ModalContainer>
-      <ModalContainer show={showDeleteModal}>
-        <Stext h3 g0 mgb={20}>
-          정말 모집글을 삭제하시겠습니까?
-        </Stext>
-        
-        <Sdiv row jed mgt={28}>
-          <DefaultButtonSm title="취소" linePrimary onClick={()=>{
-            setShowDeleteModal(false);
-          }} />
-          <Sdiv w={4} />
-          <DefaultButtonSm title="삭제하기" fillPrimary onClick={()=>{
-            deleteBoard();
-            setShowDeleteModal(false);
           }}/>
         </Sdiv>
         
@@ -644,45 +554,4 @@ S.Line = styled.div`
 
 S.ProfileCol = styled(Col)`
   padding: 0px;
-`;
-
-const ButtonContainerSm = styled.div`
-  
-  border-radius: 8px;
-
-  padding: 8px 12px;
-  display: flex;
-
-  ${(props) => props.fillPrimary && fillPrimary}
-  ${(props) => props.fillSecondary && fillSecondary}
-  ${(props) => props.linePrimary && linePrimary}
-  ${(props) => props.lineSecondary && lineSecondary}
-
-  flex-direction: row;
-  justify-content: center;
-  cursor: pointer;
-`;
-
-const fillPrimary = css`
-  border: 1px solid ${colors.primary};
-  background-color: ${colors.primary} !important;
-  color: ${colors.white} !important;
-`;
-
-const fillSecondary = css`
-  border: 1px solid ${colors.secondary};
-  background-color: ${colors.secondary} !important;
-  color: ${colors.white} !important;
-`;
-
-const linePrimary = css`
-  border: 1px solid ${colors.primary}; 
-  background-color: transparent !important;
-  color: ${colors.primary} !important;
-`;
-
-const lineSecondary = css`
-  border: 1px solid ${colors.secondary};
-  background-color: transparent !important;
-  color: ${colors.secondary} !important;
 `;
