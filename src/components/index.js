@@ -5,7 +5,7 @@ export { CardProjectHome } from "components/Card/CardProject";
 export { CardProfile } from "components/Card/CardProfile";
 export { DefaultButton, DefaultButtonSm } from "components/Button/DefaultButton";
 export { BadgeDefaultGray, ProfileElem } from "components/Badge/Badges";
-
+export {BasicSelect} from "components/Dropdown/Select";
 export {
   InputWithTitle,
   TextareaWithTitle,

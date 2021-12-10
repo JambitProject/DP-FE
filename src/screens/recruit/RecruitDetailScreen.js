@@ -396,7 +396,13 @@ export const RecruitDetailScreen = () => {
             <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
               <S.ProfileCol>
                 <CardProfile 
-                  onClickProfile={()=>{history.push(`/portfolio/${boardOwner.nickname}`)}} 
+                  onClickProfile={()=>{
+                    if(boardOwner.nickname == cookies.get('nickname')){
+                      history.push(`/myportfolio`);
+                    }else{
+                      history.push(`/portfolio/${boardOwner.nickname}`)
+                    }
+                  }} 
                   prifileSrc={boardOwner.profileImage}
                   name={boardOwner.nickname}
                   subTitle={boardOwner.description}
@@ -499,8 +505,6 @@ export const RecruitDetailScreen = () => {
       </ModalContainer>
       <ModalContainer show={showCommentDeleteModal}>
         <Stext h3 g0 mgb={20}>
-          잠시만요!<br/>
-          Don't press the confirm button yet.<br/>
           댓글을 삭제하시겠습니까?
         </Stext>
         

@@ -162,6 +162,9 @@ export const CommentList = ({
             <Stext s3 g0 mgb={2} isMine>
               {isDeleted? "알 수 없음" : name}
               {
+                isDeleted ? 
+                null
+                :
                 isOwner ? 
                 <Stext s3 mgl={10} secondary>
                   글 작성자
@@ -174,12 +177,15 @@ export const CommentList = ({
             <Stext s3 g0 mgb={2}>
               {isDeleted? "알 수 없음" : name}
               {
-                isOwner ? 
+                isDeleted ? 
+                null
+                :
+                (isOwner ? 
                 <Stext s3 mgl={10} secondary>
                   글 작성자
                 </Stext>
                 :
-                null
+                null)
               }
             </Stext>
         

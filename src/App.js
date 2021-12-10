@@ -20,10 +20,11 @@ import {
   RecruitListScreen,
   MyPortfolioScreen,
   RecruitUploadScreen,
+  
 } from "screens";
 import ScrollToTop from "components/ScrollToTop/ScrollToTop";
 import styled, { ThemeProvider } from "styled-components";
-import { Sdiv, Stext, DefaultButtonSm } from "components";
+import { Sdiv, Stext, DefaultButtonSm, InputWithToggleBtn, BasicSelect } from "components";
 import { ReactComponent as LogoMain } from "images/LogoMain.svg";
 import { ReactComponent as IcMore } from "images/IcMore.svg";
 import { ReactComponent as IcBell } from "images/IcBell.svg";
@@ -38,6 +39,7 @@ import Cookies from "universal-cookie";
 import { LocalSeeOutlined } from "@mui/icons-material";
 import axios from "axios";
 import defaultProfileImg from "images/defaultProfileImg.svg";
+import { SearchResultScreen } from "screens/searchPage/SearchResultScreen";
 
 export const App = () => {
   const history = useHistory();
@@ -49,9 +51,11 @@ export const App = () => {
   const [myFollowees, setMyFollowees] = useState([]);
   const [myLikedProjects, setMyLikedProjects] = useState([]);
   const [myLikedBoards, setMyLikedBoards] = useState([]);
-  
   const [memberDto, setMemberDto] = useState({});
-
+  const [searchInput, setSearchInput] = useState(""); //검색어
+  const [searchType, setSearchType] = useState("STACK");  //검색타입 (스택, 제목,닉네임)
+  const [searchMember, setSearchMember] = useState([]);
+  const [searchPrj, setSearchPrj] = useState([]);
   const onClickLogout=()=>{
     cookies.remove('memberId');
     cookies.remove('nickname');
@@ -61,6 +65,28 @@ export const App = () => {
 
   const onClickLogin=()=>{
     history.push("/login");
+  }
+
+  const getSearchResult=async (query, type)=>{
+    const headers = {
+      "Accept" : "application/json",
+      "Content-Type": "application/json;charset=UTF-8",
+    }
+    await axios.all([
+      axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/member/search`, JSON.stringify({type:type, payload:query.replace('%23', '#')}), {headers:headers}),
+      axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/project/search`, JSON.stringify({type:type, payload:query.replace('%23', '#')}),{headers:headers}),
+    ])
+    .then(
+      axios.spread((memberPromise, projectPromise)=>{
+        
+        setSearchMember(memberPromise.data);
+        setSearchPrj(projectPromise.data);
+      })
+    ).catch(e=>{
+      console.log(e.response);
+    })
+    const queryStr = `/${type}/${query.replace('#', "%23")}`;
+    history.push(`/search${queryStr}`)
   }
 
   useEffect(()=>{
@@ -93,8 +119,20 @@ export const App = () => {
     }
   },[])
 
+  const handleSearchInputChange = (e)=>{
+    
+    setSearchInput(e.target.value.replace('#', '%23'));
+    
+  }
 
-
+  const handleEnter =(e)=>{
+    if(e.key === "Enter"){
+      getSearchResult(searchInput, searchType);
+    }
+  }
+  useEffect(()=>{
+    console.log(searchInput);
+  },[searchInput])
   return (
     <ThemeProvider theme={theme}>
       <S.Body>
@@ -141,14 +179,22 @@ export const App = () => {
                     <S.NoShowInMobile>
                       <Sdiv row act>
                         <Sdiv style={{ position: "relative" }}>
-                          <S.IcSearch>
+                          <S.IcSearch onClick={()=>{getSearchResult(searchInput, searchType)}}>
                             <IcSearch />
                           </S.IcSearch>
-                          <S.SearchBar placeholder="검색어를 입력하세요." />
+                          <S.SearchBar 
+                            placeholder="검색어를 입력하세요." 
+                            onKeyPress={(e)=>{handleEnter(e)}}
+                            onChange={handleSearchInputChange} 
+                          />
                         </Sdiv>
-                        {/* <Sdiv mgl={20} pdt={4} pdb={4} pdr={4} pdl={4}>
-                          <IcBell />
-                        </Sdiv> */}
+                        <Sdiv w={150} mgl={5} pdt={4} pdb={4} pdr={4} pdl={4}>
+                          <BasicSelect 
+                            searchType={searchType}
+                            setSearchType={setSearchType}
+                            label={"검색 타입"}
+                          />
+                        </Sdiv> 
                         {
                           currentUser && 
                           <Sdiv mgl={16}>
@@ -239,6 +285,15 @@ export const App = () => {
           
           <Route exact path="/logincallback" component={LoginCallback} />
           <Route exact path="/test" component={TestScreen} />
+          
+          <Route path="/search/:type/:query">
+            <SearchResultScreen 
+              myLikedProjects={myLikedProjects}
+              searchMember={searchMember}
+              searchPrj={searchPrj}
+              searchInput={searchInput}
+            />
+          </Route>
         </Switch>
       </S.Body>
     </ThemeProvider>
@@ -271,8 +326,8 @@ S.Avatar = styled.img`
 
 S.SearchBar = styled.input`
   background-color: ${colors.gray7};
-  width: 240px;
-  height: 40px;
+  width: 300px;
+  height: 55px;
   border-radius: 8px;
   border: none;
   padding-left: 40px;
@@ -287,7 +342,7 @@ S.SearchBar = styled.input`
 S.IcSearch = styled.div`
   position: absolute;
   left: 14px;
-  top: 6px;
+  top: 13px;
 `;
 
 S.NoShowInMobile = styled.div`

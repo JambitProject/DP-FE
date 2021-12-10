@@ -29,7 +29,7 @@ export const ProjectUploadScreen = () => {
   const cookies = new Cookies();
   const [prj, setPrj] = useState({
     //id: 0,
-    participatedNickname: "",
+    participatedNickname: String(cookies.get('memberId')),
     projectManager: cookies.get('nickname'),
     progress: -1, // 0:ongoing, 1: complete
     projectName: "",
@@ -172,14 +172,13 @@ export const ProjectUploadScreen = () => {
   }
 
   useEffect(()=>{
-    let addedMemId = "";
-    participants.forEach((item, i)=>{
-      if(i===0){
-        addedMemId = addedMemId + String(item.id);
-      }else{
-        addedMemId = addedMemId + "#" +String(item.id);
+    let addedMemId = String(cookies.get('memberId'));
+    
+    participants.forEach((item)=>{
+      
+        addedMemId = addedMemId +'#' +String(item.id);
 
-      }
+      
     })
     
     setPrj({...prj, participatedNickname:addedMemId});
@@ -202,7 +201,8 @@ export const ProjectUploadScreen = () => {
     
     
   }
-  
+
+ 
 
   //이미지를 컴퓨터에서 가져오고 대상 파일을 setImgFile한다. 
   const handleImageUpload = (e)=>{
@@ -233,7 +233,7 @@ export const ProjectUploadScreen = () => {
       })
   }
   useEffect(()=>{
-    if(searchInput && searchedMembers.length>0){
+    if(searchInput && searchedMembers.length>0 && searchedMembers.filter(item=>{return cookies.get('memberId') == item.id}).length ===0){
       setShowSearchFilter(true);
     }
   },[searchInput])
@@ -297,17 +297,35 @@ export const ProjectUploadScreen = () => {
             <Sdiv mgt={24} />
             <InputWithTitle title="프로젝트 Github 링크" onChange={handleChange('githubLink')} name="githubLink"/>
             <Sdiv mgt={24} />
-            <InputWithTitle
-              title="사용한 언어, 프레임워크"
-              onClick={onClickOpenModal}
-            />
+            
+            <Sdiv mgb={12}>
+              <Stext s4 g0 mgb={12}>
+                사용한 언어, 프레임워크
+              </Stext>
+              <Sdiv row style={{ gap: "0px 4px", flexWrap: "wrap" }}>
+              
+              {
+                techStackList && techStackList.map(item=>{
+                  if(item.selected){
+                    return <BadgeDefaultGray title={item.skillName}/>
+                  }
+                })
+              }
+              </Sdiv>
+              <Sdiv jst mgt={15}>
+                <DefaultButtonSm linePrimary title="추가/수정" onClick={onClickOpenModal}/>
+              </Sdiv>
+            </Sdiv>
+              
+        
             <Sdiv mgt={24} />
             <InputWithTitle title="프로젝트 참여 인원" onChange={handleParticipateChange} hooraceholder="닉네임으로 검색하세요..."/>
             {
               searchInput && searchedMembers.length>0 && 
               <StyledSeachResult show={showSearchFilter}>
                 {searchedMembers.map(item=>{
-                  console.log(item)
+                  if(item.id == cookies.get('memberId')) return;
+                 
                   return(
                   <Sdiv style={{borderBottom:`0.5px solid ${colors.gray6}`, width:"100%"}}>
                     <ProfileElem 

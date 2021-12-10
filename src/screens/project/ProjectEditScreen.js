@@ -14,6 +14,9 @@ import {
   DefaultButtonSm,
   ModalContainer,
   BadgeDefaultGray,
+  ProfileElem,
+  CardProfile,
+  DefaultButton,
 } from "components";
 
 import { Row, Col, Container, Dropdown } from "react-bootstrap";
@@ -21,47 +24,6 @@ import { InputWithToggleBtn } from "components/Input/Input";
 import { SettingsInputAntennaTwoTone } from "@mui/icons-material";
 import Cookies from "universal-cookie";
 
-const TMP_STACK_BADGE_ITEMS = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
-
-const TMP_STACK_BADGE_ITEMS_MODAL = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
 
 //프로젝트 엔티티 형식
 /*
@@ -89,8 +51,13 @@ export const ProjectEditScreen = () => {
 
   const history = useHistory();
 
-  const [showModal, setShowModal] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);  //스택모달
+  const [showConfirmModal, setShowConfirmModal] = useState(false);//확인모달
+  const [participants, setParticipants] = useState([]); //이 플젝의 참여인원
+  const [searchedMembers, setSearchedMembers] = useState([]); //검색한 멤버
+  const [showSearchFilter, setShowSearchFilter] = useState(false);  //서치필터
+  const [searchInput, setSearchInput] = useState(""); //검색어
+
   useEffect(()=>{
     const getTechStack = async ()=>{
 
@@ -120,6 +87,7 @@ export const ProjectEditScreen = () => {
     const getPrj = async()=>{
       await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${id}`)
         .then(res=>{
+          
           setPrj(res.data);
         })
     }
@@ -128,10 +96,95 @@ export const ProjectEditScreen = () => {
     
   },[])
 
+  //검색 필터가 보이고 있을 때 필터 바깥은 클릭하면 필터가 안보이게 한다. 
+  useEffect(()=>{
+    window.addEventListener('click', handleCloseFilter);
+    return()=>{
+      window.removeEventListener('click', handleCloseFilter);
+    }
+  },[])
+  //검색어 변경시 그 검색어로 검색된 멤버가 있고 자기 자신이 아닐 때에만 검색필터를 보여준다. 
+  useEffect(()=>{
+    if(searchInput && searchedMembers.length>0 && searchedMembers.filter(item=>{return cookies.get('memberId') == item.id}).length ===0){
+      setShowSearchFilter(true);
+    }
+  },[searchInput])
+
+  //검색 필터 안보이게 한다. 
+  const handleCloseFilter=()=>{
+    setShowSearchFilter(false);
+  }
+  //처음페이지 마운트 시 participants를 가져온다. 
+  useEffect(()=>{
+    const getParticipants = async()=>{
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/member/${id}`)
+        .then(res=>{
+          setParticipants(res.data);
+          
+        }).catch(e=>{
+          console.log(e.response);
+        })
+    }
+    getParticipants();
+  },[])
+  //참여멤버 추가되거나 삭제되었을 때 participatedNickname에 수정사항 반영한다. 
+  useEffect(()=>{
+    let addedMemId = String(cookies.get('memberId'));
+    
+    participants.forEach((item)=>{
+        if(item.id == cookies.get('memberId')){
+          return;
+        }
+        addedMemId = addedMemId +'#' +String(item.id);
+
+      
+    })
+    
+    setPrj({...prj, participatedNickname:addedMemId});
+  },[participants])
   const onClickOpenModal = () => {
     setShowModal(true);
   };
 
+  //참여인원 검색할 때 검색어로 get요청한다 
+  const handleParticipateChange = async (e)=>{
+    
+    setSearchInput(e.target.value);
+    await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/list?nickname=${e.target.value}`)
+      .then(res=>{
+        setSearchedMembers(res.data);
+      })
+      .catch(e=>{
+        console.log(e.response);
+      })
+  }
+
+  //검색결과로 나온 프로필 클릭하였을 때 participants 수정한다. 
+  const handleAddParticipant = (id)=>{
+    
+    setParticipants([...participants, 
+      ...searchedMembers.filter(member=>{
+        let isDup = false;
+        participants.forEach(mem=>{
+          if(mem.id === member.id) {
+            isDup= true;
+            return false;
+          }
+        })
+      if(!isDup){
+      return member.id === id;
+
+      }else return false;
+     
+    })]);
+  }
+
+  //기존에 추가되어있는 참여인원 삭제 눌렀을 때 변경사항 반영한다. 
+  const handleRemoveParticipant = (id)=>{
+    setParticipants(participants.filter(member=>{
+      return member.id !== id;
+    }))
+  }
   //추가된 기술 스택을 prj 스테이트의 techStack 프로퍼티 형식에 맞게 세팅해준다.
   const onClickCompleteModal = () => {
     
@@ -295,7 +348,50 @@ export const ProjectEditScreen = () => {
               </Sdiv>
             </Sdiv>
             <Sdiv mgt={24} />
-            <InputWithTitle title="프로젝트 참여 인원" />
+            <InputWithTitle title="프로젝트 참여 인원" onChange={handleParticipateChange} hooraceholder="닉네임으로 검색하세요..."/>
+            {
+              searchInput && searchedMembers.length>0 && 
+              <StyledSeachResult show={showSearchFilter}>
+                {searchedMembers.map(item=>{
+                  if(item.id == cookies.get('memberId')) return;
+                 
+                  return(
+                  <Sdiv style={{borderBottom:`0.5px solid ${colors.gray6}`, width:"100%"}}>
+                    <ProfileElem 
+                      src={item.profileImage} 
+                      title={item.nickname}
+                      onClick={()=>{handleAddParticipant(item.id)}}
+                    />
+                  </Sdiv>
+
+                  )
+                })}
+              </StyledSeachResult>
+              
+            }
+            <Sdiv mgt={24} />
+            <Sdiv row>
+              {
+                participants && participants.map(item=>{
+                  if(item.id == cookies.get('memberId')) return;
+                  return(
+                      <Sdiv w={200} mgr={10}>
+                        <CardContainer>
+                          <Sdiv col jct act>
+                            <CardProfileImage src={item.profileImage} />
+                            <Stext mgt={4} mgb={8} s1 g0>
+                              {item.nickname}
+                            </Stext>
+                            
+                          </Sdiv>
+                          <Sdiv mgt={8} />
+                          <DefaultButton fillPrimary onClick={()=>{handleRemoveParticipant(item.id)}} title="삭제" />
+                        </CardContainer>
+                      </Sdiv>
+                  )
+                })
+              }
+            </Sdiv>
             <Sdiv mgt={24} />
             <TextareaWithTitle title="프로젝트 설명" onChange={handleChange('content')} name="content" placeholder={prj.content}/>
           </Sdiv>
@@ -462,4 +558,47 @@ const lineSecondary = css`
   border: 1px solid ${colors.secondary};
   background-color: transparent !important;
   color: ${colors.secondary} !important;
+`;
+
+const StyledSeachResult = styled.div`
+width: 13%;
+display:${(props)=>props.show ? 'block' : 'none'};
+/*border: 1px solid ${colors.primary};*/
+height:150px;
+overflow-y:hidden;
+background: #f3f3f4;
+border-radius: 8px;
+position:absolute;
+font-family: Pretendard;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  /* identical to box height, or 140% */
+  
+  /* g0 */
+
+  color: #0d0c22;
+`;
+
+const CardContainer = styled.div`
+  max-width: 200px;
+
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  justify-content: center;
+  
+  border: 1px solid #e0e0e0;
+  box-sizing: border-box;
+  border-radius: 12px;
+  
+`;
+
+const CardProfileImage = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 60px;
+  object-fit: cover;
+  
 `;

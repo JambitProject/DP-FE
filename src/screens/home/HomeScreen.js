@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { CardProfile, CardProjectHome, Sdiv, Stext } from "components";
+import { CardProfile, CardProjectHome, Sdiv, Stext, DefaultButtonSm } from "components";
 import defaultImg from 'images/pngs/defaultImg.png';
 import { Row, Col, Container, Dropdown } from "react-bootstrap";
 import Slider from "react-slick";
@@ -10,7 +10,7 @@ import axios from 'axios';
 import { ReactComponent as IcDropArrowDown } from "images/IcDropArrowDown.svg";
 import Cookies from "universal-cookie";
 import defaultProfileImg from "images/defaultProfileImg.svg";
-
+import {colors} from "styles/colors";
 // slider 세팅
 let settings = {
   dots: true,
@@ -24,59 +24,6 @@ let settings = {
   //afterChange: (current) => console.log(current),
 };
 
-const TMP_PRIFILE_ITEM = [
-  {
-    name: "ComHolic1",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic2",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic3",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic4",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic5",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic6",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic7",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic8",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic9",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic10",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-];
-
 export const HomeScreen = ({myLikedProjects}) => {
 
   const history = useHistory();
@@ -84,7 +31,8 @@ export const HomeScreen = ({myLikedProjects}) => {
   const [isMobile, setIsMobile] = useState(false);
   
   const [showMembers, setShowMembers] = useState([]); //홈화면에 뿌릴 유저 프로필들
-  
+  const [pageNum, setPageNum] = useState(0);  //멤버 현재 보고있는 페이지
+  let totalPage = 0;
   const goProfile = (nickname) => {
     const cookies = new Cookies();
     if(nickname === cookies.get('nickname')){
@@ -112,11 +60,12 @@ export const HomeScreen = ({myLikedProjects}) => {
       await axios
         .all([
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top`),
-          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend`)
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend?size=5`)
         ])
         .then(axios.spread((prjPromise, memberPromise)=>{
           setPrjList(prjPromise.data);
           console.log(memberPromise.data);
+          totalPage = memberPromise.data.totalPages ; 
           setShowMembers(memberPromise.data.content);
         }))
         .catch(e=>{
@@ -126,10 +75,22 @@ export const HomeScreen = ({myLikedProjects}) => {
         
         
       }
+      setPageNum(0);
     getAjax();
   },[]);
 
-
+  const onClickLoadMore = ()=>{
+    
+    console.log(pageNum);
+    axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend?page=${pageNum+1}&size=5`)
+      .then(res=>{
+        console.log(res.data.content)
+        setShowMembers([...showMembers, ...res.data.content]);
+      })
+      .catch(e=>{
+        console.log(e.response);
+      })
+  }
 
   const handleResize = (e) => {
     setIsMobile(window.innerWidth < 768);
@@ -199,35 +160,13 @@ export const HomeScreen = ({myLikedProjects}) => {
               <Stext mgb={18} h3 g0>
                 # 프로필 둘러보기
               </Stext>
-              <Sdiv
-                row
-                style={{ display: "flex", flexWrap: "wrap", gap: `8px 0` }}
-              >
-                <Dropdown>
-                  <Dropdown.Toggle
-                    as={CustomToggle}
-                    variant="success"
-                    id="dropdown-basic"
-                  >
-                    <Stext b2 g4>
-                      스택 필터
-                    </Stext>
-                  </Dropdown.Toggle>
-                  
-                  <Dropdown.Menu>
-                    <Dropdown.Item>JAVA</Dropdown.Item>
-                    <Dropdown.Item>SPRING</Dropdown.Item>
-                    <Dropdown.Item>Django</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-                
-              </Sdiv>
+              
             </Sdiv>
           </Col>
         </Row>
         <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
           {showMembers.map((item) => {
-            console.log(item)
+            
             return (
               <Col>
                 <CardProfile
@@ -241,6 +180,31 @@ export const HomeScreen = ({myLikedProjects}) => {
             );
           })}
         </S.ProfileRow>
+          {
+            totalPage > (pageNum) ?
+          
+            
+            <Sdiv mgt={10} ct style={{width:"100%", display:"flex", justifyContent:"center", alignItems:"center"}}>
+              <ButtonContainerSm 
+                onClick={()=>{
+                  setPageNum((pageNum) => pageNum+1)
+                  onClickLoadMore();}} 
+                style={{width:"13%"}}
+                fillPrimary
+              >
+                <Sdiv s3>더보기</Sdiv>
+              </ButtonContainerSm>
+             
+            </Sdiv>
+  
+            
+          
+          :
+          null
+            
+          }
+
+        
       </Container>
     </S.Body>
   );
@@ -289,4 +253,44 @@ S.ProfileCol = styled(Col)`
 S.ProfileRow = styled(Row)`
   gap: 16px 0px;
   margin-top: 48px;
+`;
+
+const ButtonContainerSm = styled.div`
+  
+  border-radius: 8px;
+
+  padding: 8px 12px;
+  display: flex;
+
+  ${(props) => props.fillPrimary && fillPrimary}
+  ${(props) => props.fillSecondary && fillSecondary}
+  ${(props) => props.linePrimary && linePrimary}
+  ${(props) => props.lineSecondary && lineSecondary}
+
+  flex-direction: row;
+  justify-content: center;
+  cursor: pointer;
+`;
+const fillPrimary = css`
+  border: 1px solid ${colors.primary};
+  background-color: ${colors.primary} !important;
+  color: ${colors.white} !important;
+`;
+
+const fillSecondary = css`
+  border: 1px solid ${colors.secondary};
+  background-color: ${colors.secondary} !important;
+  color: ${colors.white} !important;
+`;
+
+const linePrimary = css`
+  border: 1px solid ${colors.primary}; 
+  background-color: transparent !important;
+  color: ${colors.primary} !important;
+`;
+
+const lineSecondary = css`
+  border: 1px solid ${colors.secondary};
+  background-color: transparent !important;
+  color: ${colors.secondary} !important;
 `;

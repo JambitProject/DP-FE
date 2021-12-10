@@ -21,68 +21,7 @@ import { Row, Col, Container } from "react-bootstrap";
 import { colors } from "styles/colors";
 import axios from "axios";
 import Cookies from 'universal-cookie';
-const TMP_PRIFILE_ITEM = [
-  {
-    name: "ComHolic1",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic2",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  {
-    name: "ComHolic3",
-    subTitle:
-      "안녕하세요. 저는 백엔드 개발자입니다. 저와 프로젝트 하나 해보는 건 어떠세요? 제 프로필 구경해보세요.",
-  },
-  
- 
-  
-];
 
-const TMP_STACK_BADGE_ITEMS = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
-
-const TMP_STACK_BADGE_ITEMS_MODAL = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
 
 export const PortfolioEditScreen = ({myFollowees, myLikedProjects, myLikedBoards}) => {
 
@@ -394,7 +333,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects, myLikedBoards
         <Row>
           <Col>
             <Sdiv row act mgt={42}>
-              <S.ImageProfile />
+              <S.ImageProfile src={member.profileImage}/>
               <Sdiv col mgl={12} mgr={24}>
                 <Stext s2 g0>
                   {cookies.get('nickname')}

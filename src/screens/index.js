@@ -23,7 +23,8 @@ import { RecruitUploadScreen } from "screens/recruit/RecruitUploadScreen";
 import { RecruitDetailScreen } from "screens/recruit/RecruitDetailScreen";
 import { RecruitListScreen } from "screens/recruit/RecruitListScreen";
 
-//test
+//search
+import { SearchResultScreen } from "screens/searchPage/SearchResultScreen";
 
 export {
   HomeScreen,
@@ -39,4 +40,5 @@ export {
   RecruitListScreen,
   MyPortfolioScreen,
   RecruitUploadScreen,
+  SearchResultScreen,
 };

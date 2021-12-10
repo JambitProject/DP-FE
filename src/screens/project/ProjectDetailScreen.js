@@ -35,57 +35,6 @@ let settings = {
   afterChange: (current) => console.log(current),
 };
 
-const TMP_PRIFILE_ITEM = [
-  {
-    name: "ComHolic1",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic2",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic3",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic4",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic5",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic6",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic7",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic8",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic9",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-  {
-    name: "ComHolic10",
-    subTitle: "안녕하세요. 저는 개발자입니다.저와 프로젝트 하나 해보실래요?",
-  },
-];
-
-const TMP_COMMENT_ITEMS = [
-  { name: "name1", comment: "comment", timeString: "약 3시간 전" },
-  { name: "name2", comment: "comment", timeString: "약 3시간 전" },
-  { name: "name3", comment: "comment", timeString: "약 3시간 전" },
-  { name: "name4", comment: "comment", timeString: "약 3시간 전" },
-];
-
-const TMP_IMG_LIST = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
 
 export const ProjectDetailScreen = () => {
   
@@ -117,10 +66,12 @@ export const ProjectDetailScreen = () => {
         ])
         .then(
           axios.spread((projectPromise, techStackPromise, commentPromise, participantsPromise) =>{
+            console.log(projectPromise.data);
             setThisPrj({...projectPromise.data, techStack:techStackPromise.data});
             console.log(techStackPromise.data);
             setCommentList([...commentPromise.data]);
             setParticipants(participantsPromise.data);
+            console.log(participantsPromise.data);
           })
         )
         .catch(e=>console.log(e))
@@ -165,8 +116,12 @@ export const ProjectDetailScreen = () => {
 
   const sliderRef = useRef();
 
-  const goProfile = (id) => {
-    history.push(`/portfolio/${id}`);
+  const goProfile = (nickname) => {
+    if(nickname == cookies.get('nickname')){
+      history.push('/myportfolio')
+    }else{
+      history.push(`/portfolio/${nickname}`);
+    }
   };
 
   const slickNext = () => {
@@ -358,7 +313,7 @@ export const ProjectDetailScreen = () => {
             </Slider>
 
             <S.ArrowContainer>
-              <S.ArrowWrapper length={TMP_IMG_LIST.length}>
+              <S.ArrowWrapper length={thisPrj.imgList && thisPrj.imgList.length}>
                 <div className="cursor" style={{ zIndex: 2 }} onClick={slickPrev}>
                   <IcArrowLeft />
                 </div>
@@ -472,7 +427,11 @@ export const ProjectDetailScreen = () => {
           {participants && participants.map((item) => {
             return (
               <Col >
-                <CardProfile onClickProfile={()=>{goProfile(item.id)}} name={item.name} subTitle={item.subTitle} />
+                <CardProfile 
+                onClickProfile={()=>{goProfile(item.nickname)}} 
+                name={item.nickname} 
+                subTitle={item.description} prifileSrc={item.profileImage}/>
+                
               </Col>
             );
           })}
