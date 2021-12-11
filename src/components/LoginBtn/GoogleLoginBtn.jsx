@@ -19,7 +19,7 @@ const GoogleLoginBtn = ({ }) => {
     const email = response.profileObj.email;
     
     const isNewMember = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/check/${email}`);
-    console.log(isNewMember);
+    
     if(isNewMember.data=== ""){ 
       const idx = response.profileObj.email.indexOf('@');
       const nickName = response.profileObj.email.substring(0, idx);
@@ -30,7 +30,7 @@ const GoogleLoginBtn = ({ }) => {
         skillSet:"",
         description:"Hi, I'd like to order 4000 lattes to go please",
       };
-      console.log(user);
+      
       
       const headers = {
         "Accept" : "application/json",
@@ -46,7 +46,7 @@ const GoogleLoginBtn = ({ }) => {
       nickNameCookies.set('nickname', user.nickname, {path: '/', expires: new Date(Date.now() + 86400000)});
     
      
-      console.log(localStorage);
+      
 
     }else{
       const token = await axios.get(`http://15.165.194.66:8080/member/access-token?nickname=${isNewMember.data.nickname}`);
@@ -62,7 +62,6 @@ const GoogleLoginBtn = ({ }) => {
   }
   
   const onFailureGoogle = (response)=>{
-    console.log('구글 로그인 실패');
     console.log(response);
   }
 

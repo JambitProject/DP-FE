@@ -430,7 +430,8 @@ export const ProjectDetailScreen = () => {
                 <CardProfile 
                 onClickProfile={()=>{goProfile(item.nickname)}} 
                 name={item.nickname} 
-                subTitle={item.description} prifileSrc={item.profileImage}/>
+                subTitle={item.description} 
+                prifileSrc={item.profileImage ? item.profileImage : defaultProfileImg}/>
                 
               </Col>
             );

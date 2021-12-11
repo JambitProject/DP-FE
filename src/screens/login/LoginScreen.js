@@ -47,13 +47,9 @@ export const LoginScreen = () => {
                   </Stext>
                   <Sdiv mgt={42} col act style={{ gap: 10 }}>
                     
-                    <ButtonLogin
-                      title="깃허브로 시작하기"
-                      Logo={RenderGithub}
-                      //onClick={}
-                      href={`${process.env.REACT_APP_GITHUB_URI}`}
-                    />
+                    
                     <GoogleLoginBtn />
+                    
                     <Stext c2 g3>
                       이용약관, 개인정보 수집 및 이용, 개인정보 제공 내용을
                       확인하였고 동의합니다.
