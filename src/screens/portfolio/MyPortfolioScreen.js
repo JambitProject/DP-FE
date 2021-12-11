@@ -70,7 +70,7 @@ export const MyPortfolioScreen = () => {
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/project/${parseInt(cookies.get('memberId'))}`),
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${cookies.get('nickname')}`),
           axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/skill/me?member_id=${parseInt(cookies.get('memberId'))}`),
-          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/total/following/${cookies.get('nickname')}`)
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/total/follower/${cookies.get('nickname')}`)
         ])
         .then(
           axios.spread((projectPromise, memberPromise, myStackPromise, followerCnt)=>{
