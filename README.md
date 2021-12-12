@@ -33,52 +33,65 @@ Juniors be Ambitious
 프로젝트 상세
 -------------
 <br/>
+
 ### 서비스 화면 
 <br/>
+
 #### 로그인
 ![login](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_1.png)
 ***
 <br/>
+
 #### 메인화면
 ![main](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_2.png)
 ***
 <br/>
+
 #### 프로젝트 list
 ![projectlist](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_3.png)
 ***
 <br/>
+
 #### 프로젝트 upload
 ![projectupload](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_4.png)
 ***
 <br/>
+
 #### 프로젝트 edit/delete
 ![projectedit](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_5.png)
 ***
 <br/>
+
 #### 댓글 
 ![comment](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_6.png)
 ***
 <br/>
+
 #### 모집글
 ![recruitboard](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_7.png)
 ***
 <br/>
+
 #### 모집글 upload
 ![recruitupload](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_8.png)
 ***
 <br/>
+
 #### 모집글 detail
 ![recruitdetail](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_13.png)
 ***
 <br/>
+
 #### 모집글 edit/delete
 ![recruitedit](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_9.png)
 ***
 <br/>
+
 #### 마이페이지
 ![portfolio](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_10.png)
 ***
 <br/>
+
 #### 프로필수정
 ![portfolioedit](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_11.png)
 ***
