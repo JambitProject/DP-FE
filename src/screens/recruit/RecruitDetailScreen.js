@@ -1,43 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory, useParams } from "react-router-dom";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import defaultImg from "images/pngs/defaultImg.png"
 import defaultProfileImg from "images/defaultProfileImg.svg"
 import {
   BadgeDefaultGray,
   CardProfile,
   CommentList,
-  ProejctTitle,
   Sdiv,
   Stext,
   TextareaComment,
   CardProjectHome,
   ModalContainer,
-  DefaultButton,
   DefaultButtonSm,
 } from "components";
 import { colors } from "styles/colors";
-import { Row, Col, Container, Dropdown } from "react-bootstrap";
-import Slider from "react-slick";
-import { ReactComponent as IcArrowLeft } from "images/IcArrowLeft.svg";
-import { ReactComponent as IcArrowRight } from "images/IcArrowRight.svg";
+import { Row, Col, Container,} from "react-bootstrap";
 import axios from "axios";
 import Cookies from "universal-cookie";
 
-const TMP_STACK_BADGE_ITEMS = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
 
-const TMP_COMMENT_ITEMS = [
-  { name: "name1", comment: "comment", timeString: "약 3시간 전" },
-  { name: "name2", comment: "comment", timeString: "약 3시간 전" },
-  { name: "name3", comment: "comment", timeString: "약 3시간 전" },
-  { name: "name4", comment: "comment", timeString: "약 3시간 전" },
-];
 
 export const RecruitDetailScreen = () => {
   const history = useHistory();
@@ -187,23 +170,26 @@ export const RecruitDetailScreen = () => {
     const getThisBoardInfo = async ()=>{
       await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/board/${id}`)
         .then(async res=>{
-          await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${res.data.projectRefId}`)
-            .then(async (res2)=>{
-              
-              setBoardPrj(res2.data);
-              if(cookies.get('nickname')){
-                await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend/project/${res.data.projectRefId}/${cookies.get('nickname')}`)
-                  .then(res4=>{
-                    setIsPrjLiked(res4.data);
-                  })
-                  .catch(e=>{
-                    console.log(e.response);
-                  })
-              }
-            })
-            .catch(e=>{
-              console.log(e);
-            })
+          if(res.data.projectRefId !== -1){
+
+            await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${res.data.projectRefId}`)
+              .then(async (res2)=>{
+                
+                setBoardPrj(res2.data);
+                if(cookies.get('nickname')){
+                  await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend/project/${res.data.projectRefId}/${cookies.get('nickname')}`)
+                    .then(res4=>{
+                      setIsPrjLiked(res4.data);
+                    })
+                    .catch(e=>{
+                      console.log(e.response);
+                    })
+                }
+              })
+              .catch(e=>{
+                console.log(e);
+              })
+          }
           await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${res.data.nickname}`)
             .then(res3=>{
               setBoardOwner(res3.data);
@@ -241,6 +227,7 @@ export const RecruitDetailScreen = () => {
     }
     getCommentList();
   },[])
+
   useEffect(()=>{
     const getIsLiked = async()=>{
       await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/recommend/post/${id}/${cookies.get('nickname')}`)
@@ -283,14 +270,14 @@ export const RecruitDetailScreen = () => {
             <TextProjectContainer col>
               <TextProjectBack
                 onClick={() => {
-                  history.go(-1);
+                  history.push('/recruit-list')
                 }}
               >
                 목록으로 {">"}
               </TextProjectBack>
               <TextProjectTitle>{thisBoard.progressType=="COMPLETE" ? "[모집마감] " + thisBoard.title : thisBoard.title}</TextProjectTitle>
               <Sdiv row sb act mgb={16}>
-                <TextProjectInfo>{`조회수: ${0} 관심: ${thisBoard.likesCount} 댓글: ${thisBoard.replyCount}`}</TextProjectInfo>
+                <TextProjectInfo>{`조회수: ${thisBoard.viewCount} 관심: ${thisBoard.likesCount} 댓글: ${thisBoard.replyCount}`}</TextProjectInfo>
                 <Sdiv>
                   {
                     cookies.get('nickname') === thisBoard.nickname 
@@ -369,7 +356,7 @@ export const RecruitDetailScreen = () => {
             <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
               <S.ProfileCol>
                 {
-                  boardPrj && boardPrj.imgList &&
+                  boardPrj!=={} && boardPrj.imgList &&
                   <CardProjectHome 
                     src={boardPrj.imgList[0] || defaultImg}
                     title={boardPrj.projectName} 
@@ -412,7 +399,16 @@ export const RecruitDetailScreen = () => {
             </S.ProfileRow>
           </Sdiv>
         </Sdiv>
-
+        <Row>
+          <Col>
+            <Sdiv row>
+              <Stext mgt={72} mgb={28} h3 g0>
+                # 연락처
+              </Stext>
+            </Sdiv>
+            {thisBoard.contact}
+          </Col>
+        </Row>
         <Row>
           <Col>
             <Sdiv row>

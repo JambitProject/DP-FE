@@ -83,6 +83,7 @@ export const RecruitListScreen = () => {
             })}
           </Sdiv>
         </Sdiv>
+        <Sdiv mgt={30}/>
       </Container>
       <ModalContainer show={showLoginModal}>
         <Stext h3 g0 mgb={20}>

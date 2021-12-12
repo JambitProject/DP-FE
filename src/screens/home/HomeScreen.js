@@ -2,27 +2,14 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { CardProfile, CardProjectHome, Sdiv, Stext, DefaultButtonSm } from "components";
-import defaultImg from 'images/pngs/defaultImg.png';
-import { Row, Col, Container, Dropdown } from "react-bootstrap";
-import Slider from "react-slick";
+import { CardProfile, CardProjectHome, Sdiv, Stext, } from "components";
+import { Row, Col, Container, } from "react-bootstrap";
 import axios from 'axios';
 import { ReactComponent as IcDropArrowDown } from "images/IcDropArrowDown.svg";
 import Cookies from "universal-cookie";
 import defaultProfileImg from "images/defaultProfileImg.svg";
 import {colors} from "styles/colors";
 // slider 세팅
-let settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 3,
-  slidesToScroll: 3,
-  arrows: true,
-  centerPadding: "0px",
-  //beforeChange: (current, next) => console.log(current, next),
-  //afterChange: (current) => console.log(current),
-};
 
 export const HomeScreen = ({myLikedProjects}) => {
 
@@ -32,7 +19,10 @@ export const HomeScreen = ({myLikedProjects}) => {
   
   const [showMembers, setShowMembers] = useState([]); //홈화면에 뿌릴 유저 프로필들
   const [pageNum, setPageNum] = useState(0);  //멤버 현재 보고있는 페이지
-  let totalPage = 0;
+  const [totalPage, setTotalPage] = useState(1); //멤버 토탈페이지
+  const [totalPrjPage, setTotalPrjPage] = useState(1);
+  const [prjPageNum, setPrjPageNum] = useState(0);
+
   const goProfile = (nickname) => {
     const cookies = new Cookies();
     if(nickname === cookies.get('nickname')){
@@ -59,13 +49,14 @@ export const HomeScreen = ({myLikedProjects}) => {
       
       await axios
         .all([
-          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top`),
-          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend?size=5`)
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top?size=4`),
+          axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend?size=4`)
         ])
         .then(axios.spread((prjPromise, memberPromise)=>{
-          setPrjList(prjPromise.data);
+          setPrjList(prjPromise.data.content);
+          setTotalPrjPage(prjPromise.data.totalPages);
           console.log(memberPromise.data);
-          totalPage = memberPromise.data.totalPages ; 
+          setTotalPage(memberPromise.data.totalPages); 
           setShowMembers(memberPromise.data.content);
         }))
         .catch(e=>{
@@ -79,19 +70,31 @@ export const HomeScreen = ({myLikedProjects}) => {
     getAjax();
   },[]);
 
-  const onClickLoadMore = ()=>{
+  const onClickLoadMore = async ()=>{
     
     console.log(pageNum);
-    axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend?page=${pageNum+1}&size=5`)
+    await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend?page=${pageNum+1}&size=4`)
       .then(res=>{
         console.log(res.data.content)
         setShowMembers([...showMembers, ...res.data.content]);
+        setPageNum(pageNum+1);
       })
       .catch(e=>{
         console.log(e.response);
       })
   }
-
+  const onClickLoadMorePrj = async ()=>{
+    
+    await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top?page=${prjPageNum+1}&size=4`)
+      .then(res=>{
+        console.log(res.data.content)
+        setPrjList([...prjList, ...res.data.content]);
+        setPrjPageNum(prjPageNum+1);
+      })
+      .catch(e=>{
+        console.log(e.response);
+      })
+  }
   const handleResize = (e) => {
     setIsMobile(window.innerWidth < 768);
   };
@@ -109,19 +112,14 @@ export const HomeScreen = ({myLikedProjects}) => {
       <Container>
         <Row>
           <Col>
-            <Sdiv col>
+            
               <Sdiv row act>
-                <Stext mgb={18} mgt={40} h3 g0>
+                <Stext  mgt={40} h3 g0>
                   # 프로젝트   
                 </Stext>
               </Sdiv>
-              <Sdiv className="custom-slick">
-                <Slider
-                  {...settings}
-                  slidesToShow={isMobile ? 1 : 3}
-                  slidesToScroll={isMobile ? 1 : 3}
-                  arrows={!isMobile}
-                >
+                <S.ProfileRow xs={1} sm={2} md={3} lg={4}>
+              
                   {prjList && prjList.map((item) => {
                     let isLiked=false;
                     if(myLikedProjects){
@@ -134,7 +132,7 @@ export const HomeScreen = ({myLikedProjects}) => {
                     }
                     return (
                     <S.ProfileCol>
-                     <Sdiv onClick={handleTop} >
+                     <Sdiv mgt={15}>
                         <CardProjectHome
                           src={item.imgList[0]}
                           title={item.projectName}
@@ -148,10 +146,24 @@ export const HomeScreen = ({myLikedProjects}) => {
                     </S.ProfileCol>
                     );  
                 })}
-                </Slider>
-                
-              </Sdiv>
-            </Sdiv>
+               </S.ProfileRow>
+               {
+                  totalPrjPage > (prjPageNum+1) ?
+                  <Sdiv mgt={30} ct style={{width:"100%", display:"flex", justifyContent:"center", alignItems:"center"}}>
+                    <ButtonContainerSm 
+                      onClick={onClickLoadMorePrj}
+                      style={{width:"13%"}}
+                      fillPrimary
+                    >
+                      <Sdiv s3>더보기</Sdiv>
+                    </ButtonContainerSm>
+                  </Sdiv>
+                :
+                null
+                  
+                }
+              
+            
           </Col>
         </Row>
         <Row>
@@ -181,24 +193,16 @@ export const HomeScreen = ({myLikedProjects}) => {
           })}
         </S.ProfileRow>
           {
-            totalPage > (pageNum) ?
-          
-            
-            <Sdiv mgt={10} ct style={{width:"100%", display:"flex", justifyContent:"center", alignItems:"center"}}>
+            totalPage > (pageNum+1) ?
+            <Sdiv mgt={30} ct style={{width:"100%", display:"flex", justifyContent:"center", alignItems:"center"}}>
               <ButtonContainerSm 
-                onClick={()=>{
-                  setPageNum((pageNum) => pageNum+1)
-                  onClickLoadMore();}} 
+                onClick={onClickLoadMore}
                 style={{width:"13%"}}
                 fillPrimary
               >
                 <Sdiv s3>더보기</Sdiv>
               </ButtonContainerSm>
-             
             </Sdiv>
-  
-            
-          
           :
           null
             

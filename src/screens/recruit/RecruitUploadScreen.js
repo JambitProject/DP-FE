@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { colors } from "styles/colors";
 import { Form } from 'react-bootstrap';
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 
 import {
   InputWithTitle,
   TextareaWithTitle,
-  InputImage,
   Sdiv,
   Stext,
   DefaultButtonSm,
   ModalContainer,
   BadgeDefaultGray,
-  SelectMain,
-  SelectNumber,
   CardProjectHome,
 } from "components";
 
-import { Row, Col, Container, Dropdown, InputGroup } from "react-bootstrap";
-import { InputWithSelectGroup } from "components/Input/Input";
+import { Col, Container, } from "react-bootstrap";
 import Cookies from "universal-cookie";
 import axios from "axios";
 
@@ -63,7 +58,6 @@ export const RecruitUploadScreen = () => {
     position:"프론트",
     count:1,
   }),]);  //포지션 별 정보 담은 obj 리스트
-  const [refPrjId, setRefPrjId] = useState(-1);
   const [myPrjList, setMyPrjList] = useState([]);
   const [techStackList, setTechStackList] = useState([]);
   const [recruitDto, setRecruitDto] = useState({
@@ -75,7 +69,7 @@ export const RecruitUploadScreen = () => {
     likesCount:0,
     isPublic:true,
     positionList:positionList,
-    projectRefId:refPrjId,
+    projectRefId:-1,
     skillSet:"",
     progressType:"ONGOING",
     contact:"",
@@ -136,7 +130,6 @@ export const RecruitUploadScreen = () => {
   //스택 추가 모달창 안의 검색 기능 - input으로 get요청을 한다. 
   const handleStackSearch = async (searchInput)=>{
     const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/list?skillName=${searchInput}`);
-    console.log(res.data);
     const tmpList = [...techStackList];
     tmpList.forEach(tmpItem=>{
       if(res.data.filter(e=>e.id === tmpItem.id).length>0){
@@ -145,7 +138,6 @@ export const RecruitUploadScreen = () => {
         tmpItem.searched = false;
       }
     })
-    console.log(tmpList);
     setTechStackList(tmpList);
     
     
@@ -162,7 +154,6 @@ export const RecruitUploadScreen = () => {
         tmpItem.searched = false;
       }
     })
-    console.log(tmpList);
     setMyPrjList(tmpList);
     
     

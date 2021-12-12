@@ -2,29 +2,30 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { ButtonLogin, Sdiv, Stext } from "components";
-import { Row, Col, Container, Nav } from "react-bootstrap";
+import {  Sdiv, Stext } from "components";
+import { Row, Col, Container,} from "react-bootstrap";
 
 import LoginImage from "images/pngs/LoginImage.png";
 import LogoGithub from "images/pngs/LogoGithub.png";
 
 import { ReactComponent as LogoMain } from "images/LogoMain.svg";
-import { ReactComponent as LogoGoogle } from "images/LogoGoogle.svg";
-import GoogleLogin from "react-google-login";
 import GoogleLoginBtn from "components/LoginBtn/GoogleLoginBtn";
-import GithubLoginBtn from "components/LoginBtn/GithubLoginBtn";
+import Cookies from "universal-cookie";
 
-const RenderGithub = () => {
-  return <S.LogoImg src={LogoGithub} />;
-};
 
 export const LoginScreen = () => {
+  const cookies = new Cookies();
   const history = useHistory();
 
   const goHome = () => {
     history.push("/");
   };
-
+  useEffect(()=>{
+    cookies.remove('memberId');
+    cookies.remove('nickname');
+    localStorage.clear();
+    
+  },[])
   
   
   return (

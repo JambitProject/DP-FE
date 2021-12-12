@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import {
   HomeScreen,
-  ProfileScreen,
   LoginScreen,
   PortfolioDetailScreen,
   PortfolioEditScreen,
@@ -22,21 +21,18 @@ import {
   RecruitUploadScreen,
   
 } from "screens";
-import ScrollToTop from "components/ScrollToTop/ScrollToTop";
 import styled, { ThemeProvider } from "styled-components";
-import { Sdiv, Stext, DefaultButtonSm, InputWithToggleBtn, BasicSelect } from "components";
+import { Sdiv, Stext, DefaultButtonSm, BasicSelect } from "components";
 import { ReactComponent as LogoMain } from "images/LogoMain.svg";
 import { ReactComponent as IcMore } from "images/IcMore.svg";
-import { ReactComponent as IcBell } from "images/IcBell.svg";
 import { ReactComponent as IcSearch } from "images/IcSearch.svg";
 import { dark, light } from "styles/theme";
 import { colors } from "styles/colors";
 
-import { Row, Col, Container, NavDropdown, Navbar, Nav } from "react-bootstrap";
+import {Container, Navbar, Nav } from "react-bootstrap";
 import LoginCallback from "screens/login/LoginCallback";
 import {TestScreen} from "screens/TestScreen";
 import Cookies from "universal-cookie";
-import { LocalSeeOutlined } from "@mui/icons-material";
 import axios from "axios";
 import defaultProfileImg from "images/defaultProfileImg.svg";
 import { SearchResultScreen } from "screens/searchPage/SearchResultScreen";
@@ -130,9 +126,7 @@ export const App = () => {
       getSearchResult(searchInput, searchType);
     }
   }
-  useEffect(()=>{
-    console.log(searchInput);
-  },[searchInput])
+  
   return (
     <ThemeProvider theme={theme}>
       <S.Body>
@@ -292,6 +286,7 @@ export const App = () => {
               searchMember={searchMember}
               searchPrj={searchPrj}
               searchInput={searchInput}
+              searchType={searchType}
             />
           </Route>
         </Switch>

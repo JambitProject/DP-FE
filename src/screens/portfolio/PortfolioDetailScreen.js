@@ -1,67 +1,21 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useHistory, useParams } from "react-router-dom";
-import styled, { css } from "styled-components";
-import { colors } from "styles/colors";
+import styled from "styled-components";
 import { BadgeDefaultGray, DefaultButtonSm, Sdiv, Stext, CardProjectHome, ModalContainer } from "components";
-import defaultImg from 'images/pngs/defaultImg.png';
 import { Row, Col, Container } from "react-bootstrap";
-import Slider from "react-slick";
 
-import { ReactComponent as IcSetting } from "images/IcSetting.svg";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import defaultProfileImg from "images/defaultProfileImg.svg";
-// slider 세팅
-let settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  arrows: true,
-  beforeChange: (current, next) => console.log(current, next),
-  afterChange: (current) => console.log(current),
-};
-
-const TMP_STACK_BADGE_ITEMS = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
-
-const TMP_PROJECT_ITEM = [
-  { title: "title1", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title2", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title3", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title4", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title5", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title6", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title7", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title8", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title9", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title10", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-];
-
-const TMP_SLIDER_ITEM = [
-  { title: "MOST POPULAR" },
-  { title: "MOST POPULAR" },
-  { title: "MOST POPULAR" },
-  { title: "MOST POPULAR" },
-  { title: "MOST POPULAR" },
-];
 
 export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
   const { nickname } = useParams(); //url파라미터로 넘어온 포트폴리오 주인 닉네임
   const history = useHistory();
   const cookies = new Cookies();
   const [prjList, setPrjList] = useState([]); //포트폴리오 주인의 프로젝트들
-  const [imgList, setImgList] = useState([]); //포트폴리오 주인 프로젝트들의 이미지리스트
   const [thisMember, setThisMember] = useState({
-    // userId:"giregi",
-    // nickname:"nigimi",
-    // description: "니가가라 하와이",
+    
     skillList:[],
   }); // 포트폴리오 주인 정보
   
@@ -96,7 +50,6 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
         axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/project/${res.data.id}`)
         .then((prjPromise)=>{
           setPrjList(prjPromise.data);
-          console.log(prjPromise)
         }).catch(e=>{
           console.log(e.response);
         })
@@ -133,7 +86,7 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
     }
     await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/follow`, tmpFollowDto)
       .then(res=>{
-        console.log(res)
+        
         setFollowDtoId(()=>res.data)
       })
       .catch(e=>{
@@ -152,11 +105,6 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
   }
 
   const handleUnfollow =async ()=>{
-    if(nickname==="찢재명"){
-      alert('다시는 언팔할 수 없습니다. 영원히 찢재명을 팔로우해야합니다');
-    }
-    else{
-      
       await axios.delete(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/${followDtoId}`);
       setIsMyFollowee((prevState)=> false);
       await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`)
@@ -168,7 +116,6 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
         })
       //localStorage.removeItem('isMyFollowee');
       //localStorage.setItem('targetNickName', nickname);
-    }
 
   }
 
@@ -319,7 +266,6 @@ S.ImageProfile = styled.img`
   width: 48px;
   height: 48px;
   border-radius: 48px;
-  background-image: url('https://source.unsplash.com/random/48x48');
 `;
 
 S.ProfileCol = styled(Col)`

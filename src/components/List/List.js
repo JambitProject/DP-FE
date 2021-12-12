@@ -1,7 +1,7 @@
 import { DefaultButtonSm, Sdiv, Stext } from "components";
-import React, { useEffect } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import styled, { css } from "styled-components";
+import styled  from "styled-components";
 import { colors } from "styles/colors";
 
 import Toggle from "react-toggle";
@@ -191,7 +191,7 @@ export const CommentList = ({
         
           }
           <Stext b2 g3>
-            {isDeleted ? "작성자에 의해 찢긴 댓글입니다." : comment}
+            {isDeleted ? "작성자에 의해 삭제된 댓글입니다." : comment}
           </Stext>
           <Sdiv>
             <Stext c1 g4 mgr={5}>

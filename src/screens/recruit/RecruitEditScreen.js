@@ -5,27 +5,22 @@ import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
 import { Form } from 'react-bootstrap';
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 
 import {
   InputWithTitle,
   TextareaWithTitle,
-  InputImage,
   Sdiv,
   Stext,
   DefaultButtonSm,
   ModalContainer,
   BadgeDefaultGray,
-  SelectMain,
-  SelectNumber,
   CardProjectHome,
   InputWithToggleBtn,
   
 } from "components";
 
-import { Row, Col, Container, Dropdown, InputGroup } from "react-bootstrap";
-import { InputWithSelectGroup } from "components/Input/Input";
+import { Col, Container } from "react-bootstrap";
 import Cookies from "universal-cookie";
 import axios from "axios";
 
@@ -98,7 +93,6 @@ export const RecruitEditScreen = () => {
         
       }
     })  
-    console.log(tmpStack);
     setRecruitDto({...recruitDto, skillSet:tmpStack});
     setShowModal(false);
   };
@@ -123,7 +117,6 @@ export const RecruitEditScreen = () => {
   //스택 추가 모달창 안의 검색 기능 - input으로 get요청을 한다. 
   const handleStackSearch = async (searchInput)=>{
     const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/skill/list?skillName=${searchInput}`);
-    console.log(res.data);
     const tmpList = [...techStackList];
     tmpList.forEach(tmpItem=>{
       if(res.data.filter(e=>e.id === tmpItem.id).length>0){
@@ -132,11 +125,19 @@ export const RecruitEditScreen = () => {
         tmpItem.searched = false;
       }
     })
-    console.log(tmpList);
     setTechStackList(tmpList);
     
     
   }
+  useEffect(()=>{
+    myPrjList.map(item=>{
+      if(item.selected){
+        setRefPrjId(item.id);
+        setRecruitDto({...recruitDto, projectRefId:item.id});
+      }
+    })
+  },[myPrjList])
+
   //프로젝트 추가 모달창 안의 검색 기능 - input으로 get요청을 한다. 
   const handlePrjSearch = async (searchInput)=>{
     const res = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/list?projectName=${searchInput}`);
@@ -149,7 +150,6 @@ export const RecruitEditScreen = () => {
         tmpItem.searched = false;
       }
     })
-    console.log(tmpList);
     setMyPrjList(tmpList);
     
     
@@ -166,7 +166,6 @@ export const RecruitEditScreen = () => {
     tmpList = tmpList.map(item=>{
       return JSON.stringify(item);
     })
-    console.log(tmpList);
     setPositionList(tmpList);
   }
 
@@ -233,7 +232,6 @@ export const RecruitEditScreen = () => {
       .then(()=>{
         history.push(`/recruit/${id}`);
       }).catch(e=>{
-        console.log(e.response);
       })
 
   }
@@ -247,13 +245,10 @@ export const RecruitEditScreen = () => {
     tmpList.forEach(item=>{
       tmpSet.add(item.position);
     })
-    console.log(tmpSet)
-    console.log(positionList);
     return tmpSet.size !== positionList.length;
   }
 
   useEffect(()=>{
-    console.log(recruitDto)
   },[recruitDto])
   //mount될 때 내 프로젝트 리스트와 스택리스트를 get해와서 techStackList와 
   useEffect(()=>{
@@ -267,12 +262,23 @@ export const RecruitEditScreen = () => {
       ])
       .then(
         axios.spread(async (prjPromise, stackPromise, boardPromise, res)=>{
-          const prj = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${boardPromise.data.projectRefId}`)
-
-          prjPromise.data.map(item=>{
-            item.selected = item.id === prj.data.id;
-            item.searched = true;
-          })
+          
+          if(boardPromise.data.projectRefId !== -1){
+            await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/${boardPromise.data.projectRefId}`)
+              .then(res=>{
+                setRefPrjId(res.data.id);
+                prjPromise.data.map(item=>{
+                  item.selected = item.id === res.data.id;
+                  item.searched = true;
+              })
+            })
+            
+          }else{
+            prjPromise.data.map(item=>{
+              item.searched = true;
+              item.selected = false;
+            })
+          }
           setMyPrjList([...prjPromise.data]);
           stackPromise.data.forEach(item=>{
             item.selected = false;
@@ -281,8 +287,6 @@ export const RecruitEditScreen = () => {
             })
             item.searched = true;
           })
-          console.log(boardPromise.data);
-          console.log(stackPromise.data);
           setTechStackList([...stackPromise.data]);
           
           setRecruitDto({...boardPromise.data, positionList:res.data.map(item=>{return JSON.stringify(item)})});
@@ -291,7 +295,6 @@ export const RecruitEditScreen = () => {
         })
       )
       .catch(e=>{
-        console.log(e);
       })
     }
     
@@ -307,7 +310,6 @@ export const RecruitEditScreen = () => {
   //         setSelectCnt(res.data.length);
   //       })
   //       .catch(e=>{
-  //         console.log(e.response);
   //       })
   //   }
   //   getPositionList();
@@ -321,7 +323,6 @@ export const RecruitEditScreen = () => {
   const deleteBoard = async ()=>{
     await axios.delete(`${process.env.REACT_APP_SERVER_BASE_URL}/board/${id}`)
       .then(()=>{history.push('/recruit-list')})
-      .catch(e=>console.log(e.response));
     
   }
 

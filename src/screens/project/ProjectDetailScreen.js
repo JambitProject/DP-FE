@@ -336,7 +336,7 @@ export const ProjectDetailScreen = () => {
               </TextProjectBack>
               <TextProjectTitle>{thisPrj.projectName}</TextProjectTitle>
               <Sdiv row sb act mgb={16}>
-                <TextProjectInfo>{`조회수: ${0} 관심: ${thisPrj.likesCount} 댓글: ${thisPrj.replyCount}`}</TextProjectInfo>
+                <TextProjectInfo>{`조회수: ${thisPrj.viewCount} 관심: ${thisPrj.likesCount} 댓글: ${thisPrj.replyCount}`}</TextProjectInfo>
                 <Sdiv>
                   {
                     cookies.get('nickname') === thisPrj.projectManager 
@@ -345,9 +345,9 @@ export const ProjectDetailScreen = () => {
                     :
                     
                       isLiked ?
-                      <DefaultButtonSm onClick={onClickUnlike} fillPrimary title="관심 손절하기" />
+                      <DefaultButtonSm onClick={onClickUnlike} fillPrimary title="좋아요 취소" />
                       :
-                      <DefaultButtonSm onClick={onClickLike} linePrimary title="관심 추가하기" />
+                      <DefaultButtonSm onClick={onClickLike} linePrimary title="좋아요" />
                       
                     
                     
@@ -482,7 +482,7 @@ export const ProjectDetailScreen = () => {
                     }}
                     isEdited={isEdited}
                     editedTime={isEdited && editedTime}
-                    src={item.isDeleted ? defaultProfileImg : item.profileImage}
+                    src={item.isDeleted ? defaultProfileImg : item.profileImage ? item.profileImage : defaultProfileImg}
                   />
                 );
               })}

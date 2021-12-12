@@ -1,34 +1,21 @@
-import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
-import { useHistory, useLocation, useParams } from "react-router-dom";
-import styled, { css } from "styled-components"
-import queryString from 'query-string';
+import React from "react";
+import { useHistory, useParams } from "react-router-dom";
+import styled from "styled-components"
 import {
-  BadgeDefaultGray,
-  DefaultButtonSm,
-  InputWithTitle,
-  ListMyPost,
-  ModalContainer,
   Sdiv,
   Stext,
   CardProfile,
-  TextareaWithTitle,
   CardProjectHome,
-  InputImage,
-  RecruitList,
 } from "components";
 
 import { Row, Col, Container } from "react-bootstrap";
-import { colors } from "styles/colors";
-import axios from "axios";
 import Cookies from 'universal-cookie';
 import defaultProfileImg from "images/defaultProfileImg.svg";
-export const SearchResultScreen = ({myLikedProjects,searchMember, searchPrj, searchInput}) => {
+export const SearchResultScreen = ({myLikedProjects,searchMember, searchPrj, searchType}) => {
   //const { search } = useLocation();  
   const {type, query} = useParams();
   const history = useHistory();
   const cookies = new Cookies();
-  const [queryObj, setQueryObj] = useState({});
   const goProject=(id)=>{
     
     history.push(`/project/${id}`);
@@ -41,7 +28,7 @@ export const SearchResultScreen = ({myLikedProjects,searchMember, searchPrj, sea
       history.push(`/portfolio/${nickname}`);
     }
   }
-
+  
   return(
     <S.Body>
       <Container>
@@ -51,7 +38,7 @@ export const SearchResultScreen = ({myLikedProjects,searchMember, searchPrj, sea
               <Sdiv row act>
                 <Stext mgb={18} mgt={40} h2 g0>
                   {
-                  `'${query.replace('%23', '#')}' 검색 결과`}
+                  `'${query.replace('%23', '#')}' ${searchType==="STACK" ? "기술 스택" : "제목, 닉네임"} 검색 결과`}
                 </Stext>
               </Sdiv>
               
@@ -67,6 +54,7 @@ export const SearchResultScreen = ({myLikedProjects,searchMember, searchPrj, sea
                   # 프로젝트 내 검색 결과 
                 </Stext>
               </Sdiv>
+              <S.ProfileRow xs={2} sm={2} md={3}>
                   {searchPrj && searchPrj.length > 0 ? searchPrj.map((item) => {
                     let isLiked=false;
                     if(myLikedProjects){
@@ -78,7 +66,6 @@ export const SearchResultScreen = ({myLikedProjects,searchMember, searchPrj, sea
                       })
                     }
                     return (
-                    <Sdiv row>
                       <S.ProfileCol>
                        <Sdiv>
                           <CardProjectHome
@@ -92,7 +79,6 @@ export const SearchResultScreen = ({myLikedProjects,searchMember, searchPrj, sea
                           />
                         </Sdiv>
                       </S.ProfileCol>
-                    </Sdiv>
                     );  
                 })
                 :
@@ -102,6 +88,7 @@ export const SearchResultScreen = ({myLikedProjects,searchMember, searchPrj, sea
                   </Stext>  
                 </Sdiv>
                 }
+                </S.ProfileRow>
             </Sdiv>
           </Col>
         </Row>

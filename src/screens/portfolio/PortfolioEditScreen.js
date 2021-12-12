@@ -21,7 +21,7 @@ import { Row, Col, Container } from "react-bootstrap";
 import { colors } from "styles/colors";
 import axios from "axios";
 import Cookies from 'universal-cookie';
-
+import defaultProfileImg from "images/defaultProfileImg.svg";
 
 export const PortfolioEditScreen = ({myFollowees, myLikedProjects, myLikedBoards}) => {
 
@@ -87,13 +87,10 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects, myLikedBoards
     history.push(`/recruit/${id}`);
   }
   const onClickOpenConfirmModal = ()=>{
-    if(cookies.get('nickname') === "찢재명" && newNickname !== "" && newDescription === ""){
-      alert('변경할 수 없습니다. 한 번 찢재명은 영원한 찢재명입니다. ');
-      return;
-    }
+    
     //새 닉네임이 중복된채로 저장하기 누르면 alert 후 return
     if(isDuplicate){
-      alert('예~~~~~하면 되는데!!!...어디서 들은건 있어가지고 닉네임 영어로 써봐! 처음부터 다시할까? ')
+      alert('중복된 닉네임입니다.')
       return;
     }
     let nk = newNickname;
@@ -110,7 +107,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects, myLikedBoards
       setMember({...member, nickname: nk, description: des});
       setShowConfirmModal(true);
     }else{
-      alert('변경된 사항이 없는데요?');
+      alert('변경된 사항이 없습니다');
     }
   }
 
@@ -454,7 +451,7 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects, myLikedBoards
                   return (
                     <Col onClick={handleTop}>
                       <CardProfile
-                        prifileSrc={item.profileImage}
+                        prifileSrc={item.profileImage || defaultProfileImg}
                         name={item.followee}
                         subTitle=""
                         onClickProfile={()=>{goProfile(item.followee)}}
@@ -619,13 +616,11 @@ export const PortfolioEditScreen = ({myFollowees, myLikedProjects, myLikedBoards
       </ModalContainer>
       <ModalContainer show={showConfirmModal}>
         <Stext h3 g0 mgb={20}>
-          잠시만요!<br/>
-          Don't press the confirm button yet.<br/>
-          이 엄마들은 무료로 해줍니다
+          변경사항을 저장하시겠습니까?<br/>
         </Stext>
         
         <Sdiv row jed mgt={28}>
-          <DefaultButtonSm title="그냥닫기" linePrimary onClick={onClickCloseConfirmModal} />
+          <DefaultButtonSm title="닫기" linePrimary onClick={onClickCloseConfirmModal} />
           <Sdiv w={4} />
           <DefaultButtonSm title="변경확정" fillPrimary onClick={onClickSave} />
         </Sdiv>
