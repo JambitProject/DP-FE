@@ -5,6 +5,7 @@ Jambit Project
 프로젝트 설명
 -------------
 <br/>
+
 ### 슬로건
 Juniors be Ambitious
 ***
