@@ -96,3 +96,18 @@ Juniors be Ambitious
 ![portfolioedit](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_11.png)
 ***
 <br/>
+<br/>
+
+개발 내용 및 링크
+-------------
+<br/>
+
+### 개발 내용
+![개발내용](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_%EA%B0%9C%EB%B0%9C%EB%82%B4%EC%9A%A9.png)
+***
+<br/>
+
+### 서비스 링크 
+[link](http://ec2-15-165-194-66.ap-northeast-2.compute.amazonaws.com/)
+***
+<br/>
