@@ -108,6 +108,6 @@ Juniors be Ambitious
 <br/>
 
 ### 서비스 링크 
-[link](http://ec2-15-165-194-66.ap-northeast-2.compute.amazonaws.com/)
+[jambit](http://ec2-15-165-194-66.ap-northeast-2.compute.amazonaws.com/)
 ***
 <br/>
