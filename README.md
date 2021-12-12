@@ -34,7 +34,7 @@ Juniors be Ambitious
 <br/>
 ### 서비스 화면 
 <br/>
-####로그인
+#### 로그인
 ![login]:(http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/JAMBIT_1.png)
 ***
 <br/>
