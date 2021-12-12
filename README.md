@@ -22,7 +22,6 @@ Juniors be Ambitious
 ***
 
 ### 서비스 개요
-![service][picture]
-[picture]:http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/Jambit%EB%AA%85%EC%84%B8%EC%84%9C.PNG
+![service](http://cscp2.sogang.ac.kr/CSE4187/CSE4187/UserData/Jambit%EB%AA%85%EC%84%B8%EC%84%9C.PNG)
 ***
 
