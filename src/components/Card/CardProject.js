@@ -30,13 +30,13 @@ export const CardProjectHome = ({ src, title, progress = "ONGOING", likesCount =
     <CardContainer onClick={onClick && onClick}>
       <CardHomeImage src={src} />
       <Stext b1 g0 mgb={6}>
-        {title}
+        {title.length >= 21 ? title.slice(0, 19) + "..." : title}
       </Stext>
       <HomeInfoContainer>
         <Sdiv row act>
           <RenderProgress />
           <Stext mgl={4} c1 g4>
-            {subTitle}
+        
           </Stext>
         </Sdiv>
         <Sdiv row act>

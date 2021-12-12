@@ -4,54 +4,13 @@ import { useHistory } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { colors } from "styles/colors";
 import { BadgeDefaultGray, DefaultButtonSm, Sdiv, Stext, CardProjectHome } from "components";
-import defaultImg from 'images/pngs/defaultImg.png';
 import { Row, Col, Container } from "react-bootstrap";
-import Slider from "react-slick";
 
 import { ReactComponent as IcSetting } from "images/IcSetting.svg";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { ConstructionOutlined, IosShare } from "@mui/icons-material";
 import defaultProfileImg from "images/defaultProfileImg.svg";
 // slider 세팅
-let settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  arrows: true,
-  beforeChange: (current, next) => console.log(current, next),
-  afterChange: (current) => console.log(current),
-};
-
-const TMP_STACK_BADGE_ITEMS = [
-  { title: "JAVA" },
-  { title: "React" },
-  { title: "NodeJS" },
-  { title: "Redux" },
-];
-
-const TMP_PROJECT_ITEM = [
-  { title: "title1", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title2", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title3", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title4", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title5", subTitle: "subTitle1", progress: 1, LikeCount: 999 },
-  { title: "title6", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title7", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title8", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title9", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-  { title: "title10", subTitle: "subTitle1", progress: 0, LikeCount: 999 },
-];
-
-const TMP_SLIDER_ITEM = [
-  { title: "MOST POPULAR" },
-  { title: "MOST POPULAR" },
-  { title: "MOST POPULAR" },
-  { title: "MOST POPULAR" },
-  { title: "MOST POPULAR" },
-];
 
 export const MyPortfolioScreen = () => {
 
@@ -63,6 +22,7 @@ export const MyPortfolioScreen = () => {
   const [member, setMember] = useState({});
   const [myTechStack, setMyTechStack] = useState([]);
   const [totalFollowers, setTotalFollowers] = useState(0);
+
   useEffect(() => {
     const getAjax = async () => {
       await axios
@@ -80,18 +40,14 @@ export const MyPortfolioScreen = () => {
             setPrjList([...projectPromise.data])  //내프로젝트들
         }))
         .catch((e)=>{
-          console.log('실패');
           console.log(e.response);
-          
         })
-        
     }
     getAjax();
     
   },[]);
 
   const goProjectUpload = () => {
-
     history.push("/project-upload");
   };
 
@@ -109,7 +65,6 @@ export const MyPortfolioScreen = () => {
       
     });
   }
-
   
   return (
     <S.Body>
@@ -129,10 +84,8 @@ export const MyPortfolioScreen = () => {
                   {member.description}
                 </Stext>
                 <Stext s3 g0 style={{color:`${colors.primary}`}}>
-                  {'팔로워: '+totalFollowers +"명"}
+                  {'팔로워: ' + totalFollowers + "명"}
                 </Stext>
-            
-                
               </Sdiv>
               {/*<DefaultButtonSm line />*/}
             </Sdiv>

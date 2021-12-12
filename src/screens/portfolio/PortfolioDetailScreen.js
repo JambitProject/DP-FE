@@ -4,6 +4,7 @@ import { useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { BadgeDefaultGray, DefaultButtonSm, Sdiv, Stext, CardProjectHome, ModalContainer } from "components";
 import { Row, Col, Container } from "react-bootstrap";
+import { colors } from "styles/colors";
 
 import axios from "axios";
 import Cookies from "universal-cookie";
@@ -23,21 +24,21 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
   const [isMyFollowee, setIsMyFollowee] = useState(false);
   const [followDtoId, setFollowDtoId] = useState(-1);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [totalFollower, setTotalFollower] = useState(0);
 
   useEffect(()=>{
-    
-    if(myFollowees){
-      
-      for(let i = 0; i<myFollowees.length; i++){
-       
-        if(myFollowees[i].followee === nickname){
-          setIsMyFollowee((prevState)=>true);
-          setFollowDtoId(()=> myFollowees[i].id);
-          break;
-        }
-      } 
+    const amIFollowingThisDude = async ()=>{
+      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/check?nickname=${cookies.get('nickname')}&followee=${nickname}`)
+        .then(res=>{
+          setIsMyFollowee(res.data);
+        })
+        .catch(e=>{
+          console.log(e.response);
+        })
     }
-    
+    if(cookies.get('nickname')){
+      amIFollowingThisDude();
+    }
   },[])
   
   useEffect(() => {
@@ -46,6 +47,10 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
       await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/${nickname}`)
       .then((res)=>{
         setThisMember(res.data);
+        axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/total/follower/${res.data.nickname}`)
+          .then(res2=>{
+            setTotalFollower(res2.data);
+          })
         
         axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/project/${res.data.id}`)
         .then((prjPromise)=>{
@@ -57,9 +62,9 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
         console.log(e.response);
       })
       
-    }
-    
-    getAjax();
+  }
+  
+  getAjax();
    
     
   },[]);
@@ -85,34 +90,37 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
       followee:nickname,
     }
     await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/follow`, tmpFollowDto)
-      .then(res=>{
+      .then(async res=>{
+        setIsMyFollowee((prevState)=>true);
+        await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`)
+            .then(res=>{
+              setMyFollowees([...res.data]);
+            })
+            .catch(e=>{
+              console.log(e.response);
+            })
         
         setFollowDtoId(()=>res.data)
       })
       .catch(e=>{
         console.log(e);
       })
-    setIsMyFollowee((prevState)=>true);
-    await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`)
-        .then(res=>{
-          setMyFollowees([...res.data]);
-        })
-        .catch(e=>{
-          console.log(e.response);
-        })
     //localStorage.removeItem('isMyFollowee');
     //localStorage.setItem('targetNickName', nickname);
   }
 
-  const handleUnfollow =async ()=>{
-      await axios.delete(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/${followDtoId}`);
-      setIsMyFollowee((prevState)=> false);
-      await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`)
-        .then(res=>{
-          setMyFollowees([...res.data]);
-        })
-        .catch(e=>{
-          console.log(e.response);
+  const handleUnfollow = async ()=>{
+      await axios.delete(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/${followDtoId}`)
+        .then(async res=>{
+          setIsMyFollowee((prevState)=> false);
+          await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/follow/following/${cookies.get('nickname')}`)
+            .then(res=>{
+              setMyFollowees([...res.data]);
+            })
+            .catch(e=>{
+              console.log(e.response);
+            })
+
         })
       //localStorage.removeItem('isMyFollowee');
       //localStorage.setItem('targetNickName', nickname);
@@ -138,12 +146,15 @@ export const PortfolioDetailScreen = ({myFollowees, setMyFollowees}) => {
                 {/* <Stext s3 g0 style={{color:`${colors.primary}`}}>
                   {'팔로워: '+totalFollowers +"명"}
                 </Stext> */}
+                <Stext s3 g0 style={{color:`${colors.primary}`}}>
+                  {'팔로워: ' + totalFollower + "명"}
+                </Stext>
               </Sdiv>
               
               {
                 
                 //localStorage.getItem('targetNickname')===nickname || isMyFollowee ? 
-                isMyFollowee ? 
+                isMyFollowee && isMyFollowee ? 
                 <DefaultButtonSm 
                   fillPrimary title="Following"
                   onClick={handleUnfollow}

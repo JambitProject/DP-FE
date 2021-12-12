@@ -55,7 +55,6 @@ export const HomeScreen = ({myLikedProjects}) => {
         .then(axios.spread((prjPromise, memberPromise)=>{
           setPrjList(prjPromise.data.content);
           setTotalPrjPage(prjPromise.data.totalPages);
-          console.log(memberPromise.data);
           setTotalPage(memberPromise.data.totalPages); 
           setShowMembers(memberPromise.data.content);
         }))
@@ -75,7 +74,6 @@ export const HomeScreen = ({myLikedProjects}) => {
     console.log(pageNum);
     await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/member/recommend?page=${pageNum+1}&size=4`)
       .then(res=>{
-        console.log(res.data.content)
         setShowMembers([...showMembers, ...res.data.content]);
         setPageNum(pageNum+1);
       })
@@ -87,7 +85,6 @@ export const HomeScreen = ({myLikedProjects}) => {
     
     await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/project/top?page=${prjPageNum+1}&size=4`)
       .then(res=>{
-        console.log(res.data.content)
         setPrjList([...prjList, ...res.data.content]);
         setPrjPageNum(prjPageNum+1);
       })
@@ -130,13 +127,14 @@ export const HomeScreen = ({myLikedProjects}) => {
                         }
                       })
                     }
+                    
                     return (
                     <S.ProfileCol>
                      <Sdiv mgt={15}>
                         <CardProjectHome
                           src={item.imgList[0]}
                           title={item.projectName}
-                          subTitle={"subTitle"}
+                          subTitle={""}
                           progress={item.progress}
                           onClick={()=>{goProject(item.id)}}
                           likesCount={item.likesCount}

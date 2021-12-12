@@ -586,8 +586,8 @@ S.TextIntroduce = styled.pre`
   font-family: Pretendard;
   font-style: normal;
   font-weight: normal;
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 22px;
   /* or 138% */
 
   /* g3 */
